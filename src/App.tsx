@@ -1,0 +1,1213 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Car, 
+  Flame, 
+  Gauge, 
+  Cpu, 
+  TrendingUp, 
+  Share2, 
+  Printer, 
+  RotateCcw, 
+  Heart, 
+  Award,
+  Sun,
+  Moon,
+  ChevronDown
+} from 'lucide-react';
+import { FuelEntry, VehicleInfo } from './types';
+import { analyzeVehicleHealth } from './utils/calculator';
+import QuickVehicleStatusCard from './components/QuickVehicleStatusCard';
+import Vehicles from './components/Vehicles';
+import FuelForm from './components/FuelForm';
+import HealthScoreCard from './components/HealthScoreCard';
+import CostAnalysisCharts from './components/CostAnalysisCharts';
+import FuelLogsList from './components/FuelLogsList';
+import AITechnicianReport from './components/AITechnicianReport';
+import EfficiencyHeroCard from './components/EfficiencyHeroCard';
+import FinancialImpactCard from './components/FinancialImpactCard';
+import SpeedSimulatorCard from './components/SpeedSimulatorCard';
+import EfficiencyIssuesCard from './components/EfficiencyIssuesCard';
+import PwaInstallBanner from './components/PwaInstallBanner';
+import SponsoredAdCard from './components/SponsoredAdCard';
+import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
+import { calculateLogEfficiencies } from './utils/calculator';
+import { translations, Language } from './utils/translations';
+
+// Pre-populate with high-quality sample logs for demonstration
+const defaultVehicleFa: VehicleInfo = {
+  brand: 'پژو',
+  model: '207i MC',
+  year: '',
+  fuelCapacity: 50,
+  currentOdometer: 64250,
+};
+
+const defaultVehicleEn: VehicleInfo = {
+  brand: 'Toyota',
+  model: 'Camry',
+  year: '',
+  fuelCapacity: 60,
+  currentOdometer: 45200,
+};
+
+const defaultLogsFa: FuelEntry[] = [
+  {
+    id: 'sample-1',
+    date: '2026-06-15',
+    odometer: 62800,
+    liters: 41.5,
+    cost: 124500,
+    fuelType: 'regular',
+    stationName: 'جایگاه ۲۸ آزادی',
+    notes: 'بنزین زدم، فیلتر هوا تعویض شد',
+  },
+  {
+    id: 'sample-2',
+    date: '2026-06-28',
+    odometer: 63280,
+    liters: 39.0,
+    cost: 117000,
+    fuelType: 'regular',
+    stationName: 'جایگاه نیاوران',
+  },
+  {
+    id: 'sample-3',
+    date: '2026-07-12',
+    odometer: 63790,
+    liters: 42.0,
+    cost: 126000,
+    fuelType: 'super',
+    stationName: 'جایگاه پاسداران',
+    notes: 'بنزین سوپر برای مقایسه مصرف زدم',
+  },
+  {
+    id: 'sample-4',
+    date: '2026-07-14',
+    odometer: 64250,
+    liters: 37.5,
+    cost: 112500,
+    fuelType: 'regular',
+    stationName: 'جایگاه آزادی',
+  }
+];
+
+const defaultLogsEn: FuelEntry[] = [
+  {
+    id: 'sample-e1',
+    date: '2026-06-10',
+    odometer: 43800,
+    liters: 48.2,
+    cost: 54,
+    fuelType: 'regular',
+    stationName: 'Shell Station #4',
+    notes: 'First log, basic highway commute',
+  },
+  {
+    id: 'sample-e2',
+    date: '2026-06-22',
+    odometer: 44320,
+    liters: 46.5,
+    cost: 52,
+    fuelType: 'regular',
+    stationName: 'Chevron Downtown',
+  },
+  {
+    id: 'sample-e3',
+    date: '2026-07-05',
+    odometer: 44790,
+    liters: 49.0,
+    cost: 65,
+    fuelType: 'super',
+    stationName: 'Exxon Fuel Stop',
+    notes: 'Premium fuel to test engine response',
+  },
+  {
+    id: 'sample-e4',
+    date: '2026-07-14',
+    odometer: 45200,
+    liters: 44.8,
+    cost: 50,
+    fuelType: 'regular',
+    stationName: 'Shell Station #4',
+  }
+];
+
+// Detect default unit system on mount if not already saved in localStorage
+const detectDefaultUnitSystem = (): 'metric' | 'us' | 'uk' => {
+  try {
+    // 1. Check navigator locales
+    if (typeof navigator !== 'undefined') {
+      const locales = navigator.languages || [navigator.language];
+      for (const locale of locales) {
+        if (locale && locale.includes('-')) {
+          const country = locale.split('-')[1].toUpperCase();
+          if (country === 'US') return 'us';
+          if (country === 'GB' || country === 'UK') return 'uk';
+        }
+      }
+    }
+
+    // 2. Check timezone as a secondary source of country/region hints
+    if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz) {
+        const tzLower = tz.toLowerCase();
+        if (tzLower.includes('america/')) {
+          // Check common US cities in timezone
+          if (
+            tzLower.includes('new_york') || 
+            tzLower.includes('chicago') || 
+            tzLower.includes('los_angeles') || 
+            tzLower.includes('denver') || 
+            tzLower.includes('phoenix') ||
+            tzLower.includes('anchorage') ||
+            tzLower.includes('honolulu') ||
+            tzLower.includes('detroit') ||
+            tzLower.includes('indianapolis')
+          ) {
+            return 'us';
+          }
+        }
+        if (tzLower.includes('london') || tzLower.includes('belfast')) {
+          return 'uk';
+        }
+      }
+    }
+  } catch (err) {
+    // Safe fallback to global metric
+  }
+  return 'metric';
+};
+
+export default function App() {
+  // State 1: Language (Hardcoded English only)
+  const [lang, setLang] = useState<Language>('en');
+
+  const t = translations[lang];
+
+  // State 2: Unit System (Default detected dynamically on first load, or retrieved from localStorage)
+  const [unitSystem, setUnitSystem] = useState<'metric' | 'us' | 'uk'>(() => {
+    const saved = localStorage.getItem('en_unit_system');
+    if (saved === 'metric' || saved === 'us' || saved === 'uk') {
+      return saved;
+    }
+    return detectDefaultUnitSystem();
+  });
+
+  // State 3: Dark/Light Theme
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('en_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  // State 4: Multi-Vehicle Garage List
+  const [vehicles, setVehicles] = useState<VehicleInfo[]>(() => {
+    const saved = localStorage.getItem('en_vehicles');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    const legacySaved = localStorage.getItem('en_vehicle');
+    if (legacySaved) {
+      try {
+        const parsed = JSON.parse(legacySaved);
+        if (parsed && typeof parsed === 'object') {
+          return [{ id: 'veh-1', ...parsed }];
+        }
+      } catch (e) {}
+    }
+    return [{ id: 'veh-1', brand: '', model: '', year: '2026', fuelCapacity: 50, currentOdometer: 0 }];
+  });
+
+  // Active Vehicle ID
+  const [activeVehicleId, setActiveVehicleId] = useState<string>(() => {
+    const savedId = localStorage.getItem('en_active_vehicle_id');
+    if (savedId) return savedId;
+    return vehicles[0]?.id || 'veh-1';
+  });
+
+  // Active Vehicle Object derived from state
+  const vehicle = vehicles.find(v => v.id === activeVehicleId) || vehicles[0] || {
+    id: 'veh-1',
+    brand: '',
+    model: '',
+    year: '2026',
+    fuelCapacity: 50,
+    currentOdometer: 0
+  };
+
+  // State 5: Fuel Entry Logs (Global logs array across all vehicles)
+  const [logs, setLogs] = useState<FuelEntry[]>(() => {
+    const saved = localStorage.getItem('en_logs');
+    if (saved) return JSON.parse(saved);
+    return [];
+  });
+
+  // Derived Active Logs (Filter logs belonging to the active vehicle; legacy untagged logs assigned to default vehicle)
+  const activeLogs = useMemo(() => {
+    const defaultId = vehicles[0]?.id || 'veh-1';
+    return logs.filter(log => {
+      if (log.vehicleId) {
+        return log.vehicleId === vehicle.id;
+      }
+      return vehicle.id === defaultId;
+    });
+  }, [logs, vehicle.id, vehicles]);
+
+  // State 6: Selected Navigation Tab (Defaults to refuel if logs are empty, dashboard if logs exist)
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'vehicles' | 'refuel' | 'history' | 'ai'>(() => {
+    const savedLogs = localStorage.getItem('en_logs');
+    if (savedLogs) {
+      try {
+        const parsed = JSON.parse(savedLogs);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return 'dashboard';
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return 'refuel';
+  });
+
+  const [showShareNotification, setShowShareNotification] = useState<boolean>(false);
+  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+
+  // Automatically switch tab based on log existence
+  useEffect(() => {
+    if (activeLogs.length === 0) {
+      setActiveTab('refuel');
+    } else if (activeLogs.length > 0 && activeTab === 'refuel') {
+      setActiveTab('dashboard');
+    }
+  }, [activeLogs.length]);
+
+  // Scroll to top on tab changes to fix mobile scroll persistence bug
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as any });
+  }, [activeTab]);
+
+  // Sync theme to localStorage
+  useEffect(() => {
+    localStorage.setItem('en_theme', theme);
+  }, [theme]);
+
+  // Sync lang to localStorage & update HTML root attributes
+  useEffect(() => {
+    localStorage.setItem('en_lang', lang);
+    document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  // Sync unitSystem to localStorage
+  useEffect(() => {
+    localStorage.setItem('en_unit_system', unitSystem);
+  }, [unitSystem]);
+
+  // Sync vehicles & activeVehicleId to localStorage
+  useEffect(() => {
+    localStorage.setItem('en_vehicles', JSON.stringify(vehicles));
+    localStorage.setItem('en_active_vehicle_id', activeVehicleId);
+    if (vehicle) {
+      localStorage.setItem('en_vehicle', JSON.stringify(vehicle));
+    }
+  }, [vehicles, activeVehicleId, vehicle]);
+
+  // Sync logs to localStorage & automatically calibrate odometer for active vehicle
+  useEffect(() => {
+    localStorage.setItem('en_logs', JSON.stringify(logs));
+    if (activeLogs.length > 0) {
+      const sorted = [...activeLogs].sort((a, b) => b.odometer - a.odometer);
+      const maxOdo = sorted[0].odometer;
+      if (maxOdo > vehicle.currentOdometer) {
+        setVehicles(prev => prev.map(v => v.id === vehicle.id ? { ...v, currentOdometer: maxOdo } : v));
+      }
+    }
+  }, [logs, activeLogs, vehicle.id, vehicle.currentOdometer]);
+
+  const handleToggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  const handleSelectVehicle = (id: string) => {
+    setActiveVehicleId(id);
+  };
+
+  const handleAddVehicle = (info: Omit<VehicleInfo, 'id'>) => {
+    const newVeh: VehicleInfo = {
+      ...info,
+      id: `veh-${Date.now()}`
+    };
+    setVehicles(prev => [...prev, newVeh]);
+    setActiveVehicleId(newVeh.id!);
+  };
+
+  const handleUpdateVehicle = (info: VehicleInfo) => {
+    setVehicles(prev => prev.map(v => (v.id === vehicle.id || (v.brand === vehicle.brand && v.model === vehicle.model)) ? { ...v, ...info, id: v.id || vehicle.id } : v));
+  };
+
+  const handleDeleteVehicle = (id: string) => {
+    if (vehicles.length <= 1) return;
+    setVehicles(prev => {
+      const filtered = prev.filter(v => v.id !== id);
+      if (activeVehicleId === id) {
+        setActiveVehicleId(filtered[0]?.id || '');
+      }
+      return filtered;
+    });
+  };
+
+  const handleAddFuelEntry = (newEntry: Omit<FuelEntry, 'id'>) => {
+    const entry: FuelEntry = {
+      ...newEntry,
+      id: `fuel-${Date.now()}`,
+      vehicleId: vehicle.id || vehicles[0]?.id || 'veh-1'
+    };
+    setLogs(prev => [entry, ...prev]);
+    setActiveTab('history'); // Redirect to history tab after addition
+  };
+
+  const handleDeleteLog = (id: string) => {
+    setLogs(prev => prev.filter(log => log.id !== id));
+  };
+
+  const handleResetData = () => {
+    setShowResetConfirm(true);
+  };
+
+  const handleConfirmReset = () => {
+    const resetVehicles = [{ id: 'veh-1', brand: '', model: '', year: '2026', fuelCapacity: 50, currentOdometer: 0 }];
+    setVehicles(resetVehicles);
+    setActiveVehicleId('veh-1');
+    setLogs([]);
+    localStorage.removeItem('en_saved_ai_report');
+    localStorage.removeItem('en_last_analyzed_log_count');
+    localStorage.removeItem('en_ai_report_fallback');
+    setActiveTab('dashboard');
+    setShowResetConfirm(false);
+  };
+
+  const handleShareReport = () => {
+    const metrics = analyzeVehicleHealth(vehicle, activeLogs, lang);
+    const vhsLevel = metrics.level === 'excellent' ? t.levelExcellent : metrics.level === 'good' ? t.levelGood : metrics.level === 'fair' ? t.levelFair : t.levelPoor;
+    
+    // Convert shared output based on selected units
+    const isMetric = unitSystem === 'metric';
+    const isUs = unitSystem === 'us';
+    const displayOdo = isMetric ? vehicle.currentOdometer : vehicle.currentOdometer * 0.621371;
+    const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+    
+    let displayEff = 'N/A';
+    if (metrics.fuelEfficiency > 0) {
+      displayEff = isMetric 
+        ? `${metrics.fuelEfficiency.toFixed(2)} L/100km`
+        : isUs 
+          ? `${(235.215 / metrics.fuelEfficiency).toFixed(1)} US MPG`
+          : `${(282.481 / metrics.fuelEfficiency).toFixed(1)} UK MPG`;
+    }
+
+    const summaryText = lang === 'fa' 
+      ? `🚗 گزارش هوشمند مصرف سوخت و سلامت خودروی ${vehicle.brand} ${vehicle.model}
+📊 امتیاز سلامت خودرو (VHS): ${metrics.score}/۱۰۰ (${vhsLevel})
+📈 میانگین مصرف سوخت: ${displayEff}
+⛽️ تعداد نوبت سوخت‌گیری ثبت شده: ${activeLogs.length} نوبت
+⚙️ کیلومترشمار فعلی: ${Math.round(displayOdo).toLocaleString()} ${odoUnit}
+📱 ایجاد شده توسط پایشگر هوشمند عیب‌یابی مصرف سوخت`
+      : `🚗 Vehicle Fuel & Health Report for ${vehicle.brand} ${vehicle.model}
+📊 Vehicle Health Score (VHS): ${metrics.score}/100 (${vhsLevel})
+📈 Average Fuel Efficiency: ${displayEff}
+⛽️ Fuel Logs count: ${activeLogs.length} logs
+⚙️ Current Mileage: ${Math.round(displayOdo).toLocaleString()} ${odoUnit}
+📱 Generated dynamically via Fuel Analyzer Intelligent Telemetry`;
+
+    navigator.clipboard.writeText(summaryText);
+    setShowShareNotification(true);
+    setTimeout(() => {
+      setShowShareNotification(false);
+    }, 3000);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Pre-calculate vehicle metrics (using active language)
+  const healthMetrics = analyzeVehicleHealth(vehicle, activeLogs, lang);
+
+  // Calculate average and last log efficiency
+  const averageEfficiency = healthMetrics.fuelEfficiency; // L/100km
+  
+  const stepEfficiencies = calculateLogEfficiencies(activeLogs);
+  const lastLogEfficiency = stepEfficiencies.length > 0 ? stepEfficiencies[stepEfficiencies.length - 1].efficiency : 0;
+
+  // Direction handling (RTL for Persian, LTR for English)
+  const isRtl = lang === 'fa';
+  const textDirection = isRtl ? 'rtl' : 'ltr';
+
+  return (
+    <div 
+      className={`min-h-screen flex flex-col relative pb-24 font-sans select-none transition-colors duration-300 ${
+        theme === 'dark' 
+          ? 'dark bg-gradient-to-b from-[#0b0f19] to-[#05070c] text-slate-100' 
+          : 'light bg-slate-50 text-slate-800'
+      }`} 
+      dir={textDirection}
+    >
+      {/* PWA Prompt Banner */}
+      <PwaInstallBanner lang={lang} />
+
+      {/* Visual background glow nodes */}
+      <div className="absolute top-0 right-1/4 w-[450px] h-[450px] rounded-full bg-purple-600/12 blur-[130px] pointer-events-none no-print"></div>
+      <div className="absolute bottom-10 left-1/4 w-[450px] h-[450px] rounded-full bg-cyan-600/12 blur-[130px] pointer-events-none no-print"></div>
+
+      {/* Share / Copy feedback alert */}
+      {showShareNotification && (
+        <div id="share-toast" className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-950/95 border border-cyan-500/40 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-xs text-cyan-400 font-bold transition-all animate-bounce">
+          <Award size={16} />
+          <span>{t.shareReportText}</span>
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="border-b border-slate-900/80 bg-black/40 backdrop-blur-md sticky top-0 z-40 no-print">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl tech-gradient p-[1px] flex items-center justify-center">
+              <div className="w-full h-full bg-black rounded-[11px] flex items-center justify-center">
+                <Flame size={18} className="animate-pulse text-cyan-400" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-sm font-extrabold text-white tracking-wider">
+                {lang === 'fa' ? 'آنالایزر مصرف سوخت' : 'Fuel Analyzer'}
+              </h1>
+              <p className="text-[10px] text-slate-500 font-bold">{t.subtitle}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Quick Vehicle Switcher Dropdown (If > 1 vehicle registered) */}
+            {vehicles.length > 1 && (
+              <div className="relative flex items-center">
+                <Car size={12} className="text-purple-400 absolute left-2.5 pointer-events-none z-10 shrink-0" />
+                <select
+                  value={activeVehicleId}
+                  onChange={(e) => handleSelectVehicle(e.target.value)}
+                  className="pl-7 pr-7 sm:pr-8 py-1.5 rounded-xl bg-slate-950 border border-purple-500/30 text-purple-300 hover:text-white text-[10px] sm:text-xs font-bold appearance-none cursor-pointer transition-all focus:outline-none focus:border-purple-500/60 max-w-[130px] sm:max-w-[180px] truncate"
+                  title={lang === 'fa' ? 'انتخاب خودروی فعال' : 'Select active vehicle'}
+                >
+                  {vehicles.map(v => (
+                    <option key={v.id} value={v.id} className="bg-slate-950 text-slate-200">
+                      {v.brand} {v.model}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-2.5 pointer-events-none z-10 flex items-center text-purple-400">
+                  <ChevronDown size={11} />
+                </div>
+              </div>
+            )}
+
+            {/* Global Unit System Dropdown Selector */}
+            <div className="relative flex items-center">
+              <Gauge size={12} className="text-cyan-400 absolute left-2.5 pointer-events-none z-10 shrink-0" />
+              <select
+                id="unit-system-selector"
+                value={unitSystem}
+                onChange={(e) => setUnitSystem(e.target.value as 'metric' | 'us' | 'uk')}
+                className="pl-7 pr-7 sm:pr-8 py-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-300 hover:text-white hover:border-cyan-500/30 text-[10px] sm:text-xs font-semibold appearance-none cursor-pointer transition-all focus:outline-none focus:border-cyan-500/40"
+                title={lang === 'fa' ? 'سیستم واحدها' : 'Unit system'}
+              >
+                <option value="metric" className="bg-slate-950 text-slate-300">
+                  {lang === 'fa' ? 'متریک (km/L/€)' : 'Global Metric (km/L/€)'}
+                </option>
+                <option value="us" className="bg-slate-950 text-slate-300">
+                  {lang === 'fa' ? 'آمریکایی (mi/gal/$)' : 'US Imperial (mi/gal/$)'}
+                </option>
+                <option value="uk" className="bg-slate-950 text-slate-300">
+                  {lang === 'fa' ? 'انگلیسی (mi/L/£)' : 'UK Hybrid (mi/L/£)'}
+                </option>
+              </select>
+              <div className="absolute right-2.5 pointer-events-none z-10 flex items-center text-slate-500">
+                <ChevronDown size={11} />
+              </div>
+            </div>
+
+            {/* Theme Toggler */}
+            <button
+              id="theme-toggler-btn"
+              onClick={handleToggleTheme}
+              className="px-2 sm:px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-300 hover:text-white hover:border-purple-500/30 text-[10px] sm:text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Toggle theme (Light / Dark)"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun size={12} className="text-yellow-400 shrink-0" />
+                  <span className="hidden xs:inline">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={12} className="text-purple-400 shrink-0" />
+                  <span className="hidden xs:inline">Dark</span>
+                </>
+              )}
+            </button>
+
+            <button
+              id="share-btn"
+              onClick={handleShareReport}
+              className="p-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/20 transition-all cursor-pointer"
+              title="Share Report"
+            >
+              <Share2 size={14} />
+            </button>
+            <button
+              id="print-btn"
+              onClick={handlePrint}
+              className="p-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-400 hover:text-purple-400 hover:border-purple-500/20 transition-all cursor-pointer"
+              title="Print Technical Report"
+            >
+              <Printer size={14} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Print View Only Area */}
+      <div className="hidden print:block p-8 space-y-6 text-black" dir={textDirection}>
+        <div className="border-b pb-4 mb-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{t.printableTitle}</h1>
+            <p className="text-sm text-gray-500 mt-1">{t.printableSub}</p>
+          </div>
+          <div className={isRtl ? 'text-right' : 'text-left'}>
+            <span className="text-xs text-gray-500 block">{t.printableDate}: {new Date().toLocaleDateString()}</span>
+            <span className="text-xs text-gray-500 block">
+              {t.currentOdo}: {Math.round(unitSystem === 'metric' ? vehicle.currentOdometer : vehicle.currentOdometer * 0.621371).toLocaleString()}{' '}
+              {unitSystem === 'metric' ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi')}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="border p-4 rounded-xl">
+            <h3 className="font-bold text-gray-800 mb-2">🚗 {t.profileTitle}</h3>
+            <p className="text-sm">{t.brand} & {t.model}: {vehicle.brand} {vehicle.model}</p>
+            <p className="text-sm">{t.year}: {vehicle.year || '2026'}</p>
+            <p className="text-sm">
+              {t.capacity}: {unitSystem === 'metric' ? vehicle.fuelCapacity : (vehicle.fuelCapacity * 0.264172).toFixed(1)}{' '}
+              {unitSystem === 'metric' ? (lang === 'fa' ? 'لیتر' : 'Liters') : (lang === 'fa' ? 'گالن' : 'Gallons')}
+            </p>
+          </div>
+          <div className="border p-4 rounded-xl text-center flex flex-col justify-center">
+            <span className="text-xs text-gray-500 block">{t.vhsTitle}</span>
+            <span className="text-4xl font-extrabold text-cyan-600 my-1">{healthMetrics.score} / 100</span>
+            <span className="text-xs font-bold uppercase">
+              {t.vhsSub}: {healthMetrics.level === 'excellent' ? t.levelExcellent : healthMetrics.level === 'good' ? t.levelGood : healthMetrics.level === 'fair' ? t.levelFair : t.levelPoor}
+            </span>
+          </div>
+        </div>
+
+        <div className="border p-4 rounded-xl">
+          <h3 className="font-bold text-gray-800 mb-2">📊 {t.factorAnalysis}</h3>
+          <p className="text-sm">
+            {t.avgEff}:{' '}
+            {healthMetrics.fuelEfficiency > 0 
+              ? (unitSystem === 'metric' 
+                  ? `${healthMetrics.fuelEfficiency.toFixed(2)} L/100km` 
+                  : unitSystem === 'us'
+                    ? `${(235.215 / healthMetrics.fuelEfficiency).toFixed(1)} US MPG`
+                    : `${(282.481 / healthMetrics.fuelEfficiency).toFixed(1)} UK MPG`)
+              : '---'}
+          </p>
+          <p className="text-sm">{t.fluctuation}: {healthMetrics.fuelEfficiencyChange.toFixed(1)}%</p>
+          <p className="text-sm">Total Fueling Events: {logs.length}</p>
+        </div>
+
+        <div className="border p-4 rounded-xl">
+          <h3 className="font-bold text-gray-800 mb-2">📋 {t.warningsTitle}</h3>
+          <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+            {healthMetrics.messages.map((m, i) => <li key={i}>{m}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      {/* Desktop Navigation Tabs Bar (Visible on md+) */}
+      <div className="hidden md:block max-w-7xl w-full mx-auto px-4 pt-4 no-print">
+        <div className="flex items-center justify-between bg-slate-950/80 border border-slate-900 rounded-2xl p-2 backdrop-blur-md">
+          <div className="flex items-center gap-1.5">
+            {/* Dashboard Tab */}
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'dashboard'
+                  ? 'bg-slate-900 border border-cyan-500/30 text-cyan-400 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+              }`}
+            >
+              <Gauge size={16} />
+              <span>{t.tabDashboard}</span>
+            </button>
+
+            {/* Vehicles Tab */}
+            <button
+              onClick={() => setActiveTab('vehicles')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'vehicles'
+                  ? 'bg-slate-900 border border-purple-500/30 text-purple-400 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+              }`}
+            >
+              <Car size={16} />
+              <span>{t.tabVehicles}</span>
+            </button>
+
+            {/* History Tab */}
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'history'
+                  ? 'bg-slate-900 border border-indigo-500/30 text-indigo-400 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+              }`}
+            >
+              <TrendingUp size={16} />
+              <span>{t.tabHistory}</span>
+            </button>
+
+            {/* AI Technician Tab */}
+            <button
+              onClick={() => setActiveTab('ai')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'ai'
+                  ? 'bg-slate-900 border border-pink-500/30 text-pink-400 shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+              }`}
+            >
+              <Cpu size={16} />
+              <span>{t.tabAi}</span>
+            </button>
+          </div>
+
+          {/* Refuel Primary Hero FAB / CTA Button on Desktop */}
+          <button
+            onClick={() => setActiveTab('refuel')}
+            className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-md active:scale-95 ${
+              activeTab === 'refuel'
+                ? 'tech-gradient text-white shadow-cyan-500/30 ring-2 ring-cyan-400'
+                : 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 border border-cyan-500/30'
+            }`}
+          >
+            <Flame size={15} className="animate-pulse" />
+            <span>{t.tabRefuel}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Responsive Layout Wrapper */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6 no-print">
+        
+        {/* DESKTOP CONTENT VIEW */}
+        <div className="hidden md:block">
+          {activeTab === 'dashboard' && (
+            <div className="grid grid-cols-12 gap-6 items-start">
+              {/* Left Column (md:col-span-6) */}
+              <div className="md:col-span-6 space-y-6">
+                {/* 1. Quick Vehicle Status Summary Card (Replaces profile card on Dashboard) */}
+                <QuickVehicleStatusCard 
+                  vehicle={vehicle} 
+                  healthMetrics={healthMetrics} 
+                  logs={logs} 
+                  unitSystem={unitSystem} 
+                  lang={lang} 
+                  onNavigateToVehicles={() => setActiveTab('vehicles')}
+                  onNavigateToRefuel={() => setActiveTab('refuel')}
+                />
+                
+                {/* 2. Log New Refueling Quick Access */}
+                {vehicle.brand ? (
+                  <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={logs} fuelCapacity={vehicle.fuelCapacity} />
+                ) : (
+                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
+                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
+                    <p className="text-xs text-slate-400">Save vehicle profile first in Vehicles tab to unlock refuel logging.</p>
+                  </div>
+                )}
+
+                {vehicle.brand && (
+                  <>
+                    {/* 3. Fuel Consumption Trend Chart */}
+                    <div>
+                      {logs.length === 1 ? (
+                        <FirstRefuelBaselineCard 
+                          odometer={logs[logs.length - 1].odometer} 
+                          unitSystem={unitSystem} 
+                          lang={lang} 
+                        />
+                      ) : (
+                        <CostAnalysisCharts logs={logs} lang={lang} hideSummary={true} hideCost={true} hideEfficiency={false} />
+                      )}
+                    </div>
+
+                    {/* 4. Refueling Cost Analysis Chart */}
+                    <div>
+                      {logs.length >= 2 && (
+                        <CostAnalysisCharts logs={logs} lang={lang} hideSummary={true} hideCost={false} hideEfficiency={true} />
+                      )}
+                    </div>
+
+                    {/* 5. Recent Refuel History */}
+                    <div>
+                      <FuelLogsList logs={logs} onDeleteEntry={handleDeleteLog} onImportLogs={setLogs} lang={lang} unitSystem={unitSystem} />
+                    </div>
+
+                    {/* 6. AI Technician Diagnostics */}
+                    <div>
+                      <AITechnicianReport vehicle={vehicle} logs={logs} lang={lang} />
+                    </div>
+                  </>
+                )}
+
+                {/* Technical Footer inside Left Column */}
+                <div className="pt-4 text-center space-y-3 bg-slate-950/10 p-4 rounded-2xl border border-slate-900/40">
+                  <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 font-medium">
+                    <Heart size={10} className="text-red-500/50" />
+                    <span>{t.offlineNote}</span>
+                  </div>
+                  <button
+                    id="reset-all-data-desktop"
+                    onClick={handleResetData}
+                    className="text-xs font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-3.5 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    <RotateCcw size={12} />
+                    <span>{t.resetAll}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column (md:col-span-6) */}
+              <div className="md:col-span-6 space-y-6">
+                {vehicle.brand ? (
+                  <>
+                    {/* 1. Fuel Consumption */}
+                    <div>
+                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
+                    </div>
+
+                    {/* 2. Financial Impact */}
+                    <div>
+                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                    </div>
+
+                    {/* 3. Vehicle Health Score (VHS) */}
+                    <div>
+                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
+                    </div>
+
+                    {/* 4. Speed vs. Efficiency Simulator */}
+                    <div>
+                      <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                    </div>
+
+                    {/* 5. Efficiency Health Checklist */}
+                    <div>
+                      <EfficiencyIssuesCard 
+                        lastLogEfficiency={lastLogEfficiency} 
+                        averageEfficiency={averageEfficiency} 
+                        lang={lang} 
+                        currentOdometer={vehicle.currentOdometer}
+                        unitSystem={unitSystem}
+                      />
+                    </div>
+
+                    {/* 6. Smart Diagnostics & Alerts */}
+                    <div>
+                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
+                    </div>
+
+                    {/* Sponsored Ads Slot */}
+                    <div>
+                      <SponsoredAdCard lang={lang} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-20 bg-slate-950/20 border border-slate-900 rounded-2xl p-10 flex flex-col items-center justify-center h-[400px]">
+                    <Car className="text-slate-700 mb-4 animate-pulse" size={48} />
+                    <h3 className="text-base font-bold text-slate-300">Awaiting Vehicle Information</h3>
+                    <p className="text-xs text-slate-500 mt-2 max-w-sm leading-relaxed">
+                      Complete and save your car details in the Vehicles tab to calibrate diagnostic sensors.
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('vehicles')}
+                      className="mt-4 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold hover:opacity-90 cursor-pointer"
+                    >
+                      Go to Vehicles
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'vehicles' && (
+            <Vehicles 
+              vehicles={vehicles}
+              activeVehicleId={activeVehicleId}
+              onSelectVehicle={handleSelectVehicle}
+              onAddVehicle={handleAddVehicle}
+              onUpdateVehicle={handleUpdateVehicle}
+              onDeleteVehicle={handleDeleteVehicle}
+              healthMetrics={healthMetrics} 
+              logs={logs} 
+              lang={lang} 
+              unitSystem={unitSystem} 
+            />
+          )}
+
+          {activeTab === 'refuel' && (
+            <div className="max-w-2xl mx-auto space-y-6">
+              {vehicle.brand ? (
+                <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={activeLogs} fuelCapacity={vehicle.fuelCapacity} />
+              ) : (
+                <div className="text-center py-16 bg-slate-950/40 border border-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center">
+                  <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={40} />
+                  <p className="text-sm font-semibold text-slate-300">
+                    {lang === 'fa' 
+                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
+                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('vehicles')}
+                    className="mt-4 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
+                  >
+                    Go to Vehicles
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="space-y-6 max-w-4xl mx-auto">
+              {activeLogs.length === 1 ? (
+                <FirstRefuelBaselineCard 
+                  odometer={activeLogs[activeLogs.length - 1].odometer} 
+                  unitSystem={unitSystem} 
+                  lang={lang} 
+                />
+              ) : (
+                <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
+              )}
+              <FuelLogsList 
+                logs={activeLogs} 
+                onDeleteEntry={handleDeleteLog} 
+                onImportLogs={setLogs}
+                onResetLogs={handleResetData}
+                lang={lang} 
+                unitSystem={unitSystem} 
+              />
+            </div>
+          )}
+
+          {activeTab === 'ai' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+              {vehicle.brand ? (
+                <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+              ) : (
+                <div className="text-center py-16 bg-slate-950/40 border border-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center">
+                  <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={40} />
+                  <p className="text-sm font-semibold text-slate-300">
+                    {lang === 'fa' 
+                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
+                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* MOBILE ONLY LAYOUT (hidden on desktop, visible on mobile) */}
+        <div className="block md:hidden space-y-6">
+          {/* Mobile View Router */}
+          <div className="space-y-6">
+            {activeTab === 'dashboard' && (
+              <>
+                {/* Quick Vehicle Operational Status Summary Card at top of Mobile Dashboard */}
+                <QuickVehicleStatusCard 
+                  vehicle={vehicle} 
+                  healthMetrics={healthMetrics} 
+                  logs={activeLogs} 
+                  unitSystem={unitSystem} 
+                  lang={lang} 
+                  onNavigateToVehicles={() => setActiveTab('vehicles')}
+                  onNavigateToRefuel={() => setActiveTab('refuel')}
+                />
+
+                {vehicle.brand ? (
+                  activeLogs.length === 0 ? (
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-cyan-500/20 p-4 rounded-2xl">
+                        <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
+                          {lang === 'fa' ? 'ثبت اولین سوخت‌گیری' : 'Log Your First Refuel'}
+                        </h4>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          {lang === 'fa'
+                            ? 'برای فعال‌سازی سنسورهای تحلیلی و محاسبه امتیاز سلامت خودرو، لطفاً اولین سوخت‌گیری خود را در کادر زیر ثبت کنید.'
+                            : 'To activate diagnostic charts and calibrate your health index, please log your first fuel entry below.'}
+                        </p>
+                      </div>
+                      <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={activeLogs} fuelCapacity={vehicle.fuelCapacity} />
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* 1. Fuel Consumption */}
+                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
+                      
+                      {/* 2. Financial Impact */}
+                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                      
+                      {/* 3. Speed vs. Efficiency Simulator */}
+                      <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                      
+                      {/* 4. Vehicle Health Score (VHS) */}
+                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
+                      
+                      {/* 5. Efficiency Health Checklist */}
+                      <EfficiencyIssuesCard 
+                        lastLogEfficiency={lastLogEfficiency} 
+                        averageEfficiency={averageEfficiency} 
+                        lang={lang} 
+                        currentOdometer={vehicle.currentOdometer}
+                        unitSystem={unitSystem}
+                      />
+                      
+                      {/* 6. AI Health Intelligence & Diagnostic Alerts */}
+                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
+                      
+                      {/* Google Ads Placement Slot */}
+                      <SponsoredAdCard lang={lang} />
+                    </div>
+                  )
+                ) : (
+                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
+                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
+                    <p className="text-xs text-slate-400">
+                      {lang === 'fa' 
+                        ? 'لطفاً ابتدا مشخصات خودروی خود را در تب خودروها تکمیل و ذخیره کنید تا امکان ثبت سوخت‌گیری فعال شود.' 
+                        : 'Please complete and save your vehicle profile in the Vehicles tab first to enable logs tracking.'}
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('vehicles')}
+                      className="mt-3 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
+                    >
+                      {lang === 'fa' ? 'ورود به تب خودروها' : 'Go to Vehicles'}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {activeTab === 'vehicles' && (
+              <Vehicles 
+                vehicles={vehicles}
+                activeVehicleId={activeVehicleId}
+                onSelectVehicle={handleSelectVehicle}
+                onAddVehicle={handleAddVehicle}
+                onUpdateVehicle={handleUpdateVehicle}
+                onDeleteVehicle={handleDeleteVehicle}
+                healthMetrics={healthMetrics} 
+                logs={logs} 
+                lang={lang} 
+                unitSystem={unitSystem} 
+              />
+            )}
+
+            {activeTab === 'refuel' && (
+              vehicle.brand ? (
+                <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={activeLogs} fuelCapacity={vehicle.fuelCapacity} />
+              ) : (
+                <div className="text-center py-12 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center">
+                  <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={36} />
+                  <p className="text-xs font-semibold text-slate-300">
+                    {lang === 'fa' 
+                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
+                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('vehicles')}
+                    className="mt-3 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
+                  >
+                    {lang === 'fa' ? 'ورود به تب خودروها' : 'Go to Vehicles'}
+                  </button>
+                </div>
+              )
+            )}
+
+            {activeTab === 'history' && (
+              <div className="space-y-6">
+                {activeLogs.length === 1 ? (
+                  <FirstRefuelBaselineCard 
+                    odometer={activeLogs[activeLogs.length - 1].odometer} 
+                    unitSystem={unitSystem} 
+                    lang={lang} 
+                  />
+                ) : (
+                  <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
+                )}
+                <FuelLogsList 
+                  logs={activeLogs} 
+                  onDeleteEntry={handleDeleteLog} 
+                  onImportLogs={setLogs}
+                  onResetLogs={handleResetData}
+                  lang={lang} 
+                  unitSystem={unitSystem} 
+                  title={lang === 'fa' ? 'خلاصه آخرین سوخت‌گیری‌ها' : 'Quick refuel overview'} 
+                />
+              </div>
+            )}
+
+            {activeTab === 'ai' && (
+              vehicle.brand ? (
+                <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+              ) : (
+                <div className="text-center py-12 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center">
+                  <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={36} />
+                  <p className="text-xs font-semibold text-slate-300">
+                    {lang === 'fa' 
+                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
+                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Technical Footer & Reset Action for Mobile */}
+          <div className="pt-8 border-t border-slate-950 text-center space-y-4">
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-600 font-medium">
+              <Heart size={10} className="text-red-500/50" />
+              <span>{t.offlineNote}</span>
+            </div>
+
+            <button
+              id="reset-all-data-mobile"
+              onClick={handleResetData}
+              className="text-xs font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-3.5 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 animate-pulse"
+            >
+              <RotateCcw size={12} />
+              <span>{t.resetAll}</span>
+            </button>
+          </div>
+        </div>
+      </main>
+
+      {/* Bottom Sticky Navigation Rail for mobile (5-Tab Layout with Center Hero/FAB) */}
+      <footer className="fixed bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-900/90 backdrop-blur-md pb-2 pt-1 px-2 z-40 md:hidden no-print">
+        <div className="grid grid-cols-5 items-end max-w-md mx-auto relative">
+          {/* Tab 1: Dashboard */}
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
+              activeTab === 'dashboard' ? 'text-cyan-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+            }`}
+          >
+            <Gauge size={20} />
+            <span className="text-[10px] font-bold mt-1">{t.tabDashboard}</span>
+          </button>
+
+          {/* Tab 2: Vehicles (New) */}
+          <button
+            onClick={() => setActiveTab('vehicles')}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
+              activeTab === 'vehicles' ? 'text-purple-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+            }`}
+          >
+            <Car size={20} />
+            <span className="text-[10px] font-bold mt-1">{t.tabVehicles}</span>
+          </button>
+
+          {/* Tab 3: Center Refuel FAB (Hero Button) */}
+          <div className="flex flex-col items-center justify-end -mt-4 z-50">
+            <button
+              onClick={() => setActiveTab('refuel')}
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 border-2 border-slate-950 shadow-lg shadow-cyan-500/30 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 hover:shadow-cyan-500/50 ${
+                activeTab === 'refuel' ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950 scale-105' : ''
+              }`}
+              title={t.tabRefuel}
+            >
+              <Flame size={20} className="animate-pulse" />
+            </button>
+            <span className={`text-[10px] font-extrabold mt-0.5 ${activeTab === 'refuel' ? 'text-cyan-400' : 'text-slate-400'}`}>
+              {t.tabRefuel}
+            </span>
+          </div>
+
+          {/* Tab 4: History */}
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
+              activeTab === 'history' ? 'text-indigo-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+            }`}
+          >
+            <TrendingUp size={20} />
+            <span className="text-[10px] font-bold mt-1">{t.tabHistory}</span>
+          </button>
+
+          {/* Tab 5: AI Technician */}
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
+              activeTab === 'ai' ? 'text-pink-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+            }`}
+          >
+            <Cpu size={20} />
+            <span className="text-[10px] font-bold mt-1">{t.tabAi}</span>
+          </button>
+        </div>
+      </footer>
+
+      {/* Custom Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl shadow-black">
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center">
+              <RotateCcw size={24} className="animate-spin-slow" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-slate-100">
+                {lang === 'fa' ? 'حذف کل اطلاعات؟' : 'Reset All Local Analytics?'}
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                {t.confirmReset}
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                id="confirm-reset-btn"
+                onClick={handleConfirmReset}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer transition-all active:scale-95"
+              >
+                {lang === 'fa' ? 'بله، بازنشانی شود' : 'Yes, reset everything'}
+              </button>
+              <button
+                id="cancel-reset-btn"
+                onClick={() => setShowResetConfirm(false)}
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 px-4 rounded-xl text-xs cursor-pointer transition-all"
+              >
+                {lang === 'fa' ? 'انصراف' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

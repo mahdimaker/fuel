@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Vazirmatn", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Custom modern cyber/techno styles */
+.tech-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+}
+
+.tech-gradient-text {
+  background: linear-gradient(135deg, #c084fc 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyber-card {
+  background: rgba(21, 28, 44, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+.cyber-card-glow {
+  border: 1px solid rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.tech-glow-purple {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
+}
+
+.tech-glow-cyan {
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+}
+
+/* Custom Cyber Range Slider */
+input[type="range"].cyber-slider {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"].cyber-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #22d3ee 30%, #0f172a 45%, #020617 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 15px var(--slider-glow, #10b981), inset 0 0 6px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"].cyber-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 22px var(--slider-glow, #10b981), inset 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+input[type="range"].cyber-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #22d3ee 30%, #0f172a 45%, #020617 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 15px var(--slider-glow, #10b981), inset 0 0 6px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"].cyber-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 22px var(--slider-glow, #10b981), inset 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+/* Print Stylesheet for Printable Report feature */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    dir: rtl !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .cyber-card {
+    border: 1px solid #ccc !important;
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* --- LIGHT MODE CUSTOM STYLES & OVERRIDES --- */
+.light {
+  background-color: #f8fafc; /* slate-50 */
+}
+
+/* Cyber card overrides in light mode */
+.light .cyber-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(168, 85, 247, 0.15) !important;
+  box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.04), 0 4px 6px -2px rgba(168, 85, 247, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.light .cyber-card-glow {
+  border: 1px solid rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.05), 0 0 15px rgba(6, 182, 212, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Neutral backdrop and borders overrides */
+.light .bg-slate-950,
+.light .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-slate-950\/95,
+.light .bg-slate-950\/90,
+.light .bg-slate-950\/85,
+.light .bg-slate-950\/80,
+.light .bg-slate-950\/60,
+.light .bg-slate-950\/50,
+.light .bg-slate-950\/40,
+.light .bg-slate-950\/30,
+.light .bg-slate-950\/20,
+.light .bg-slate-900\/80,
+.light .bg-slate-900\/60,
+.light .bg-slate-900\/50,
+.light .bg-slate-900\/40,
+.light .bg-slate-900\/20 {
+  background-color: rgba(241, 245, 249, 0.75) !important;
+}
+
+.light .bg-slate-950\/10,
+.light .bg-slate-900\/10 {
+  background-color: rgba(241, 245, 249, 0.45) !important; /* slate-100/45 */
+}
+
+.light .bg-black\/40 {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.light .border-slate-800,
+.light .border-slate-800\/80,
+.light .border-slate-900,
+.light .border-slate-900\/40,
+.light .border-slate-900\/50,
+.light .border-slate-900\/55,
+.light .border-slate-900\/60,
+.light .border-slate-900\/80,
+.light .border-slate-950,
+.light .border-slate-950\/20,
+.light .border-slate-950\/40 {
+  border-color: rgba(226, 232, 240, 0.8) !important; /* slate-200 */
+}
+
+/* Text contrast mapping overrides */
+.light .text-white {
+  color: #0f172a; /* slate-900 */
+}
+
+.light .text-slate-100 {
+  color: #1e293b; /* slate-800 */
+}
+
+.light .text-slate-200 {
+  color: #334155; /* slate-700 */
+}
+
+.light .text-slate-300 {
+  color: #475569; /* slate-600 */
+}
+
+.light .text-slate-400 {
+  color: #64748b; /* slate-500 */
+}
+
+.light .text-slate-500 {
+  color: #94a3b8; /* slate-400 */
+}
+
+/* Button & Select overrides */
+.light input,
+.light select,
+.light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+.light input:focus,
+.light select:focus,
+.light textarea:focus {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15) !important;
+}
+
+/* Custom list items & hover overrides */
+.light .hover\:bg-slate-950\/80:hover,
+.light .hover\:bg-slate-950\/60:hover,
+.light .hover\:bg-slate-950\/50:hover,
+.light .hover\:bg-slate-950:hover,
+.light .hover\:bg-slate-900\/50:hover {
+  background-color: rgba(226, 232, 240, 0.85) !important;
+}
+
+.light .hover\:border-slate-800\/80:hover {
+  border-color: rgba(203, 213, 225, 1) !important; /* slate-300 */
+}
+
+.light .bg-slate-900\/40 {
+  background-color: rgba(241, 245, 249, 0.4) !important;
+}
+
+.light .group:hover {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+

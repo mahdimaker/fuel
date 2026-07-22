@@ -1,0 +1,6 @@
+{
+  "name": "Fuel Analyzer",
+  "description": "سامانه هوشمند تحلیل مصرف سوخت، امتیاز سلامت خودرو و گزارش تکنسین هوشمند (AI)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
