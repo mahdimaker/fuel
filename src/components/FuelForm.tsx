@@ -319,7 +319,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Fuel Type Selector */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-2 mr-1">{t.fuelTypeLabel}</label>
+          <label className="block text-sm font-semibold text-slate-400 mb-2 mr-1">{t.fuelTypeLabel}</label>
           <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2">
             {fuelTypesList.map((item) => (
               <button
@@ -327,7 +327,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 type="button"
                 id={`fuel-type-${item.value}`}
                 onClick={() => setFuelType(item.value)}
-                className={`py-2 px-1 text-center rounded-xl text-xs font-medium border transition-all cursor-pointer ${
+                className={`py-2 px-1 text-center rounded-xl text-sm font-medium border transition-all cursor-pointer ${
                   fuelType === item.value
                     ? 'bg-slate-900 border-indigo-500 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-800'
@@ -346,7 +346,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Odometer Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
               <Hash size={12} className="text-indigo-400" />
               <span>{lang === 'fa' ? `کیلومترشمار فعلی (${odoUnit})` : `Odometer (${odoUnit})`}</span>
             </label>
@@ -372,7 +372,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
           {/* Volume Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
               <Flame size={12} className="text-cyan-400" />
               <span>{lang === 'fa' ? `مقدار سوخت (${volumeUnit})` : `Fuel volume (${volumeUnit})`}</span>
             </label>
@@ -402,7 +402,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
           {/* Paid Cost Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
               <DollarSign size={12} className="text-emerald-400" />
               <span>{lang === 'fa' ? `مجموع پرداختی (${currencyUnit})` : `Total cost (${currencyUnit})`}</span>
             </label>
@@ -446,7 +446,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
             <div className={`space-y-1.5 flex-1 ${lang === 'fa' ? 'text-right pl-4' : 'text-left pr-4'}`}>
-              <label className="text-sm md:text-base font-black text-slate-100 block tracking-wide">
+              <label className="text-xs md:text-base font-black text-slate-100 block tracking-wide">
                 {lang === 'fa' ? 'آیا باک کاملاً پر شد؟' : 'Did you fill the tank fully?'}
               </label>
               <span className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium block">
@@ -491,7 +491,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
             <div className={`space-y-1.5 flex-1 ${lang === 'fa' ? 'text-right pl-4' : 'text-left pr-4'}`}>
-              <label className="text-sm md:text-base font-black text-slate-100 block tracking-wide">
+              <label className="text-xs md:text-base font-black text-slate-100 block tracking-wide">
                 {lang === 'fa' ? 'سوخت‌گیری قبلی ثبت نشده؟' : 'Missed a previous refuel?'}
               </label>
               <span className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium block">

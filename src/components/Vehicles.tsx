@@ -349,7 +349,7 @@ export default function Vehicles({
             return (
               <div
                 key={v.id || v.brand + v.model}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between w-full ${
+                className={`px-3 sm:px-4.5 py-4 sm:py-5 rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between w-full ${
                   isActive
                     ? 'bg-slate-900/90 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
                     : 'bg-slate-950/60 border-slate-900 hover:border-slate-800'
@@ -483,32 +483,32 @@ export default function Vehicles({
                         )}
                       </div>
 
-                      <div className="w-full grid grid-cols-3 gap-2 sm:gap-3.5 my-3.5 text-center">
-                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                      <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 my-3.5 text-center">
+                        <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
                             {lang === 'fa' ? 'ظرفیت باک' : 'TANK CAP'}
                           </span>
-                          <span className="font-mono font-bold text-lg sm:text-xl text-slate-100 whitespace-nowrap flex items-baseline gap-1">
+                          <span className="font-mono font-bold text-base sm:text-lg text-slate-100 whitespace-nowrap flex items-baseline gap-1">
                             <span>{isUs ? (v.fuelCapacity * LITERS_TO_GALLONS).toFixed(1) : v.fuelCapacity}</span>
                             <span className="text-xs font-normal text-slate-400">{isUs ? 'gal' : 'L'}</span>
                           </span>
                         </div>
 
-                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                        <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
                             {lang === 'fa' ? 'کارکرد' : 'ODOMETER'}
                           </span>
-                          <span className="font-mono font-bold text-lg sm:text-xl text-emerald-400 whitespace-nowrap flex items-baseline gap-1">
+                          <span className="font-mono font-bold text-base sm:text-lg text-emerald-400 whitespace-nowrap flex items-baseline gap-1">
                             <span>{Math.round(isMetric ? v.currentOdometer : v.currentOdometer * KM_TO_MILES).toLocaleString()}</span>
                             <span className="text-xs font-normal text-slate-400">{isMetric ? 'km' : 'mi'}</span>
                           </span>
                         </div>
 
-                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                        <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
                             {lang === 'fa' ? 'ثبت سوخت' : 'FUEL LOGS'}
                           </span>
-                          <span className="font-mono font-bold text-lg sm:text-xl text-cyan-400 whitespace-nowrap flex items-baseline gap-1">
+                          <span className="font-mono font-bold text-base sm:text-lg text-cyan-400 whitespace-nowrap flex items-baseline gap-1">
                             <span>{vLogsCount}</span>
                             <span className="text-xs font-normal text-slate-400">{lang === 'fa' ? 'ثبت' : 'logs'}</span>
                           </span>

@@ -7,7 +7,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Trash2, AlertCircle, Calendar, Fuel, ChevronDown, Check, X, 
   Download, Upload, CheckCircle2, FileSpreadsheet, RotateCcw, 
-  Gauge, Droplets, ArrowUpDown
+  Gauge, Droplets, ArrowUpDown, MapPin
 } from 'lucide-react';
 import { FuelEntry } from '../types';
 import { translations, Language } from '../utils/translations';
@@ -286,13 +286,8 @@ export default function FuelLogsList({
                   <span>{log.date}</span>
                 </div>
 
-                {/* Station & Fuel Type Tags (Center) */}
+                {/* Fuel Type & Status Tags (Center) */}
                 <div className="flex flex-wrap items-center justify-center gap-1.5">
-                  {log.stationName && (
-                    <span className="text-[11px] text-slate-300 bg-slate-950/80 border border-slate-800 px-2 py-0.5 rounded-md truncate max-w-[140px]" title={log.stationName}>
-                      📍 {log.stationName}
-                    </span>
-                  )}
                   <span className="text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
                     <Fuel size={11} className="text-cyan-400" />
                     <span>{getFuelTypeLabel(log.fuelType)}</span>
@@ -412,68 +407,32 @@ export default function FuelLogsList({
                 </div>
               </div>
 
-              {/* Tech Notes Footer */}
-              {log.notes && (
-                <div className="pt-2 border-t border-slate-800/40">
-                  <div className="px-3 py-1.5 rounded-lg bg-purple-950/20 border border-purple-500/10 text-xs text-purple-300/80 flex items-center gap-2">
-                    <span className="font-bold text-purple-400 shrink-0 uppercase tracking-wider text-[10px]">
-                      {lang === 'fa' ? 'یادداشت فنی:' : 'Tech Notes:'}
-                    </span>
-                    <span className="italic truncate">{log.notes}</span>
-                  </div>
+              {/* Tech Notes & Station Footer */}
+              {(log.notes || log.stationName) && (
+                <div className="pt-2 border-t border-slate-800/40 space-y-1.5">
+                  {log.notes && (
+                    <div className="px-3 py-1.5 rounded-lg bg-purple-950/20 border border-purple-500/10 text-xs text-purple-300/80 flex items-center gap-2">
+                      <span className="font-bold text-purple-400 shrink-0 uppercase tracking-wider text-[10px]">
+                        {lang === 'fa' ? 'یادداشت فنی:' : 'Tech Notes:'}
+                      </span>
+                      <span className="italic truncate">{log.notes}</span>
+                    </div>
+                  )}
+
+                  {log.stationName && (
+                    <div className="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-xs text-slate-300 flex items-center gap-2">
+                      <MapPin size={12} className="text-amber-400 shrink-0" />
+                      <span className="font-bold text-amber-400 shrink-0 uppercase tracking-wider text-[10px]">
+                        STATION:
+                      </span>
+                      <span className="font-medium text-slate-200 truncate">{log.stationName}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           );
         })}
-      </div>
-
-      {/* COMPACT DATA MANAGEMENT FOOTER */}
-      <div className="pt-3 border-t border-slate-800/80">
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-sm backdrop-blur-md">
-          {/* CSV Actions */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mr-1">
-              <FileSpreadsheet size={15} className="text-cyan-400" />
-              <span className="hidden sm:inline">Data Management:</span>
-            </div>
-
-            <button
-              onClick={handleExportCSV}
-              className="px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-850 border border-slate-800 hover:border-cyan-500/40 text-cyan-400 hover:text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
-              title="Download CSV Backup"
-            >
-              <Download size={13} />
-              <span>Export CSV</span>
-            </button>
-
-            <button
-              onClick={handleImportClick}
-              className="px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-850 border border-slate-800 hover:border-purple-500/40 text-purple-400 hover:text-purple-300 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
-              title="Import CSV File"
-            >
-              <Upload size={13} />
-              <span>Import CSV</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Feedback Toast Banner */}
-        {importNotice && (
-          <div className={`mt-2 p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 animate-fadeIn ${
-            importNotice.type === 'success' 
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-          }`}>
-            <span className="flex items-center gap-1.5">
-              {importNotice.type === 'success' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
-              <span>{importNotice.message}</span>
-            </span>
-            <button onClick={() => setImportNotice(null)} className="p-1 text-slate-400 hover:text-white cursor-pointer">
-              <X size={12} />
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

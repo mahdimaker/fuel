@@ -35,6 +35,7 @@ import EfficiencyIssuesCard from './components/EfficiencyIssuesCard';
 import PwaInstallBanner from './components/PwaInstallBanner';
 import SponsoredAdCard from './components/SponsoredAdCard';
 import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
+import CSVDataManagementCard from './components/CSVDataManagementCard';
 import { calculateLogEfficiencies } from './utils/calculator';
 import { translations, Language } from './utils/translations';
 
@@ -752,7 +753,12 @@ export default function App() {
 
                 {vehicle.brand && (
                   <>
-                    {/* 3. Fuel Consumption Trend Chart */}
+                    {/* 3. Recent Refuel History */}
+                    <div>
+                      <FuelLogsList logs={logs} onDeleteEntry={handleDeleteLog} onImportLogs={setLogs} lang={lang} unitSystem={unitSystem} />
+                    </div>
+
+                    {/* 4. Fuel Consumption Trend Chart */}
                     <div>
                       {logs.length === 1 ? (
                         <FirstRefuelBaselineCard 
@@ -765,19 +771,19 @@ export default function App() {
                       )}
                     </div>
 
-                    {/* 4. Refueling Cost Analysis Chart */}
+                    {/* 5. Refueling Cost Analysis Chart */}
                     <div>
                       {logs.length >= 2 && (
                         <CostAnalysisCharts logs={logs} lang={lang} hideSummary={true} hideCost={false} hideEfficiency={true} />
                       )}
                     </div>
 
-                    {/* 5. Recent Refuel History */}
+                    {/* 6. CSV Data Backup & Management */}
                     <div>
-                      <FuelLogsList logs={logs} onDeleteEntry={handleDeleteLog} onImportLogs={setLogs} lang={lang} unitSystem={unitSystem} />
+                      <CSVDataManagementCard logs={logs} onImportLogs={setLogs} lang={lang} />
                     </div>
 
-                    {/* 6. AI Technician Diagnostics */}
+                    {/* 7. AI Technician Diagnostics */}
                     <div>
                       <AITechnicianReport vehicle={vehicle} logs={logs} lang={lang} />
                     </div>
@@ -826,11 +832,6 @@ export default function App() {
                         currentOdometer={vehicle.currentOdometer}
                         unitSystem={unitSystem}
                       />
-                    </div>
-
-                    {/* 6. Smart Diagnostics & Alerts */}
-                    <div>
-                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
                     </div>
 
                     {/* Sponsored Ads Slot */}
@@ -897,6 +898,13 @@ export default function App() {
 
           {activeTab === 'history' && (
             <div className="space-y-6 max-w-4xl mx-auto">
+              <FuelLogsList 
+                logs={activeLogs} 
+                onDeleteEntry={handleDeleteLog} 
+                onImportLogs={setLogs}
+                lang={lang} 
+                unitSystem={unitSystem} 
+              />
               {activeLogs.length === 1 ? (
                 <FirstRefuelBaselineCard 
                   odometer={activeLogs[activeLogs.length - 1].odometer} 
@@ -906,13 +914,7 @@ export default function App() {
               ) : (
                 <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
               )}
-              <FuelLogsList 
-                logs={activeLogs} 
-                onDeleteEntry={handleDeleteLog} 
-                onImportLogs={setLogs}
-                lang={lang} 
-                unitSystem={unitSystem} 
-              />
+              <CSVDataManagementCard logs={activeLogs} onImportLogs={setLogs} lang={lang} />
               <div className="pt-2 text-center">
                 <button
                   id="reset-all-data-history-desktop"
@@ -929,7 +931,10 @@ export default function App() {
           {activeTab === 'ai' && (
             <div className="max-w-4xl mx-auto space-y-6">
               {vehicle.brand ? (
-                <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+                <>
+                  <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
+                  <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+                </>
               ) : (
                 <div className="text-center py-16 bg-slate-950/40 border border-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={40} />
@@ -999,9 +1004,6 @@ export default function App() {
                         unitSystem={unitSystem}
                       />
                       
-                      {/* 6. AI Health Intelligence & Diagnostic Alerts */}
-                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
-                      
                       {/* Google Ads Placement Slot */}
                       <SponsoredAdCard lang={lang} />
                     </div>
@@ -1063,6 +1065,14 @@ export default function App() {
 
             {activeTab === 'history' && (
               <div className="space-y-6">
+                <FuelLogsList 
+                  logs={activeLogs} 
+                  onDeleteEntry={handleDeleteLog} 
+                  onImportLogs={setLogs}
+                  lang={lang} 
+                  unitSystem={unitSystem} 
+                  title={lang === 'fa' ? 'خلاصه آخرین سوخت‌گیری‌ها' : 'Quick refuel overview'} 
+                />
                 {activeLogs.length === 1 ? (
                   <FirstRefuelBaselineCard 
                     odometer={activeLogs[activeLogs.length - 1].odometer} 
@@ -1072,14 +1082,7 @@ export default function App() {
                 ) : (
                   <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
                 )}
-                <FuelLogsList 
-                  logs={activeLogs} 
-                  onDeleteEntry={handleDeleteLog} 
-                  onImportLogs={setLogs}
-                  lang={lang} 
-                  unitSystem={unitSystem} 
-                  title={lang === 'fa' ? 'خلاصه آخرین سوخت‌گیری‌ها' : 'Quick refuel overview'} 
-                />
+                <CSVDataManagementCard logs={activeLogs} onImportLogs={setLogs} lang={lang} />
                 <div className="pt-2 text-center">
                   <button
                     id="reset-all-data-history-mobile"
@@ -1095,7 +1098,10 @@ export default function App() {
 
             {activeTab === 'ai' && (
               vehicle.brand ? (
-                <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+                <div className="space-y-6">
+                  <HealthScoreCard metrics={healthMetrics} lang={lang} hideScore={true} />
+                  <AITechnicianReport vehicle={vehicle} logs={activeLogs} lang={lang} />
+                </div>
               ) : (
                 <div className="text-center py-12 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={36} />
