@@ -175,50 +175,38 @@ export default function CostAnalysisCharts({
     <div id="cost-analysis-charts-view" className={hideSummary && hideEfficiency && hideCost ? "" : "space-y-5"}>
       {/* Sleek KPI Counters Row */}
       {!hideSummary && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {/* Total Fuel Spent */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-3 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
-                <DollarSign size={16} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-[11px] font-medium text-slate-400 block truncate">{t.costSum || 'Total Fuel Spent'}</span>
-                <span className="text-sm sm:text-base font-extrabold text-purple-400 font-mono tracking-tight whitespace-nowrap block">
-                  {displayTotalCostStr}
-                </span>
-              </div>
+          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+            <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 mb-1.5 shrink-0">
+              <DollarSign size={16} />
             </div>
+            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{t.costSum || 'Total Fuel Spent'}</span>
+            <span className="text-[14px] font-extrabold text-purple-400 font-mono tracking-tight truncate w-full mt-0.5">
+              {displayTotalCostStr}
+            </span>
           </div>
 
           {/* Total Liters Filled */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-3 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shrink-0">
-                <Fuel size={16} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-[11px] font-medium text-slate-400 block whitespace-nowrap">{displayVolumeLabel}</span>
-                <span className="text-sm sm:text-base font-extrabold text-cyan-400 font-mono tracking-tight whitespace-nowrap block">
-                  {displayTotalVolumeStr}
-                </span>
-              </div>
+          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+            <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-1.5 shrink-0">
+              <Fuel size={16} />
             </div>
+            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{displayVolumeLabel}</span>
+            <span className="text-[14px] font-extrabold text-cyan-400 font-mono tracking-tight truncate w-full mt-0.5">
+              {displayTotalVolumeStr}
+            </span>
           </div>
 
           {/* Avg Cost Per Liter */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-3 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
-                <TrendingUp size={16} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-[11px] font-medium text-slate-400 block whitespace-nowrap">{t.avgCostLiter || 'Avg. Cost / Liter'}</span>
-                <span className="text-sm sm:text-base font-extrabold text-emerald-400 font-mono tracking-tight whitespace-nowrap block">
-                  {displayAvgCostStr}
-                </span>
-              </div>
+          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-1.5 shrink-0">
+              <TrendingUp size={16} />
             </div>
+            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{t.avgCostLiter || 'Avg. Cost / Liter'}</span>
+            <span className="text-[14px] font-extrabold text-emerald-400 font-mono tracking-tight truncate w-full mt-0.5">
+              {displayAvgCostStr}
+            </span>
           </div>
         </div>
       )}

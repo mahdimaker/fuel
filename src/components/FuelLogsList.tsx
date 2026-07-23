@@ -456,18 +456,6 @@ export default function FuelLogsList({
               <span>Import CSV</span>
             </button>
           </div>
-
-          {/* Reset All Analytics Button */}
-          {onResetLogs && (
-            <button
-              onClick={onResetLogs}
-              className="px-3 py-1.5 rounded-lg bg-rose-500/5 hover:bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ml-auto"
-              title="Reset All Analytics"
-            >
-              <RotateCcw size={13} />
-              <span>{t.resetAll || 'Reset All Analytics'}</span>
-            </button>
-          )}
         </div>
 
         {/* Feedback Toast Banner */}

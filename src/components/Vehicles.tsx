@@ -174,10 +174,10 @@ export default function Vehicles({
 
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-2 cursor-pointer transition-all shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 hover:text-white text-base font-bold flex items-center gap-2 cursor-pointer transition-all shrink-0"
           >
-            <Plus size={16} />
-            <span>{showAddForm ? (lang === 'fa' ? 'پنهان‌سازی فرم ثبت' : 'Hide Registration Form') : (lang === 'fa' ? 'افزودن خودرو جدید' : 'Register New Vehicle')}</span>
+            <Plus size={18} />
+            <span className="text-base font-bold">{showAddForm ? (lang === 'fa' ? 'پنهان‌سازی فرم ثبت' : 'Hide Registration Form') : (lang === 'fa' ? 'افزودن خودرو جدید' : 'Register New Vehicle')}</span>
           </button>
         </div>
 
@@ -320,7 +320,7 @@ export default function Vehicles({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
           {vehicles.map((v) => {
             const isActive = v.id === activeVehicleId;
             const isEditing = editingVehicleId === v.id;
@@ -329,85 +329,85 @@ export default function Vehicles({
             return (
               <div
                 key={v.id || v.brand + v.model}
-                className={`p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+                className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between w-full ${
                   isActive
                     ? 'bg-slate-900/90 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
                     : 'bg-slate-950/60 border-slate-900 hover:border-slate-800'
                 }`}
               >
                 {isActive && (
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 )}
 
                 {isEditing ? (
                   /* INLINE EDITING FORM */
-                  <form onSubmit={handleSaveEdit} className="space-y-3 p-1 animate-fadeIn">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-1">
-                      <span className="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
-                        <Pencil size={13} />
+                  <form onSubmit={handleSaveEdit} className="space-y-4 p-1 animate-fadeIn">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-1">
+                      <span className="text-sm font-bold text-cyan-400 flex items-center gap-1.5">
+                        <Pencil size={15} />
                         {lang === 'fa' ? 'ویرایش مشخصات خودرو' : 'Edit Vehicle Details'}
                       </span>
                       <button
                         type="button"
                         onClick={() => setEditingVehicleId(null)}
-                        className="text-slate-400 hover:text-white text-xs px-1.5 py-0.5"
+                        className="text-slate-400 hover:text-white text-sm px-2 py-0.5"
                       >
                         ✕
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[10px] text-slate-400 mb-0.5">{lang === 'fa' ? 'برند' : 'Brand'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'برند' : 'Brand'}</label>
                         <input
                           type="text"
                           required
                           value={editBrand}
                           onChange={(e) => setEditBrand(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none"
+                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400 mb-0.5">{lang === 'fa' ? 'مدل' : 'Model'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'مدل' : 'Model'}</label>
                         <input
                           type="text"
                           required
                           value={editModel}
                           onChange={(e) => setEditModel(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none"
+                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-[10px] text-slate-400 mb-0.5">{lang === 'fa' ? 'سال' : 'Year'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'سال' : 'Year'}</label>
                         <input
                           type="text"
                           value={editYear}
                           onChange={(e) => setEditYear(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 outline-none"
+                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400 mb-0.5">{lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'} ({isUs ? 'gal' : 'L'})</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'} ({isUs ? 'gal' : 'L'})</label>
                         <input
                           type="number"
                           required
                           step="any"
                           value={editCapacity}
                           onChange={(e) => setEditCapacity(Number(e.target.value))}
-                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono outline-none"
+                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] text-slate-400 mb-0.5">{lang === 'fa' ? 'کارکرد' : 'Odometer'} ({isMetric ? 'km' : 'mi'})</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'کارکرد' : 'Odometer'} ({isMetric ? 'km' : 'mi'})</label>
                         <input
                           type="number"
                           required
                           value={editOdometer}
                           onChange={(e) => setEditOdometer(e.target.value === '' ? '' : Number(e.target.value))}
-                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono outline-none"
+                          className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
                         />
                       </div>
                     </div>
@@ -415,15 +415,15 @@ export default function Vehicles({
                     <div className="flex items-center gap-2 pt-1">
                       <button
                         type="submit"
-                        className="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold text-xs hover:bg-cyan-400 flex items-center gap-1 cursor-pointer transition-all"
+                        className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-sm hover:bg-cyan-400 flex items-center gap-1.5 cursor-pointer transition-all"
                       >
-                        <Check size={14} />
-                        <span>{lang === 'fa' ? 'ذخیره' : 'Save'}</span>
+                        <Check size={16} />
+                        <span>{lang === 'fa' ? 'ذخیره تغییرات' : 'Save Changes'}</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditingVehicleId(null)}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-medium text-xs hover:bg-slate-700 cursor-pointer"
+                        className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-sm hover:bg-slate-700 cursor-pointer"
                       >
                         {lang === 'fa' ? 'انصراف' : 'Cancel'}
                       </button>
@@ -433,73 +433,82 @@ export default function Vehicles({
                   /* CARD DISPLAY MODE */
                   <div>
                     <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className={`p-2 rounded-xl border ${isActive ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'bg-slate-900 text-slate-400 border-slate-800'}`}>
-                            <Car size={18} />
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2.5 rounded-xl border ${isActive ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'bg-slate-900 text-slate-400 border-slate-800'}`}>
+                            <Car size={22} />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-white tracking-wide">
+                            <h4 className="text-base sm:text-lg font-extrabold text-white tracking-wide">
                               {v.brand || (lang === 'fa' ? 'بدون نام' : 'Unnamed')} {v.model}
                             </h4>
-                            <span className="text-[11px] text-slate-500 font-mono">
+                            <span className="text-xs sm:text-sm text-slate-400 font-mono font-medium">
                               {lang === 'fa' ? 'مدل:' : 'Year:'} {v.year || '2026'}
                             </span>
                           </div>
                         </div>
 
                         {isActive ? (
-                          <span className="px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-400 text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
-                            <CheckCircle2 size={12} />
+                          <span className="px-3 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-400 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+                            <CheckCircle2 size={14} />
                             <span>{lang === 'fa' ? 'فعال' : 'Active'}</span>
                           </span>
                         ) : (
                           <button
                             onClick={() => v.id && onSelectVehicle(v.id)}
-                            className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:text-cyan-300 text-slate-300 text-xs font-semibold cursor-pointer transition-all"
+                            className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:text-cyan-300 text-slate-200 text-xs sm:text-sm font-bold cursor-pointer transition-all"
                           >
                             {lang === 'fa' ? 'انتخاب' : 'Select'}
                           </button>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 my-2 text-center text-[11px]">
-                        <div className="p-2 rounded-lg bg-slate-950 border border-slate-900/80">
-                          <span className="text-slate-500 block text-[9px] uppercase">{lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'}</span>
-                          <span className="font-mono font-bold text-slate-200">
-                            {isUs ? (v.fuelCapacity * LITERS_TO_GALLONS).toFixed(1) : v.fuelCapacity} {isUs ? 'gal' : 'L'}
+                      <div className="w-full grid grid-cols-3 gap-2 sm:gap-3.5 my-3.5 text-center">
+                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
+                            {lang === 'fa' ? 'ظرفیت باک' : 'TANK CAP'}
+                          </span>
+                          <span className="font-mono font-bold text-lg sm:text-xl text-slate-100 whitespace-nowrap flex items-baseline gap-1">
+                            <span>{isUs ? (v.fuelCapacity * LITERS_TO_GALLONS).toFixed(1) : v.fuelCapacity}</span>
+                            <span className="text-xs font-normal text-slate-400">{isUs ? 'gal' : 'L'}</span>
                           </span>
                         </div>
 
-                        <div className="p-2 rounded-lg bg-slate-950 border border-slate-900/80">
-                          <span className="text-slate-500 block text-[9px] uppercase">{lang === 'fa' ? 'کارکرد' : 'Odometer'}</span>
-                          <span className="font-mono font-bold text-emerald-400">
-                            {Math.round(isMetric ? v.currentOdometer : v.currentOdometer * KM_TO_MILES).toLocaleString()} {isMetric ? 'km' : 'mi'}
+                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
+                            {lang === 'fa' ? 'کارکرد' : 'ODOMETER'}
+                          </span>
+                          <span className="font-mono font-bold text-lg sm:text-xl text-emerald-400 whitespace-nowrap flex items-baseline gap-1">
+                            <span>{Math.round(isMetric ? v.currentOdometer : v.currentOdometer * KM_TO_MILES).toLocaleString()}</span>
+                            <span className="text-xs font-normal text-slate-400">{isMetric ? 'km' : 'mi'}</span>
                           </span>
                         </div>
 
-                        <div className="p-2 rounded-lg bg-slate-950 border border-slate-900/80">
-                          <span className="text-slate-500 block text-[9px] uppercase">{lang === 'fa' ? 'ثبت سوخت' : 'Fuel Logs'}</span>
-                          <span className="font-mono font-bold text-cyan-400">
-                            {vLogsCount}
+                        <div className="w-full px-2 py-3 sm:px-3 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center">
+                          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
+                            {lang === 'fa' ? 'ثبت سوخت' : 'FUEL LOGS'}
+                          </span>
+                          <span className="font-mono font-bold text-lg sm:text-xl text-cyan-400 whitespace-nowrap flex items-baseline gap-1">
+                            <span>{vLogsCount}</span>
+                            <span className="text-xs font-normal text-slate-400">{lang === 'fa' ? 'ثبت' : 'logs'}</span>
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-900/60 mt-2">
-                      <span className="text-[10px] text-slate-500">
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-900/60 mt-3">
+                      <span className="text-xs font-medium text-slate-400">
                         {isActive ? (lang === 'fa' ? 'خودروی فعلی برای سوخت‌گیری و تحلیل‌ها' : 'Currently active for fueling & stats') : (lang === 'fa' ? 'جهت سوئیچ کلیک کنید' : 'Click select to set active')}
                       </span>
 
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleStartEdit(v)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all cursor-pointer flex items-center gap-1 text-xs"
+                          className="px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm font-semibold"
                           title={lang === 'fa' ? 'ویرایش خودرو' : 'Edit vehicle'}
                         >
-                          <Pencil size={13} />
-                          <span className="text-[11px] font-medium">{lang === 'fa' ? 'ویرایش' : 'Edit'}</span>
+                          <Pencil size={15} />
+                          <span>{lang === 'fa' ? 'ویرایش' : 'Edit'}</span>
                         </button>
 
                         {vehicles.length > 1 && (
@@ -509,10 +518,10 @@ export default function Vehicles({
                                 if (v.id) onDeleteVehicle(v.id);
                               }
                             }}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer"
+                            className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer"
                             title={lang === 'fa' ? 'حذف خودرو' : 'Delete vehicle'}
                           >
-                            <Trash2 size={13} />
+                            <Trash2 size={15} />
                           </button>
                         )}
                       </div>

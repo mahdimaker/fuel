@@ -218,12 +218,12 @@ export default function App() {
     if (legacySaved) {
       try {
         const parsed = JSON.parse(legacySaved);
-        if (parsed && typeof parsed === 'object') {
+        if (parsed && typeof parsed === 'object' && parsed.brand && parsed.brand.trim() !== '') {
           return [{ id: 'veh-1', ...parsed }];
         }
       } catch (e) {}
     }
-    return [{ id: 'veh-1', brand: '', model: '', year: '2026', fuelCapacity: 50, currentOdometer: 0 }];
+    return [{ id: 'veh-1', brand: 'Toyota', model: 'Camry', year: '2026', fuelCapacity: 60, currentOdometer: 0 }];
   });
 
   // Active Vehicle ID
@@ -236,10 +236,10 @@ export default function App() {
   // Active Vehicle Object derived from state
   const vehicle = vehicles.find(v => v.id === activeVehicleId) || vehicles[0] || {
     id: 'veh-1',
-    brand: '',
-    model: '',
+    brand: 'Toyota',
+    model: 'Camry',
     year: '2026',
-    fuelCapacity: 50,
+    fuelCapacity: 60,
     currentOdometer: 0
   };
 
@@ -345,7 +345,17 @@ export default function App() {
       ...info,
       id: `veh-${Date.now()}`
     };
-    setVehicles(prev => [...prev, newVeh]);
+    setVehicles(prev => {
+      // If there is only 1 vehicle in garage and it's an unnamed vehicle OR the initial default vehicle with 0 fuel logs,
+      // replace it so user doesn't end up with an extra default vehicle!
+      if (prev.length === 1) {
+        const first = prev[0];
+        if (!first.brand || first.brand.trim() === '' || (logs.length === 0 && first.id === 'veh-1')) {
+          return [newVeh];
+        }
+      }
+      return [...prev, newVeh];
+    });
     setActiveVehicleId(newVeh.id!);
   };
 
@@ -383,7 +393,7 @@ export default function App() {
   };
 
   const handleConfirmReset = () => {
-    const resetVehicles = [{ id: 'veh-1', brand: '', model: '', year: '2026', fuelCapacity: 50, currentOdometer: 0 }];
+    const resetVehicles = [{ id: 'veh-1', brand: 'Toyota', model: 'Camry', year: '2026', fuelCapacity: 60, currentOdometer: 0 }];
     setVehicles(resetVehicles);
     setActiveVehicleId('veh-1');
     setLogs([]);
@@ -488,33 +498,10 @@ export default function App() {
               <h1 className="text-sm font-extrabold text-white tracking-wider">
                 {lang === 'fa' ? 'آنالایزر مصرف سوخت' : 'Fuel Analyzer'}
               </h1>
-              <p className="text-[10px] text-slate-500 font-bold">{t.subtitle}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Quick Vehicle Switcher Dropdown (If > 1 vehicle registered) */}
-            {vehicles.length > 1 && (
-              <div className="relative flex items-center">
-                <Car size={12} className="text-purple-400 absolute left-2.5 pointer-events-none z-10 shrink-0" />
-                <select
-                  value={activeVehicleId}
-                  onChange={(e) => handleSelectVehicle(e.target.value)}
-                  className="pl-7 pr-7 sm:pr-8 py-1.5 rounded-xl bg-slate-950 border border-purple-500/30 text-purple-300 hover:text-white text-[10px] sm:text-xs font-bold appearance-none cursor-pointer transition-all focus:outline-none focus:border-purple-500/60 max-w-[130px] sm:max-w-[180px] truncate"
-                  title={lang === 'fa' ? 'انتخاب خودروی فعال' : 'Select active vehicle'}
-                >
-                  {vehicles.map(v => (
-                    <option key={v.id} value={v.id} className="bg-slate-950 text-slate-200">
-                      {v.brand} {v.model}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-2.5 pointer-events-none z-10 flex items-center text-purple-400">
-                  <ChevronDown size={11} />
-                </div>
-              </div>
-            )}
-
             {/* Global Unit System Dropdown Selector */}
             <div className="relative flex items-center">
               <Gauge size={12} className="text-cyan-400 absolute left-2.5 pointer-events-none z-10 shrink-0" />
@@ -526,13 +513,13 @@ export default function App() {
                 title={lang === 'fa' ? 'سیستم واحدها' : 'Unit system'}
               >
                 <option value="metric" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'متریک (km/L/€)' : 'Global Metric (km/L/€)'}
+                  {lang === 'fa' ? 'متریک' : 'Metric'}
                 </option>
                 <option value="us" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'آمریکایی (mi/gal/$)' : 'US Imperial (mi/gal/$)'}
+                  {lang === 'fa' ? 'آمریکایی' : 'US'}
                 </option>
                 <option value="uk" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'انگلیسی (mi/L/£)' : 'UK Hybrid (mi/L/£)'}
+                  {lang === 'fa' ? 'انگلیسی' : 'UK'}
                 </option>
               </select>
               <div className="absolute right-2.5 pointer-events-none z-10 flex items-center text-slate-500">
@@ -646,60 +633,60 @@ export default function App() {
             {/* Dashboard Tab */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
                 activeTab === 'dashboard'
                   ? 'bg-slate-900 border border-cyan-500/30 text-cyan-400 shadow-md'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Gauge size={16} />
-              <span>{t.tabDashboard}</span>
+              <span className="text-base font-bold">{t.tabDashboard}</span>
             </button>
 
             {/* Vehicles Tab */}
             <button
               onClick={() => setActiveTab('vehicles')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
                 activeTab === 'vehicles'
                   ? 'bg-slate-900 border border-purple-500/30 text-purple-400 shadow-md'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Car size={16} />
-              <span>{t.tabVehicles}</span>
+              <span className="text-base font-bold">{t.tabVehicles}</span>
             </button>
 
             {/* History Tab */}
             <button
               onClick={() => setActiveTab('history')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
                 activeTab === 'history'
                   ? 'bg-slate-900 border border-indigo-500/30 text-indigo-400 shadow-md'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <TrendingUp size={16} />
-              <span>{t.tabHistory}</span>
+              <span className="text-base font-bold">{t.tabHistory}</span>
             </button>
 
             {/* AI Technician Tab */}
             <button
               onClick={() => setActiveTab('ai')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
                 activeTab === 'ai'
                   ? 'bg-slate-900 border border-pink-500/30 text-pink-400 shadow-md'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Cpu size={16} />
-              <span>{t.tabAi}</span>
+              <span className="text-base font-bold">{t.tabAi}</span>
             </button>
           </div>
 
           {/* Refuel Primary Hero FAB / CTA Button on Desktop */}
           <button
             onClick={() => setActiveTab('refuel')}
-            className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-md active:scale-95 ${
+            className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-md active:scale-95 ${
               activeTab === 'refuel'
                 ? 'tech-gradient text-white shadow-cyan-500/30 ring-2 ring-cyan-400'
                 : 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 border border-cyan-500/30'
@@ -776,19 +763,11 @@ export default function App() {
                 )}
 
                 {/* Technical Footer inside Left Column */}
-                <div className="pt-4 text-center space-y-3 bg-slate-950/10 p-4 rounded-2xl border border-slate-900/40">
+                <div className="pt-4 text-center bg-slate-950/10 p-4 rounded-2xl border border-slate-900/40">
                   <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 font-medium">
                     <Heart size={10} className="text-red-500/50" />
                     <span>{t.offlineNote}</span>
                   </div>
-                  <button
-                    id="reset-all-data-desktop"
-                    onClick={handleResetData}
-                    className="text-xs font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-3.5 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
-                  >
-                    <RotateCcw size={12} />
-                    <span>{t.resetAll}</span>
-                  </button>
                 </div>
               </div>
 
@@ -909,10 +888,19 @@ export default function App() {
                 logs={activeLogs} 
                 onDeleteEntry={handleDeleteLog} 
                 onImportLogs={setLogs}
-                onResetLogs={handleResetData}
                 lang={lang} 
                 unitSystem={unitSystem} 
               />
+              <div className="pt-2 text-center">
+                <button
+                  id="reset-all-data-history-desktop"
+                  onClick={handleResetData}
+                  className="text-sm font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-4 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 active:scale-95"
+                >
+                  <RotateCcw size={14} />
+                  <span className="text-sm font-bold">{t.resetAll}</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -1066,11 +1054,20 @@ export default function App() {
                   logs={activeLogs} 
                   onDeleteEntry={handleDeleteLog} 
                   onImportLogs={setLogs}
-                  onResetLogs={handleResetData}
                   lang={lang} 
                   unitSystem={unitSystem} 
                   title={lang === 'fa' ? 'خلاصه آخرین سوخت‌گیری‌ها' : 'Quick refuel overview'} 
                 />
+                <div className="pt-2 text-center">
+                  <button
+                    id="reset-all-data-history-mobile"
+                    onClick={handleResetData}
+                    className="text-sm font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-4 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 active:scale-95"
+                  >
+                    <RotateCcw size={14} />
+                    <span className="text-sm font-bold">{t.resetAll}</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1090,21 +1087,12 @@ export default function App() {
             )}
           </div>
 
-          {/* Technical Footer & Reset Action for Mobile */}
-          <div className="pt-8 border-t border-slate-950 text-center space-y-4">
+          {/* Technical Footer for Mobile */}
+          <div className="pt-6 border-t border-slate-950 text-center">
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-600 font-medium">
               <Heart size={10} className="text-red-500/50" />
               <span>{t.offlineNote}</span>
             </div>
-
-            <button
-              id="reset-all-data-mobile"
-              onClick={handleResetData}
-              className="text-xs font-bold text-red-500 hover:text-red-400 bg-red-950/20 hover:bg-red-950/40 px-3.5 py-2 border border-red-900/40 hover:border-red-900/60 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 animate-pulse"
-            >
-              <RotateCcw size={12} />
-              <span>{t.resetAll}</span>
-            </button>
           </div>
         </div>
       </main>
