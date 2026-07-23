@@ -412,14 +412,17 @@ export default function App() {
   };
 
   const handleConfirmReset = () => {
-    const resetVehicles = [{ id: 'veh-1', brand: 'Toyota', model: 'Camry', year: '2026', fuelCapacity: 60, currentOdometer: 0 }];
-    setVehicles(resetVehicles);
-    setActiveVehicleId('veh-1');
+    setVehicles([]);
+    setActiveVehicleId('');
     setLogs([]);
+    localStorage.removeItem('en_vehicles');
+    localStorage.removeItem('en_vehicle');
+    localStorage.removeItem('en_logs');
+    localStorage.removeItem('en_active_vehicle_id');
     localStorage.removeItem('en_saved_ai_report');
     localStorage.removeItem('en_last_analyzed_log_count');
     localStorage.removeItem('en_ai_report_fallback');
-    setActiveTab('dashboard');
+    setActiveTab('vehicles');
     setShowResetConfirm(false);
   };
 
