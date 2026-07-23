@@ -223,7 +223,7 @@ export default function App() {
         }
       } catch (e) {}
     }
-    return [{ id: 'veh-1', brand: 'Toyota', model: 'Camry', year: '2026', fuelCapacity: 60, currentOdometer: 0 }];
+    return [];
   });
 
   // Active Vehicle ID
@@ -236,10 +236,10 @@ export default function App() {
   // Active Vehicle Object derived from state
   const vehicle = vehicles.find(v => v.id === activeVehicleId) || vehicles[0] || {
     id: 'veh-1',
-    brand: 'Toyota',
-    model: 'Camry',
+    brand: '',
+    model: '',
     year: '2026',
-    fuelCapacity: 60,
+    fuelCapacity: 50,
     currentOdometer: 0
   };
 
@@ -261,9 +261,11 @@ export default function App() {
     });
   }, [logs, vehicle.id, vehicles]);
 
-  // State 6: Selected Navigation Tab (Defaults to refuel if logs are empty, dashboard if logs exist)
+  // State 6: Selected Navigation Tab (Defaults to 'vehicles' on first open without data, 'dashboard' if logs exist, or 'refuel' if vehicles exist but no logs)
   const [activeTab, setActiveTab] = useState<'dashboard' | 'vehicles' | 'refuel' | 'history' | 'ai'>(() => {
+    const savedVehicles = localStorage.getItem('en_vehicles') || localStorage.getItem('en_vehicle');
     const savedLogs = localStorage.getItem('en_logs');
+
     if (savedLogs) {
       try {
         const parsed = JSON.parse(savedLogs);
@@ -274,20 +276,33 @@ export default function App() {
         // ignore
       }
     }
-    return 'refuel';
+
+    if (savedVehicles) {
+      try {
+        const parsed = JSON.parse(savedVehicles);
+        if (Array.isArray(parsed) ? parsed.length > 0 : Boolean(parsed)) {
+          return 'refuel';
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // First time opening app without data -> directly to vehicle definition
+    return 'vehicles';
   });
 
   const [showShareNotification, setShowShareNotification] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
-  // Automatically switch tab based on log existence
+  // Automatically switch tab when no vehicles exist or when adding logs
   useEffect(() => {
-    if (activeLogs.length === 0) {
-      setActiveTab('refuel');
+    if (vehicles.length === 0) {
+      setActiveTab('vehicles');
     } else if (activeLogs.length > 0 && activeTab === 'refuel') {
       setActiveTab('dashboard');
     }
-  }, [activeLogs.length]);
+  }, [vehicles.length, activeLogs.length]);
 
   // Scroll to top on tab changes to fix mobile scroll persistence bug
   useEffect(() => {
@@ -345,6 +360,7 @@ export default function App() {
       ...info,
       id: `veh-${Date.now()}`
     };
+    const wasEmpty = vehicles.length === 0;
     setVehicles(prev => {
       // If there is only 1 vehicle in garage and it's an unnamed vehicle OR the initial default vehicle with 0 fuel logs,
       // replace it so user doesn't end up with an extra default vehicle!
@@ -357,6 +373,9 @@ export default function App() {
       return [...prev, newVeh];
     });
     setActiveVehicleId(newVeh.id!);
+    if (wasEmpty) {
+      setActiveTab('refuel');
+    }
   };
 
   const handleUpdateVehicle = (info: VehicleInfo) => {

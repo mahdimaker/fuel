@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Car, Fuel, Calendar, Gauge, Plus, CheckCircle2, Trash2, Check, Grid, Layers, Pencil } from 'lucide-react';
 import { VehicleInfo, HealthMetrics, FuelEntry } from '../types';
 import { Language } from '../utils/translations';
@@ -39,7 +39,13 @@ export default function Vehicles({
   const KM_TO_MILES = 0.621371;
   const LITERS_TO_GALLONS = 0.264172;
 
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [showAddForm, setShowAddForm] = useState<boolean>(() => vehicles.length === 0);
+
+  useEffect(() => {
+    if (vehicles.length === 0) {
+      setShowAddForm(true);
+    }
+  }, [vehicles.length]);
   const [newBrand, setNewBrand] = useState<string>('');
   const [newModel, setNewModel] = useState<string>('');
   const [newYear, setNewYear] = useState<string>('2026');
@@ -319,6 +325,20 @@ export default function Vehicles({
             {vehicles.length} {lang === 'fa' ? 'خودرو' : 'Vehicle(s)'}
           </span>
         </div>
+
+        {vehicles.length === 0 && (
+          <div className="p-8 text-center rounded-2xl bg-slate-950/60 border border-dashed border-purple-500/30 space-y-3 my-2">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
+              <Car size={24} />
+            </div>
+            <h4 className="text-base font-bold text-slate-100">
+              {lang === 'fa' ? 'هنوز هیچ خودرویی ثبت نشده است' : 'No vehicles registered yet'}
+            </h4>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              {lang === 'fa' ? 'لطفاً با استفاده از فرم بالا، اولین خودروی خود را تعریف کنید تا امکان سوخت‌گیری و تحلیل فراهم شود.' : 'Please use the registration form above to define your vehicle.'}
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
           {vehicles.map((v) => {
