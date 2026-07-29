@@ -269,22 +269,25 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
     setMissedRefuel(false);
   };
 
-  const fuelTypesList: { value: FuelType; label: string; color: string }[] = lang === 'fa' ? [
-    { value: 'regular', label: 'بنزین معمولی', color: 'from-blue-500 to-indigo-500' },
-    { value: 'super', label: 'بنزین سوپر', color: 'from-purple-500 to-pink-500' },
-    { value: 'diesel', label: 'دیزل / گازوئیل', color: 'from-amber-600 to-yellow-500' },
-    { value: 'hybrid', label: 'هیبرید / برقی', color: 'from-emerald-500 to-teal-400' },
-    { value: 'gas', label: 'گاز CNG/LPG', color: 'from-cyan-500 to-blue-400' },
+  const fuelTypesList: { value: FuelType; label: string; color: string; activeClass: string }[] = lang === 'fa' ? [
+    { value: 'regular', label: 'بنزین معمولی', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
+    { value: 'super', label: 'بنزین سوپر', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
+    { value: 'diesel', label: 'دیزل / گازوئیل', color: 'from-amber-600 to-yellow-500', activeClass: 'bg-amber-600 border-amber-400 text-white !text-white shadow-md shadow-amber-500/25' },
+    { value: 'hybrid', label: 'هیبرید / برقی', color: 'from-emerald-500 to-teal-400', activeClass: 'bg-emerald-600 border-emerald-400 text-white !text-white shadow-md shadow-emerald-500/25' },
+    { value: 'gas', label: 'گاز CNG/LPG', color: 'from-cyan-500 to-blue-400', activeClass: 'bg-cyan-600 border-cyan-400 text-white !text-white shadow-md shadow-cyan-500/25' },
   ] : [
-    { value: 'regular', label: 'Regular Gas', color: 'from-blue-500 to-indigo-500' },
-    { value: 'super', label: 'Premium Fuel', color: 'from-purple-500 to-pink-500' },
-    { value: 'diesel', label: 'Diesel', color: 'from-amber-600 to-yellow-500' },
-    { value: 'hybrid', label: 'Hybrid/Electric', color: 'from-emerald-500 to-teal-400' },
-    { value: 'gas', label: 'LPG / CNG', color: 'from-cyan-500 to-blue-400' },
+    { value: 'regular', label: 'Regular Gas', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
+    { value: 'super', label: 'Premium Fuel', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
+    { value: 'diesel', label: 'Diesel', color: 'from-amber-600 to-yellow-500', activeClass: 'bg-amber-600 border-amber-400 text-white !text-white shadow-md shadow-amber-500/25' },
+    { value: 'hybrid', label: 'Hybrid/Electric', color: 'from-emerald-500 to-teal-400', activeClass: 'bg-emerald-600 border-emerald-400 text-white !text-white shadow-md shadow-emerald-500/25' },
+    { value: 'gas', label: 'LPG / CNG', color: 'from-cyan-500 to-blue-400', activeClass: 'bg-cyan-600 border-cyan-400 text-white !text-white shadow-md shadow-cyan-500/25' },
   ];
 
   // Unit overrides
-  const displayPrevOdo = isMetric ? currentOdometer : currentOdometer * KM_TO_MILES;
+  const lastOdoKm = logs.length > 0 ? Math.max(...logs.map(l => l.odometer)) : currentOdometer;
+  const displayPrevOdo = Math.round(isMetric ? lastOdoKm : lastOdoKm * KM_TO_MILES);
+  const maxVolCapacity = Math.round(isUs ? fuelCapacity * LITERS_TO_GALLONS : fuelCapacity);
+
   const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
   const volumeUnit = isUs 
     ? (lang === 'fa' ? 'گالن' : 'Gallons') 
@@ -294,6 +297,27 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
     : isUs 
       ? (lang === 'fa' ? 'دلار' : '$') 
       : (lang === 'fa' ? 'پوند' : '£');
+
+  // Default values initialization
+  React.useEffect(() => {
+    if (!odometer) {
+      setOdometer(displayPrevOdo.toString());
+    }
+  }, [displayPrevOdo]);
+
+  React.useEffect(() => {
+    if (!liters) {
+      const defaultVol = Math.round(maxVolCapacity * 0.7);
+      setLiters((defaultVol > 0 ? defaultVol : 30).toString());
+    }
+  }, [maxVolCapacity]);
+
+  React.useEffect(() => {
+    if (!cost) {
+      const defaultCost = lang === 'fa' ? '150000' : '50';
+      setCost(defaultCost);
+    }
+  }, [lang]);
 
   return (
     <div id="fuel-form-card" className="cyber-card p-6 rounded-2xl relative overflow-hidden transition-all duration-300 border-indigo-500/20 hover:border-indigo-500/30">
@@ -316,146 +340,224 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Fuel Type Selector */}
         <div>
-          <label className="block text-sm font-semibold text-slate-400 mb-2 mr-1">{t.fuelTypeLabel}</label>
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2">
+          <label className="block text-sm font-semibold text-slate-300 mb-2 mr-1">{t.fuelTypeLabel}</label>
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2.5">
             {fuelTypesList.map((item) => (
               <button
                 key={item.value}
                 type="button"
                 id={`fuel-type-${item.value}`}
                 onClick={() => setFuelType(item.value)}
-                className={`py-2 px-1 text-center rounded-xl text-sm font-medium border transition-all cursor-pointer ${
+                className={`py-2.5 px-2 text-center rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   fuelType === item.value
-                    ? 'bg-slate-900 border-indigo-500 text-white shadow-md shadow-indigo-500/10'
+                    ? item.activeClass
                     : 'bg-slate-950/40 border-slate-900 text-slate-400 hover:border-slate-800'
                 }`}
               >
-                <div className="flex flex-col items-center gap-1">
-                  <span className={`w-2.5 h-2.5 rounded-full bg-gradient-to-r ${item.color}`}></span>
-                  <span>{item.label}</span>
+                <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${fuelType === item.value ? 'bg-white' : `bg-gradient-to-r ${item.color}`}`}></span>
+                  <span className={fuelType === item.value ? 'text-white !text-white font-bold' : ''}>{item.label}</span>
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Inputs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Inputs with Sliders */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           {/* Odometer Field */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
-              <Hash size={12} className="text-indigo-400" />
-              <span>{lang === 'fa' ? `کیلومترشمار فعلی (${odoUnit})` : `Odometer (${odoUnit})`}</span>
-            </label>
-            <input
-              id="input-odometer"
-              type="number"
-              required
-              min="0"
-              placeholder={lang === 'fa' ? `بر حسب ${odoUnit}` : `Enter mileage in ${odoUnit}`}
-              value={odometer}
-              onChange={(e) => {
-                setOdometer(e.target.value);
-                runAutoDetect(liters, e.target.value);
-              }}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono outline-none transition-all"
-            />
-            {currentOdometer > 0 && (
-              <span className="text-[10px] text-slate-500 mt-1 block mr-1 font-semibold">
-                {lang === 'fa' ? 'آخرین کارکرد ثبت شده:' : 'Previous Mileage:'} {Math.round(displayPrevOdo).toLocaleString()} {odoUnit}
-              </span>
+          <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-1">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <Hash size={13} className="text-indigo-400 shrink-0" />
+                  <span>{lang === 'fa' ? 'کیلومترشمار' : 'Odometer'}</span>
+                </label>
+                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{odoUnit}</span>
+              </div>
+              <input
+                id="input-odometer"
+                type="number"
+                required
+                min="0"
+                value={odometer}
+                onChange={(e) => {
+                  setOdometer(e.target.value);
+                  runAutoDetect(liters, e.target.value);
+                }}
+                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+              />
+            </div>
+            
+            <div className="space-y-1 pt-1">
+              <input
+                type="range"
+                min={displayPrevOdo}
+                max={Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500)}
+                step={10}
+                value={Number(odometer) || displayPrevOdo}
+                onChange={(e) => {
+                  setOdometer(e.target.value);
+                  runAutoDetect(liters, e.target.value);
+                }}
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+
+              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
+                <span>{Math.round(displayPrevOdo).toLocaleString()}</span>
+                <span>+{(Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500) - displayPrevOdo).toLocaleString()}</span>
+              </div>
+            </div>
+
+            {lastOdoKm > 0 && (
+              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                <span>{lang === 'fa' ? 'آخرین کارکرد:' : 'Previous:'}</span>
+                <span className="text-indigo-400 font-bold font-mono">{Math.round(displayPrevOdo).toLocaleString()} {odoUnit}</span>
+              </div>
             )}
           </div>
 
           {/* Volume Field */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
-              <Flame size={12} className="text-cyan-400" />
-              <span>{lang === 'fa' ? `مقدار سوخت (${volumeUnit})` : `Fuel volume (${volumeUnit})`}</span>
-            </label>
-            <input
-              id="input-liters"
-              type="number"
-              step="0.01"
-              required
-              min="0.1"
-              placeholder={!isUs ? (lang === 'fa' ? "مثال: ۳۵.۵" : "e.g. 35.5") : "e.g. 9.4"}
-              value={liters}
-              onChange={(e) => {
-                setLiters(e.target.value);
-                runAutoDetect(e.target.value, odometer);
-              }}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono outline-none transition-all"
-            />
-            {wasAutoDetected && (
-              <span className="text-[10px] text-cyan-400 mt-1 block font-semibold">
-                {fullTank 
-                  ? (lang === 'fa' ? '✨ باک پر تخمین زده شد' : '✨ Full tank auto-estimated')
-                  : (lang === 'fa' ? 'ℹ️ باک نیمه‌پر تخمین زده شد' : 'ℹ️ Partial fill-up auto-estimated')
-                }
-              </span>
+          <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-1">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <Flame size={13} className="text-cyan-400 shrink-0" />
+                  <span>{lang === 'fa' ? 'مقدار سوخت' : 'Volume'}</span>
+                </label>
+                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{volumeUnit}</span>
+              </div>
+              <input
+                id="input-liters"
+                type="number"
+                step="0.01"
+                required
+                min="0.1"
+                value={liters}
+                onChange={(e) => {
+                  setLiters(e.target.value);
+                  runAutoDetect(e.target.value, odometer);
+                }}
+                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+              />
+            </div>
+
+            <div className="space-y-1 pt-1">
+              <input
+                type="range"
+                min={1}
+                max={Math.max(10, maxVolCapacity)}
+                step={0.5}
+                value={Number(liters) || 1}
+                onChange={(e) => {
+                  setLiters(e.target.value);
+                  runAutoDetect(e.target.value, odometer);
+                }}
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+              />
+
+              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
+                <span>1</span>
+                <span>{Math.max(10, maxVolCapacity)} {volumeUnit}</span>
+              </div>
+            </div>
+
+            {wasAutoDetected ? (
+              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-cyan-400 font-semibold">
+                <span>{fullTank ? (lang === 'fa' ? '✨ باک پر تخمین زده شد' : '✨ Full tank estimated') : (lang === 'fa' ? 'ℹ️ باک نیمه‌پر تخمین زده شد' : 'ℹ️ Partial fill estimated')}</span>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-slate-800/60 text-[11px] text-slate-500 font-semibold text-center">
+                <span>{lang === 'fa' ? 'حجم سوخت واردشده' : 'Fuel volume'}</span>
+              </div>
             )}
           </div>
 
           {/* Paid Cost Field */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-400 mb-1.5 px-1 flex items-center gap-1">
-              <DollarSign size={12} className="text-emerald-400" />
-              <span>{lang === 'fa' ? `مجموع پرداختی (${currencyUnit})` : `Total cost (${currencyUnit})`}</span>
-            </label>
-            <input
-              id="input-cost"
-              type="number"
-              required
-              min="1"
-              placeholder={lang === 'fa' ? "مثال: ۱۰۵۰۰۰" : "e.g. 55"}
-              value={cost}
-              onChange={(e) => setCost(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-mono outline-none transition-all"
-            />
+          <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-1">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <DollarSign size={13} className="text-emerald-400 shrink-0" />
+                  <span>{lang === 'fa' ? 'مجموع هزینه' : 'Total Cost'}</span>
+                </label>
+                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{currencyUnit}</span>
+              </div>
+              <input
+                id="input-cost"
+                type="number"
+                required
+                min="1"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+              />
+            </div>
 
-            {/* Smart Gas Price Indicator Badge */}
-            {hasPriceDiff && (
-              <span className={`text-[9px] font-bold mt-1.5 px-2 py-0.5 rounded-md border flex items-center gap-1 w-fit ${
-                priceDiffPct > 0 
-                  ? 'text-rose-400 bg-rose-500/10 border-rose-500/15' 
-                  : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/15'
-              }`}>
-                <Zap size={8} />
-                <span>
-                  {priceDiffPct > 0 ? (
-                    lang === 'fa' ? `${Math.round(priceDiffPct)}٪ بیشتر از میانگین قیمت سوخت شما` : `${priceDiffPct.toFixed(1)}% higher than your average price`
-                  ) : (
-                    lang === 'fa' ? `${Math.round(Math.abs(priceDiffPct))}٪ کمتر از میانگین قیمت سوخت شما` : `${Math.abs(priceDiffPct).toFixed(1)}% lower than your average price`
-                  )}
+            <div className="space-y-1 pt-1">
+              <input
+                type="range"
+                min={lang === 'fa' ? 10000 : 1}
+                max={lang === 'fa' ? 2000000 : 250}
+                step={lang === 'fa' ? 5000 : 1}
+                value={Number(cost) || (lang === 'fa' ? 10000 : 1)}
+                onChange={(e) => setCost(e.target.value)}
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              />
+
+              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
+                <span>{(lang === 'fa' ? 10000 : 1).toLocaleString()}</span>
+                <span>{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800/60 min-h-[25px] flex items-center justify-between">
+              {hasPriceDiff ? (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 w-full justify-between ${
+                  priceDiffPct > 0 
+                    ? 'text-rose-400 bg-rose-500/10 border-rose-500/15' 
+                    : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/15'
+                }`}>
+                  <Zap size={10} className="shrink-0" />
+                  <span>
+                    {priceDiffPct > 0 ? (
+                      lang === 'fa' ? `${Math.round(priceDiffPct)}٪ بالاتر از میانگین` : `${priceDiffPct.toFixed(1)}% above avg`
+                    ) : (
+                      lang === 'fa' ? `${Math.round(Math.abs(priceDiffPct))}٪ اقتصادی‌تر از میانگین` : `${Math.abs(priceDiffPct).toFixed(1)}% below avg`
+                    )}
+                  </span>
                 </span>
-              </span>
-            )}
+              ) : (
+                <span className="text-[11px] text-slate-500 font-semibold text-center w-full">
+                  {lang === 'fa' ? 'هزینه کل سوخت‌گیری' : 'Total refuel cost'}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Scenario Toggles: Tank Full & Missed Refuel */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {/* Tank Full Toggle */}
-          <div className={`flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 shadow-md ${
+          <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 shadow-md ${
             fullTank 
               ? 'bg-indigo-950/20 border-indigo-500/30 shadow-[0_4px_20px_rgba(99,102,241,0.08)]' 
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
-            <div className={`space-y-1.5 flex-1 ${lang === 'fa' ? 'text-right pl-4' : 'text-left pr-4'}`}>
-              <label className="text-xs md:text-base font-black text-slate-100 block tracking-wide">
+            <div className={`space-y-1 flex-1 ${lang === 'fa' ? 'text-right pl-3' : 'text-left pr-3'}`}>
+              <label className="text-xs sm:text-sm font-bold text-slate-100 block tracking-wide">
                 {lang === 'fa' ? 'آیا باک کاملاً پر شد؟' : 'Did you fill the tank fully?'}
               </label>
-              <span className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium block">
+              <span className="text-xs text-slate-400 leading-relaxed font-normal block">
                 {lang === 'fa'
-                  ? 'فعال نگه دارید تا محاسبات مصرف سوخت دقیق انجام شود. برای سوخت‌گیری‌های جزئی غیرفعال کنید.'
-                  : 'Keep active for accurate fuel economy calculations. Turn off for partial fill-ups.'}
+                  ? 'فعال نگه دارید تا محاسبات مصرف سوخت دقیق انجام شود.'
+                  : 'Keep active for accurate fuel economy calculations.'}
               </span>
               {wasAutoDetected && (
-                <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-md mt-1.5 border border-cyan-500/20">
+                <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-md mt-1 border border-cyan-500/20">
                   {fullTank
                     ? (lang === 'fa' ? 'تخمین خودکار: باک پر' : 'Auto-detected: Full Tank')
                     : (lang === 'fa' ? 'تخمین خودکار: نیمه‌پر' : 'Auto-detected: Partial')
@@ -485,19 +587,19 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           </div>
 
           {/* Missed Refuel Toggle */}
-          <div className={`flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 shadow-md ${
+          <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 shadow-md ${
             missedRefuel 
               ? 'bg-amber-950/20 border-amber-500/30 shadow-[0_4px_20px_rgba(245,158,11,0.08)]' 
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
-            <div className={`space-y-1.5 flex-1 ${lang === 'fa' ? 'text-right pl-4' : 'text-left pr-4'}`}>
-              <label className="text-xs md:text-base font-black text-slate-100 block tracking-wide">
+            <div className={`space-y-1 flex-1 ${lang === 'fa' ? 'text-right pl-3' : 'text-left pr-3'}`}>
+              <label className="text-xs sm:text-sm font-bold text-slate-100 block tracking-wide">
                 {lang === 'fa' ? 'سوخت‌گیری قبلی ثبت نشده؟' : 'Missed a previous refuel?'}
               </label>
-              <span className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium block">
+              <span className="text-xs text-slate-400 leading-relaxed font-normal block">
                 {lang === 'fa'
-                  ? 'اگر فراموش کرده‌اید سوخت‌گیری‌های قبل را ثبت کنید فعال کنید تا میانگین مصرف خراب نشود.'
-                  : 'Check this if you forgot to log any fill-ups between your last entry and this one to prevent skewed average statistics.'}
+                  ? 'اگر سوخت‌گیری‌های قبل را ثبت نکرده‌اید فعال کنید.'
+                  : 'Check this if you forgot to log any prior fill-ups.'}
               </span>
             </div>
             <button
@@ -549,7 +651,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
         <button
           id="btn-submit-refuel"
           type="submit"
-          className="w-full bg-slate-900 border border-indigo-500/40 hover:border-indigo-500 text-indigo-300 hover:text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm cursor-pointer transition-all active:scale-98 mt-2"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm cursor-pointer transition-all active:scale-98 mt-2 shadow-md"
         >
           <PlusCircle size={18} />
           <span>{t.submitRefuel}</span>

@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Gauge } from 'lucide-react';
+import { Gauge, SlidersHorizontal, Sun, Wind, Box } from 'lucide-react';
 import { FuelEntry } from '../types';
 import { Language } from '../utils/translations';
 
@@ -27,6 +27,11 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
   // Use a fallback fuelEfficiency if there's none
   const eff = fuelEfficiency > 0 ? fuelEfficiency : 8.0;
 
+  // Environmental Variables States
+  const [acOn, setAcOn] = useState<boolean>(false);
+  const [windowsOpen, setWindowsOpen] = useState<boolean>(false);
+  const [roofRackLoaded, setRoofRackLoaded] = useState<boolean>(false);
+
   // Get average fuel price from logs, fallback if none
   const getAveragePrice = () => {
     if (!logs || logs.length === 0) return 1.25; // default gas price
@@ -47,12 +52,21 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
   // Convert current speed to MPH for unified calculations
   const speedMph = isMetric ? speed * KM_TO_MILES : speed;
 
+  // Environmental Drag Penalties
+  const acPenaltyPct = acOn ? 8 : 0;
+  // Windows drag increases with speed
+  const windowsPenaltyPct = windowsOpen ? Math.round(5 + (speedMph > 50 ? (speedMph - 50) * 0.15 : 0)) : 0;
+  const roofRackPenaltyPct = roofRackLoaded ? 12 : 0;
+  const totalEnvPenaltyPct = acPenaltyPct + windowsPenaltyPct + roofRackPenaltyPct;
+
   // Efficiency Penalty Model:
   // Base optimal speed is 55 mph (90 km/h).
   // Aerodynamic drag increases quadratically above 55 mph.
   const mphDiff = Math.max(0, speedMph - 55);
-  const penaltyPct = mphDiff * 1.2 + Math.pow(mphDiff, 1.6) * 0.15; // e.g. at 75mph: (20 * 1.2) + (20^1.6 * 0.15) = 24 + 18 = 42% increase! Extremely realistic.
+  const speedPenaltyPct = mphDiff * 1.2 + Math.pow(mphDiff, 1.6) * 0.15; // e.g. at 75mph: (20 * 1.2) + (20^1.6 * 0.15) = 24 + 18 = 42% increase! Extremely realistic.
   
+  const penaltyPct = speedPenaltyPct + totalEnvPenaltyPct;
+
   // Calculate extra fuel and money burned over 100 miles/km driven
   const baseLitersPer100km = eff;
   const currentLitersPer100km = baseLitersPer100km * (1 + penaltyPct / 100);
@@ -139,7 +153,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
       </p>
 
       {/* Interactive Simulation Dashboard Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-5">
         <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
             {lang === 'fa' ? 'افزایش مصرف سوخت' : 'Fuel Burn Increase'}
@@ -162,6 +176,73 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
           <span className="text-[10px] text-slate-400 mt-1 block font-semibold">
             {lang === 'fa' ? `به ازای ${unitLabel}` : `Per ${unitLabel}`}
           </span>
+        </div>
+      </div>
+
+      {/* ENVIRONMENTAL VARIABLES SECTION */}
+      <div className="bg-slate-950/70 border border-slate-900/80 p-4 rounded-2xl space-y-3 mb-6 shadow-sm">
+        <div className="flex items-center gap-2 text-amber-400/90 font-extrabold text-xs uppercase tracking-widest">
+          <SlidersHorizontal size={14} className="text-amber-400" />
+          <span>{lang === 'fa' ? 'متغیرهای محیطی (ENVIRONMENTAL VARIABLES)' : 'ENVIRONMENTAL VARIABLES'}</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+          {/* A/C Toggle */}
+          <button
+            type="button"
+            id="toggle-ac-environmental-variable"
+            onClick={() => setAcOn(!acOn)}
+            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
+              acOn
+                ? 'bg-blue-600 border-blue-400 !text-white shadow-lg shadow-blue-500/25 ring-1 ring-blue-400'
+                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Sun size={16} className={acOn ? '!text-white animate-spin-slow shrink-0' : 'text-slate-400 shrink-0'} />
+            <span className={acOn ? 'tracking-wide !text-white' : 'tracking-wide'}>
+              {acOn 
+                ? (lang === 'fa' ? `کولر روشن (+${acPenaltyPct}٪)` : `A/C ON (+${acPenaltyPct}%)`)
+                : (lang === 'fa' ? 'کولر خاموش' : 'A/C OFF')}
+            </span>
+          </button>
+
+          {/* Windows Toggle */}
+          <button
+            type="button"
+            id="toggle-windows-environmental-variable"
+            onClick={() => setWindowsOpen(!windowsOpen)}
+            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
+              windowsOpen
+                ? 'bg-amber-600 border-amber-400 !text-white shadow-lg shadow-amber-500/25 ring-1 ring-amber-400'
+                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Wind size={16} className={windowsOpen ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
+            <span className={windowsOpen ? 'tracking-wide !text-white' : 'tracking-wide'}>
+              {windowsOpen 
+                ? (lang === 'fa' ? `پنجره باز (+${windowsPenaltyPct}٪)` : `Windows Open (+${windowsPenaltyPct}%)`)
+                : (lang === 'fa' ? 'پنجره‌ها بسته' : 'Windows Closed')}
+            </span>
+          </button>
+
+          {/* Roof Rack Toggle */}
+          <button
+            type="button"
+            id="toggle-roofrack-environmental-variable"
+            onClick={() => setRoofRackLoaded(!roofRackLoaded)}
+            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
+              roofRackLoaded
+                ? 'bg-purple-600 border-purple-400 !text-white shadow-lg shadow-purple-500/25 ring-1 ring-purple-400'
+                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Box size={16} className={roofRackLoaded ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
+            <span className={roofRackLoaded ? 'tracking-wide !text-white' : 'tracking-wide'}>
+              {roofRackLoaded 
+                ? (lang === 'fa' ? `باربند سقف (+${roofRackPenaltyPct}٪)` : `Roof Rack (+${roofRackPenaltyPct}%)`)
+                : (lang === 'fa' ? 'بدون باربند' : 'Roof Rack None')}
+            </span>
+          </button>
         </div>
       </div>
 

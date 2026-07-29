@@ -143,10 +143,6 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
   if (!isEditing && vehicle.brand) {
     return (
       <div id="vehicle-profile-view" className="cyber-card p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
-        {/* Glow effect */}
-        <div className="absolute -right-24 -top-24 w-48 h-48 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-24 -bottom-24 w-48 h-48 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
-
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">

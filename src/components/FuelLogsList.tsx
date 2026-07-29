@@ -136,7 +136,7 @@ export default function FuelLogsList({
 
   if (logs.length === 0) {
     return (
-      <div id="empty-logs-card" className="bg-slate-900/60 border border-slate-800 p-8 rounded-2xl text-center space-y-4 backdrop-blur-md shadow-sm">
+      <div id="empty-logs-card" className="bg-slate-800/80 border border-slate-800 p-8 rounded-2xl text-center space-y-4 shadow-sm">
         {/* Hidden File Input */}
         <input
           type="file"
@@ -276,7 +276,7 @@ export default function FuelLogsList({
             <div
               key={log.id}
               id={`log-entry-${log.id}`}
-              className="group bg-slate-900/60 hover:bg-slate-900/90 border border-slate-800 hover:border-slate-700/80 p-3.5 sm:p-4 rounded-xl relative transition-all duration-200 shadow-sm backdrop-blur-md space-y-3"
+              className="group bg-slate-800/80 hover:bg-slate-800/95 border border-slate-700 hover:border-slate-700/80 p-3.5 sm:p-4 rounded-xl relative transition-all duration-200 shadow-sm space-y-3"
             >
               {/* Header Row: Date (Left), Station & Fuel Type Tags (Center), Delete Button (Right) */}
               <div className="flex items-center justify-between gap-2 border-b border-slate-800/60 pb-2.5">

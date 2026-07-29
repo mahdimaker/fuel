@@ -69,7 +69,7 @@ export default function CSVDataManagementCard({
   };
 
   return (
-    <div id="csv-data-management-card" className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-sm backdrop-blur-md space-y-3">
+    <div id="csv-data-management-card" className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
       {/* Hidden File Input */}
       <input
         type="file"

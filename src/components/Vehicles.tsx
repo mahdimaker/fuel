@@ -154,23 +154,20 @@ export default function Vehicles({
       {/* =========================================================================
           ROW 1: VEHICLE GARAGE HEADER & REGISTRATION FORM
          ========================================================================= */}
-      <div className="cyber-card p-6 rounded-2xl relative overflow-hidden border border-purple-500/30 tech-glow-purple space-y-5">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
+      <div className={`cyber-card p-4 sm:p-5 rounded-2xl relative overflow-hidden border border-purple-500/30 tech-glow-purple transition-all ${showAddForm ? 'space-y-4 pb-4 sm:pb-5' : 'pb-3 sm:pb-3.5'}`}>
         {/* Banner Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-900 pb-4">
+        <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${showAddForm ? 'border-b border-slate-900 pb-3.5 sm:pb-4' : ''}`}>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/20 via-indigo-500/20 to-cyan-500/20 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-400 shadow-lg">
-              <Car size={26} />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-500/20 via-indigo-500/20 to-cyan-500/20 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-400 shadow-lg">
+              <Car size={22} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-white">
+                <h1 className="text-lg sm:text-xl font-extrabold text-white">
                   {lang === 'fa' ? 'گاراژ خودرو' : 'Vehicle Garage'}
                 </h1>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
                 {lang === 'fa' 
                   ? 'مدیریت و ثبت خودروهای شما در گاراژ هوشمند.' 
                   : 'Manage and register your vehicles in the smart garage.'}
@@ -180,10 +177,10 @@ export default function Vehicles({
 
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 hover:text-white text-base font-bold flex items-center gap-2 cursor-pointer transition-all shrink-0"
+            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 hover:text-white text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer transition-all shrink-0"
           >
-            <Plus size={18} />
-            <span className="text-base font-bold">{showAddForm ? (lang === 'fa' ? 'پنهان‌سازی فرم ثبت' : 'Hide Registration Form') : (lang === 'fa' ? 'افزودن خودرو جدید' : 'Register New Vehicle')}</span>
+            <Plus size={16} />
+            <span>{showAddForm ? (lang === 'fa' ? 'پنهان‌سازی فرم ثبت' : 'Hide Registration Form') : (lang === 'fa' ? 'افزودن خودرو جدید' : 'Register New Vehicle')}</span>
           </button>
         </div>
 
@@ -356,7 +353,7 @@ export default function Vehicles({
                 }`}
               >
                 {isActive && (
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full pointer-events-none"></div>
                 )}
 
                 {isEditing ? (

@@ -13,8 +13,7 @@ interface SponsoredAdCardProps {
 
 export default function SponsoredAdCard({ lang }: SponsoredAdCardProps) {
   return (
-    <div id="sponsored-ad-card" className="cyber-card p-5 rounded-2xl border border-slate-900 bg-slate-950/20 text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/10">
-      <div className="absolute right-0 top-0 w-20 h-20 rounded-full bg-cyan-500/5 blur-2xl pointer-events-none"></div>
+    <div id="sponsored-ad-card" className="cyber-card p-5 rounded-2xl border border-slate-900 bg-slate-950/80 text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/10">
       
       <div className="flex items-center justify-between text-[10px] text-slate-600 font-extrabold tracking-widest uppercase mb-2">
         <span>{lang === 'fa' ? 'پیشنهاد حامی برنامه‌ریزی سلامت' : 'Sponsored Diagnostics'}</span>

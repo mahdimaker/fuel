@@ -198,30 +198,30 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
   const ratingDetails = {
     optimal: {
       label: lang === 'fa' ? 'راندمان بسیار بهینه' : 'OPTIMAL EFFICIENCY',
-      badgeColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.25)]',
+      badgeColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/40',
       bannerBg: 'bg-emerald-950/30 border-emerald-500/20',
-      icon: <Leaf size={16} className="text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]" />,
+      icon: <Leaf size={16} className="text-emerald-400" />,
       message: lang === 'fa' ? 'رانندگی فوق‌العاده بهینه مانند خودروی برقی!' : 'Driving smooth like an EV!',
       thumbColor: 'bg-emerald-500',
-      thumbGlow: '0 0 14px #10b981',
+      thumbGlow: 'none',
     },
     moderate: {
       label: lang === 'fa' ? 'راندمان سوخت بهینه' : 'OPTIMAL EFFICIENCY',
-      badgeColor: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.25)]',
+      badgeColor: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/40',
       bannerBg: 'bg-cyan-950/30 border-cyan-500/20',
-      icon: <Zap size={16} className="text-cyan-400 drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]" />,
+      icon: <Zap size={16} className="text-cyan-400" />,
       message: lang === 'fa' ? 'محدوده مصرف سوخت بهینه و استاندارد' : 'Optimal Combustion Range',
       thumbColor: 'bg-cyan-500',
-      thumbGlow: '0 0 14px #06b6d4',
+      thumbGlow: 'none',
     },
     high: {
       label: lang === 'fa' ? 'مصرف بالاتر از حد متوسط' : 'ABOVE AVERAGE',
-      badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.25)]',
+      badgeColor: 'text-amber-400 bg-amber-500/10 border-amber-500/40',
       bannerBg: 'bg-amber-950/30 border-amber-500/20',
-      icon: <TrendingUp size={16} className="text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]" />,
+      icon: <TrendingUp size={16} className="text-amber-400" />,
       message: lang === 'fa' ? 'مصرف بالاتر از حد متوسط' : 'Above Average Consumption',
       thumbColor: 'bg-amber-500',
-      thumbGlow: '0 0 14px #f59e0b',
+      thumbGlow: 'none',
     },
   }[rating];
 
@@ -253,7 +253,7 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
         {/* Row 2: Icon, Title & Subtitle with full width */}
         <div className="flex items-center gap-3 w-full">
           <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0">
-            <Gauge size={22} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+            <Gauge size={22} />
           </div>
           <div className="w-full">
             <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white leading-tight">
@@ -271,21 +271,21 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
         <div className="flex items-baseline justify-center gap-2 font-mono">
           {isMetric ? (
             <>
-              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.35)]">
+              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
                 {fuelEfficiency.toFixed(1)}
               </span>
               <span className="text-sm md:text-base font-extrabold text-slate-400 font-sans uppercase tracking-wider whitespace-nowrap">L/100km</span>
             </>
           ) : isUs ? (
             <>
-              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.35)]">
+              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
                 {mpg.toFixed(1)}
               </span>
               <span className="text-sm md:text-base font-extrabold text-slate-400 font-sans uppercase tracking-wider whitespace-nowrap">US MPG</span>
             </>
           ) : (
             <>
-              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.35)]">
+              <span className="text-5xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
                 {ukMpg.toFixed(1)}
               </span>
               <span className="text-sm md:text-base font-extrabold text-slate-400 font-sans uppercase tracking-wider whitespace-nowrap">UK MPG</span>
@@ -343,8 +343,8 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
         </div>
       )}
 
-      {/* Sleek Glassmorphism Compact Dynamic Insight Banner */}
-      <div className={`mt-5 px-3.5 py-2.5 rounded-xl border backdrop-blur-md flex items-center gap-2.5 transition-all ${ratingDetails.bannerBg}`}>
+      {/* Sleek Compact Dynamic Insight Banner */}
+      <div className={`mt-5 px-3.5 py-2.5 rounded-xl border flex items-center gap-2.5 transition-all ${ratingDetails.bannerBg}`}>
         <div className="shrink-0 p-1.5 rounded-md bg-slate-950/60 border border-white/5">
           {ratingDetails.icon}
         </div>

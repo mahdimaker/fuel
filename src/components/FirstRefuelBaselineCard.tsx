@@ -34,13 +34,9 @@ export default function FirstRefuelBaselineCard({ odometer, unitSystem, lang }: 
       id="first-refuel-baseline-card" 
       className="rounded-2xl p-6 md:p-8 border border-slate-800 bg-gradient-to-br from-[#1a1c24] to-[#121318] relative overflow-hidden shadow-2xl transition-all duration-300 hover:border-cyan-500/25"
     >
-      {/* Soft cyan background glow */}
-      <div className="absolute -right-20 -bottom-20 w-48 h-48 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
-      
       <div className="flex flex-col items-center text-center space-y-6">
         {/* Glowing badge */}
         <div className="relative">
-          <div className="absolute inset-0 bg-cyan-400/20 rounded-full blur-md animate-pulse"></div>
           <div className="relative w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
             <Fuel size={28} className="animate-pulse" />
             <div className="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 rounded-full border border-slate-900 flex items-center justify-center text-white">

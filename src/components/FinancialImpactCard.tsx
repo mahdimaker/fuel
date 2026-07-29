@@ -24,14 +24,13 @@ export default function FinancialImpactCard({ logs, fuelEfficiency, unitSystem, 
     const isDiagnostic = logs.length >= 2;
     if (isDiagnostic) {
       return (
-        <div id="financial-impact-diagnostic" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
+        <div id="financial-impact-diagnostic" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-950/80 relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
           {/* Subtle grid pattern background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none"></div>
-          <div className="absolute -left-20 -top-20 w-44 h-44 rounded-full bg-rose-500/10 blur-3xl pointer-events-none"></div>
           
           <div className="flex items-center gap-3 mb-5">
-            <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.25)] shrink-0">
-              <ShieldAlert size={22} className="text-rose-400 animate-pulse drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]" />
+            <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 shrink-0">
+              <ShieldAlert size={22} className="text-rose-400 animate-pulse" />
             </div>
             <div className={lang === 'fa' ? 'text-right' : 'text-left'}>
               <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white leading-tight">
@@ -281,12 +280,9 @@ export default function FinancialImpactCard({ logs, fuelEfficiency, unitSystem, 
     : `Eco-Finance Action: By tuning your engine and keeping tires correctly inflated, you can plug this cash leak and save on future commutes.`;
 
   return (
-    <div id="financial-impact-card" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
+    <div id="financial-impact-card" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-950/80 relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
       {/* Subtle grid pattern background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none"></div>
-      
-      {/* Decorative pulse background glow */}
-      <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-amber-500/10 blur-3xl pointer-events-none"></div>
 
       {/* Row 1: Status Badge aligned to corner */}
       <div className={`flex mb-2 sm:mb-3 ${lang === 'fa' ? 'justify-start' : 'justify-end'}`}>

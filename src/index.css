@@ -29,10 +29,9 @@ html, body {
 }
 
 .cyber-card {
-  background: rgba(21, 28, 44, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(24px) !important;
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.3) !important;
 }
 
 .cyber-card-glow {
@@ -117,10 +116,9 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 
 /* Cyber card overrides in light mode */
 .light .cyber-card {
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: #ffffff !important;
   border: 1px solid rgba(168, 85, 247, 0.15) !important;
-  box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.04), 0 4px 6px -2px rgba(168, 85, 247, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
 }
 
 .light .cyber-card-glow {
@@ -138,7 +136,6 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light .bg-slate-950\/90,
 .light .bg-slate-950\/85,
 .light .bg-slate-950\/80,
-.light .bg-slate-950\/60,
 .light .bg-slate-950\/50,
 .light .bg-slate-950\/40,
 .light .bg-slate-950\/30,
@@ -148,7 +145,11 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light .bg-slate-900\/50,
 .light .bg-slate-900\/40,
 .light .bg-slate-900\/20 {
-  background-color: rgba(241, 245, 249, 0.75) !important;
+  background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.light .bg-slate-950\/60 {
+  background-color: rgba(251, 251, 251, 0.75) !important;
 }
 
 .light .bg-slate-950\/10,
@@ -171,39 +172,48 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light .border-slate-950,
 .light .border-slate-950\/20,
 .light .border-slate-950\/40 {
-  border-color: rgba(226, 232, 240, 0.8) !important; /* slate-200 */
+  border-color: rgba(255, 255, 255, 0.8) !important; /* slate-200 */
 }
 
 /* Text contrast mapping overrides */
 .light .text-white {
-  color: #0f172a; /* slate-900 */
+  color: #0f172a !important; /* slate-900 */
+}
+
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light h5,
+.light h6 {
+  color: #0f172a !important;
 }
 
 .light .text-slate-100 {
-  color: #1e293b; /* slate-800 */
+  color: #1e293b !important; /* slate-800 */
 }
 
 .light .text-slate-200 {
-  color: #334155; /* slate-700 */
+  color: #334155 !important; /* slate-700 */
 }
 
 .light .text-slate-300 {
-  color: #475569; /* slate-600 */
+  color: #475569 !important; /* slate-600 */
 }
 
 .light .text-slate-400 {
-  color: #64748b; /* slate-500 */
+  color: #64748b !important; /* slate-500 */
 }
 
 .light .text-slate-500 {
-  color: #94a3b8; /* slate-400 */
+  color: #94a3b8 !important; /* slate-400 */
 }
 
 /* Button & Select overrides */
 .light input,
 .light select,
 .light textarea {
-  background-color: #ffffff !important;
+  background-color: #f5f5f5 !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
@@ -218,6 +228,87 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light textarea:focus {
   border-color: #a855f7 !important;
   box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15) !important;
+}
+
+/* Dark buttons white background override in light theme */
+.light button.bg-slate-950,
+.light button.bg-slate-900,
+.light button.bg-slate-850,
+.light button.bg-slate-800,
+.light button.bg-black,
+.light button[class*="bg-slate-950"],
+.light button[class*="bg-slate-900"],
+.light button[class*="bg-slate-850"],
+.light button[class*="bg-slate-800"],
+.light button[class*="bg-purple-950"],
+.light button[class*="bg-cyan-950"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+.light button.bg-slate-950:hover,
+.light button.bg-slate-900:hover,
+.light button.bg-slate-850:hover,
+.light button.bg-slate-800:hover,
+.light button[class*="bg-slate-950"]:hover,
+.light button[class*="bg-slate-900"]:hover,
+.light button[class*="bg-slate-850"]:hover,
+.light button[class*="bg-slate-800"]:hover,
+.light button[class*="bg-purple-950"]:hover,
+.light button[class*="bg-cyan-950"]:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.light button[class*="bg-slate"] span,
+.light button[class*="bg-purple-950"] span,
+.light button[class*="bg-cyan-950"] span {
+  color: #0f172a !important;
+}
+
+/* Active colored buttons and elements in light theme MUST have white text & icons */
+.light .bg-blue-600,
+.light .bg-amber-600,
+.light .bg-purple-600,
+.light .bg-emerald-600,
+.light .bg-indigo-600,
+.light .bg-cyan-600,
+.light .bg-violet-600,
+.light .bg-rose-600,
+.light .bg-red-600,
+.light .bg-blue-500,
+.light .bg-purple-500,
+.light .bg-emerald-500,
+.light .bg-cyan-500,
+.light .bg-indigo-500,
+.light button.bg-blue-600,
+.light button.bg-amber-600,
+.light button.bg-purple-600,
+.light button.bg-emerald-600,
+.light button.bg-indigo-600,
+.light button.bg-cyan-600 {
+  color: #ffffff !important;
+}
+
+.light .bg-blue-600 *,
+.light .bg-amber-600 *,
+.light .bg-purple-600 *,
+.light .bg-emerald-600 *,
+.light .bg-indigo-600 *,
+.light .bg-cyan-600 *,
+.light .bg-violet-600 *,
+.light button.bg-blue-600 *,
+.light button.bg-amber-600 *,
+.light button.bg-purple-600 *,
+.light button.bg-emerald-600 *,
+.light button.bg-indigo-600 * {
+  color: #ffffff !important;
+}
+
+.light .\!text-white {
+  color: #ffffff !important;
 }
 
 /* Custom list items & hover overrides */
@@ -239,5 +330,213 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 
 .light .group:hover {
   background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.light .mt-5.px-3\.5.py-2\.5.rounded-xl.border.backdrop-blur-md.flex.items-center.gap-2\.5.transition-all.bg-emerald-950\/30.border-emerald-500\/20 {
+    background-color: #fff;
+}
+
+.light .bg-emerald-950\/20 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(0.94 0.08 175.68) 20%, transparent);
+    }
+}
+
+.light .bg-slate-950\/70 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(0.98 0 0) 70%, transparent);
+    }
+}
+
+.light .md\:col-span-5.flex.flex-col.items-center.justify-center.bg-slate-950\/70.border.border-slate-800\/90.rounded-xl.sm\:rounded-2xl.p-6.sm\:p-7.relative.backdrop-blur-md.shadow-\[0_0_25px_rgba\(0\,0\,0\,0\.4\)\] {
+    background-color: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.light span.text-\[11px\].font-extrabold.px-4.py-1\.5.rounded-full.border.uppercase.tracking-wider.text-emerald-400.bg-emerald-950\/40.border-emerald-500\/30.shadow-\[0_0_10px_rgba\(16\,185\,129\,0\.15\)\] {
+    background: #dffff6;
+}
+
+/* Hide grid pattern overlays in light mode */
+.light .bg-\[size\:20px_20px\],
+.light div[class*="linear-gradient(to_right"] {
+    display: none !important;
+}
+
+.light .bg-slate-900\/90 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(1 0 0) 90%, transparent);
+    }
+}
+
+.light .border-slate-900\/90 {
+    @supports (color: color-mix(in lab, red, red)) {
+        border-color: 
+color-mix(in oklab, oklch(0.98 0 0) 90%, transparent);
+    }
+}
+
+.light .bg-purple-950\/20 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(1 0 0) 20%, transparent);
+    }
+}
+
+.light .space-y-5.bg-slate-950\/60.p-5.sm\:p-6.rounded-2xl.border.border-slate-900\/80.backdrop-blur-md.shadow-\[0_0_20px_rgba\(0\,0\,0\,0\.3\)\] {
+    box-shadow: none !important;
+}
+
+/* Light theme alert cards (Health Intelligence alerts) */
+.light .bg-emerald-950\/30,
+.light .bg-emerald-950\/40,
+.light .bg-rose-950\/30,
+.light .bg-amber-950\/30 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .bg-emerald-950\/30 p,
+.light .bg-emerald-950\/30 div,
+.light .text-emerald-200 {
+  color: #064e3b !important;
+}
+
+.light .bg-rose-950\/30 p,
+.light .bg-rose-950\/30 div,
+.light .text-rose-200 {
+  color: #881337 !important;
+}
+
+.light .bg-amber-950\/30 p,
+.light .bg-amber-950\/30 div,
+.light .text-amber-200 {
+  color: #78350f !important;
+}
+
+/* Header logo square background in light theme */
+.light header .tech-gradient div,
+.light header div[class*="bg-black"] {
+  background-color: #ffffff !important;
+}
+
+/* Refuel FAB button icon white in light theme */
+.light button[class*="bg-gradient-to-tr"] svg,
+.light button[class*="bg-gradient-to-tr"] path,
+.light button[title*="Refuel"] svg,
+.light button[title*="ثبت سوخت"] svg {
+  color: #ffffff !important;
+}
+
+.light .bg-slate-800\/80 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(1 0 0) 80%, transparent);
+    }
+}
+.light .border-slate-700 {
+    border-color: oklch(1 0 0);
+}
+
+/* Active navigation tabs in Light Mode - Blue-Purple background with crisp white text */
+.light .nav-tab-active,
+.light button.nav-tab-active,
+.light button[class*="nav-tab-active"] {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+}
+
+.light .nav-tab-active *,
+.light .nav-tab-active span,
+.light .nav-tab-active .text-white,
+.light .nav-tab-active svg,
+.light .nav-tab-active path,
+.light button.nav-tab-active *,
+.light button.nav-tab-active span,
+.light button.nav-tab-active .text-white,
+.light button.nav-tab-active svg,
+.light button.nav-tab-active path,
+.light button[class*="nav-tab-active"] *,
+.light button[class*="nav-tab-active"] span,
+.light button[class*="nav-tab-active"] .text-white,
+.light button[class*="nav-tab-active"] svg,
+.light button[class*="nav-tab-active"] path {
+  color: #ffffff !important;
+}
+
+/* Inactive navigation tabs in Light Mode */
+.light .nav-tab-inactive {
+  background-color: transparent !important;
+  color: #475569 !important;
+  border-color: transparent !important;
+}
+
+.light .nav-tab-inactive:hover {
+  background-color: rgba(203, 213, 225, 0.6) !important;
+  color: #0f172a !important;
+}
+
+.light .nav-tab-inactive *,
+.light .nav-tab-inactive span,
+.light .nav-tab-inactive svg {
+  color: #475569 !important;
+}
+
+/* Refuel CTA button in Light Mode - high contrast, clear legibility */
+.light .btn-refuel-cta {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #4f46e5 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+}
+
+.light .btn-refuel-cta *,
+.light .btn-refuel-cta span,
+.light .btn-refuel-cta svg {
+  color: #ffffff !important;
+}
+
+.light .flex.items-center.justify-between.p-4.rounded-2xl.border.transition-all.duration-300.shadow-md.bg-indigo-950\/20.border-indigo-500\/30.shadow-\[0_4px_20px_rgba\(99\,102\,241\,0\.08\)\] {
+    background-color: #eef6ff;
+}
+
+.light .border-slate-800\/60, .border-slate-800\/40 {
+    @supports (color: color-mix(in lab, red, red)) {
+        border-color: 
+color-mix(in oklab, oklch(0.9 0 0) 60%, transparent);
+    }
+}
+
+.light button#reset-all-data-history-mobile {
+    background-color: #fff;
+}
+
+/* Navigation Tabs Base Styles - Anti Flash & Layout Shift Fixes */
+.nav-tab-inactive {
+  border-color: transparent;
+}
+
+.nav-tab-active,
+.nav-tab-inactive,
+.btn-refuel-cta {
+  outline: none !important;
+  box-sizing: border-box !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-tab-active:focus,
+.nav-tab-inactive:focus,
+.btn-refuel-cta:focus,
+.nav-tab-active:focus-visible,
+.nav-tab-inactive:focus-visible,
+.btn-refuel-cta:focus-visible {
+  outline: none !important;
 }
 

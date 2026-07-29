@@ -25,27 +25,27 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
       case 'excellent':
         return { 
           text: t.levelExcellent, 
-          color: 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)]', 
-          scoreColor: 'text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.6)]' 
+          color: 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30', 
+          scoreColor: 'text-emerald-400' 
         };
       case 'good':
         return { 
           text: t.levelGood, 
-          color: 'text-cyan-400 bg-cyan-950/40 border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.15)]', 
-          scoreColor: 'text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]' 
+          color: 'text-cyan-400 bg-cyan-950/40 border-cyan-500/30', 
+          scoreColor: 'text-cyan-400' 
         };
       case 'fair':
         return { 
           text: t.levelFair, 
-          color: 'text-amber-400 bg-amber-950/40 border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]', 
-          scoreColor: 'text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.6)]' 
+          color: 'text-amber-400 bg-amber-950/40 border-amber-500/30', 
+          scoreColor: 'text-amber-400' 
         };
       case 'poor':
       default:
         return { 
           text: t.levelPoor, 
-          color: 'text-rose-400 bg-rose-950/40 border-rose-500/30 shadow-[0_0_10px_rgba(244,63,94,0.15)]', 
-          scoreColor: 'text-rose-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.6)]' 
+          color: 'text-rose-400 bg-rose-950/40 border-rose-500/30', 
+          scoreColor: 'text-rose-400' 
         };
     }
   };
@@ -154,7 +154,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
       {!hideScore && (
         <div className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
           {/* Subtle grid pattern background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none dark:block hidden"></div>
           <div className="absolute -left-20 -top-20 w-44 h-44 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
 
           {/* Header */}
@@ -373,7 +373,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
       {/* Warnings & Diagnosis Alerts */}
       {!hideAlerts && (
         <div id="ai-telemetry-warnings" className="cyber-card p-5 sm:p-6 rounded-2xl border border-indigo-500/15 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none dark:block hidden"></div>
           
           {/* Header with Dynamic AI Icon */}
           <div className="flex items-center gap-3 mb-5">
@@ -399,10 +399,10 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
               return (
                 <div 
                   key={index} 
-                  className={`flex items-start gap-3.5 p-3.5 sm:p-4 rounded-xl border backdrop-blur-md transition-all duration-200 ${alertStyle.container}`}
+                  className={`flex items-start gap-3.5 p-3.5 sm:p-4 rounded-xl border transition-all duration-200 ${alertStyle.container}`}
                 >
                   <div className={alertStyle.iconBadge}>
-                    <AlertIcon size={18} className="drop-shadow-sm" />
+                    <AlertIcon size={18} />
                   </div>
                   <div className="flex-1 min-w-0 pt-0.5">
                     <div className="flex items-center justify-between gap-2 mb-1">

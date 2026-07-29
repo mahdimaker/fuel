@@ -11,7 +11,6 @@ import {
   Cpu, 
   TrendingUp, 
   Share2, 
-  Printer, 
   RotateCcw, 
   Heart, 
   Award,
@@ -36,6 +35,7 @@ import PwaInstallBanner from './components/PwaInstallBanner';
 import SponsoredAdCard from './components/SponsoredAdCard';
 import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
 import CSVDataManagementCard from './components/CSVDataManagementCard';
+import AppIcon from './components/AppIcon';
 import { calculateLogEfficiencies } from './utils/calculator';
 import { translations, Language } from './utils/translations';
 
@@ -496,27 +496,11 @@ export default function App() {
       {/* PWA Prompt Banner */}
       <PwaInstallBanner lang={lang} />
 
-      {/* Visual background glow nodes */}
-      <div className="absolute top-0 right-1/4 w-[450px] h-[450px] rounded-full bg-purple-600/12 blur-[130px] pointer-events-none no-print"></div>
-      <div className="absolute bottom-10 left-1/4 w-[450px] h-[450px] rounded-full bg-cyan-600/12 blur-[130px] pointer-events-none no-print"></div>
-
-      {/* Share / Copy feedback alert */}
-      {showShareNotification && (
-        <div id="share-toast" className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-950/95 border border-cyan-500/40 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-xs text-cyan-400 font-bold transition-all animate-bounce">
-          <Award size={16} />
-          <span>{t.shareReportText}</span>
-        </div>
-      )}
-
       {/* Header */}
-      <header className="border-b border-slate-900/80 bg-black/40 backdrop-blur-md sticky top-0 z-40 no-print">
+      <header className="border-b border-slate-900/80 bg-slate-950/95 sticky top-0 z-40 no-print">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl tech-gradient p-[1px] flex items-center justify-center">
-              <div className="w-full h-full bg-black rounded-[11px] flex items-center justify-center">
-                <Flame size={18} className="animate-pulse text-cyan-400" />
-              </div>
-            </div>
+          <div className="flex items-center gap-2.5">
+            <AppIcon size={38} />
             <div>
               <h1 className="text-sm font-extrabold text-white tracking-wider">
                 {lang === 'fa' ? 'آنالایزر مصرف سوخت' : 'Fuel Analyzer'}
@@ -577,14 +561,6 @@ export default function App() {
               title="Share Report"
             >
               <Share2 size={14} />
-            </button>
-            <button
-              id="print-btn"
-              onClick={handlePrint}
-              className="p-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-400 hover:text-purple-400 hover:border-purple-500/20 transition-all cursor-pointer"
-              title="Print Technical Report"
-            >
-              <Printer size={14} />
             </button>
           </div>
         </div>
@@ -651,15 +627,15 @@ export default function App() {
 
       {/* Desktop Navigation Tabs Bar (Visible on md+) */}
       <div className="hidden md:block max-w-7xl w-full mx-auto px-4 pt-4 no-print">
-        <div className="flex items-center justify-between bg-slate-950/80 border border-slate-900 rounded-2xl p-2 backdrop-blur-md">
+        <div className="flex items-center justify-between bg-slate-950/95 border border-slate-900 rounded-2xl p-2">
           <div className="flex items-center gap-1.5">
             {/* Dashboard Tab */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-colors duration-150 cursor-pointer outline-none focus:outline-none focus:ring-0 select-none border ${
                 activeTab === 'dashboard'
-                  ? 'bg-slate-900 border border-cyan-500/30 text-cyan-400 shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                  ? 'nav-tab-active bg-slate-900 border-cyan-500/40 text-white shadow-md'
+                  : 'nav-tab-inactive border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Gauge size={16} />
@@ -669,10 +645,10 @@ export default function App() {
             {/* Vehicles Tab */}
             <button
               onClick={() => setActiveTab('vehicles')}
-              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-colors duration-150 cursor-pointer outline-none focus:outline-none focus:ring-0 select-none border ${
                 activeTab === 'vehicles'
-                  ? 'bg-slate-900 border border-purple-500/30 text-purple-400 shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                  ? 'nav-tab-active bg-slate-900 border-purple-500/40 text-white shadow-md'
+                  : 'nav-tab-inactive border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Car size={16} />
@@ -682,10 +658,10 @@ export default function App() {
             {/* History Tab */}
             <button
               onClick={() => setActiveTab('history')}
-              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-colors duration-150 cursor-pointer outline-none focus:outline-none focus:ring-0 select-none border ${
                 activeTab === 'history'
-                  ? 'bg-slate-900 border border-indigo-500/30 text-indigo-400 shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                  ? 'nav-tab-active bg-slate-900 border-indigo-500/40 text-white shadow-md'
+                  : 'nav-tab-inactive border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <TrendingUp size={16} />
@@ -695,10 +671,10 @@ export default function App() {
             {/* AI Technician Tab */}
             <button
               onClick={() => setActiveTab('ai')}
-              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold flex items-center gap-2 transition-colors duration-150 cursor-pointer outline-none focus:outline-none focus:ring-0 select-none border ${
                 activeTab === 'ai'
-                  ? 'bg-slate-900 border border-pink-500/30 text-pink-400 shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                  ? 'nav-tab-active bg-slate-900 border-pink-500/40 text-white shadow-md'
+                  : 'nav-tab-inactive border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
               }`}
             >
               <Cpu size={16} />
@@ -709,10 +685,10 @@ export default function App() {
           {/* Refuel Primary Hero FAB / CTA Button on Desktop */}
           <button
             onClick={() => setActiveTab('refuel')}
-            className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-md active:scale-95 ${
+            className={`btn-refuel-cta px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm font-extrabold flex items-center gap-1.5 transition-colors duration-150 cursor-pointer shadow-md active:scale-95 outline-none focus:outline-none focus:ring-0 select-none border ${
               activeTab === 'refuel'
-                ? 'tech-gradient text-white shadow-cyan-500/30 ring-2 ring-cyan-400'
-                : 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 border border-cyan-500/30'
+                ? 'tech-gradient text-white shadow-cyan-500/30 border-cyan-400/80'
+                : 'bg-gradient-to-r from-cyan-500/20 via-indigo-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-cyan-300 border-cyan-500/30'
             }`}
           >
             <Flame size={15} className="animate-pulse" />
@@ -730,7 +706,7 @@ export default function App() {
             <div className="grid grid-cols-12 gap-6 items-start">
               {/* Left Column (md:col-span-6) */}
               <div className="md:col-span-6 space-y-6">
-                {/* 1. Quick Vehicle Status Summary Card (Replaces profile card on Dashboard) */}
+                {/* 1. Quick Vehicle Status Summary Card / Profile */}
                 <QuickVehicleStatusCard 
                   vehicle={vehicle} 
                   healthMetrics={healthMetrics} 
@@ -740,52 +716,28 @@ export default function App() {
                   onNavigateToVehicles={() => setActiveTab('vehicles')}
                   onNavigateToRefuel={() => setActiveTab('refuel')}
                 />
-                
-                {/* 2. Log New Refueling Quick Access */}
-                {vehicle.brand ? (
-                  <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={logs} fuelCapacity={vehicle.fuelCapacity} />
-                ) : (
-                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
-                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
-                    <p className="text-xs text-slate-400">Save vehicle profile first in Vehicles tab to unlock refuel logging.</p>
-                  </div>
-                )}
 
                 {vehicle.brand && (
                   <>
-                    {/* 3. Recent Refuel History */}
+                    {/* 2. Fuel Consumption */}
                     <div>
-                      <FuelLogsList logs={logs} onDeleteEntry={handleDeleteLog} onImportLogs={setLogs} lang={lang} unitSystem={unitSystem} />
+                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
                     </div>
 
-                    {/* 4. Fuel Consumption Trend Chart */}
+                    {/* 3. Vehicle Health Score (VHS) */}
                     <div>
-                      {logs.length === 1 ? (
-                        <FirstRefuelBaselineCard 
-                          odometer={logs[logs.length - 1].odometer} 
-                          unitSystem={unitSystem} 
-                          lang={lang} 
-                        />
-                      ) : (
-                        <CostAnalysisCharts logs={logs} lang={lang} hideSummary={true} hideCost={true} hideEfficiency={false} />
-                      )}
+                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
                     </div>
 
-                    {/* 5. Refueling Cost Analysis Chart */}
+                    {/* 4. Efficiency Health Checklist */}
                     <div>
-                      {logs.length >= 2 && (
-                        <CostAnalysisCharts logs={logs} lang={lang} hideSummary={true} hideCost={false} hideEfficiency={true} />
-                      )}
-                    </div>
-
-                    {/* 6. CSV Data Backup & Management */}
-                    <div>
-                      <CSVDataManagementCard logs={logs} onImportLogs={setLogs} lang={lang} />
-                    </div>
-
-                    {/* 7. AI Technician Diagnostics */}
-                    <div>
-                      <AITechnicianReport vehicle={vehicle} logs={logs} lang={lang} />
+                      <EfficiencyIssuesCard 
+                        lastLogEfficiency={lastLogEfficiency} 
+                        averageEfficiency={averageEfficiency} 
+                        lang={lang} 
+                        currentOdometer={vehicle.currentOdometer}
+                        unitSystem={unitSystem}
+                      />
                     </div>
                   </>
                 )}
@@ -801,37 +753,26 @@ export default function App() {
 
               {/* Right Column (md:col-span-6) */}
               <div className="md:col-span-6 space-y-6">
+                {/* 1. Log New Refueling Quick Access */}
+                {vehicle.brand ? (
+                  <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={logs} fuelCapacity={vehicle.fuelCapacity} />
+                ) : (
+                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
+                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
+                    <p className="text-xs text-slate-400">Save vehicle profile first in Vehicles tab to unlock refuel logging.</p>
+                  </div>
+                )}
+
                 {vehicle.brand ? (
                   <>
-                    {/* 1. Fuel Consumption */}
-                    <div>
-                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
-                    </div>
-
                     {/* 2. Financial Impact */}
                     <div>
                       <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
                     </div>
 
-                    {/* 3. Vehicle Health Score (VHS) */}
-                    <div>
-                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
-                    </div>
-
-                    {/* 4. Speed vs. Efficiency Simulator */}
+                    {/* 3. Speed vs. Efficiency Simulator */}
                     <div>
                       <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
-                    </div>
-
-                    {/* 5. Efficiency Health Checklist */}
-                    <div>
-                      <EfficiencyIssuesCard 
-                        lastLogEfficiency={lastLogEfficiency} 
-                        averageEfficiency={averageEfficiency} 
-                        lang={lang} 
-                        currentOdometer={vehicle.currentOdometer}
-                        unitSystem={unitSystem}
-                      />
                     </div>
 
                     {/* Sponsored Ads Slot */}
@@ -1126,13 +1067,13 @@ export default function App() {
       </main>
 
       {/* Bottom Sticky Navigation Rail for mobile (5-Tab Layout with Center Hero/FAB) */}
-      <footer className="fixed bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-900/90 backdrop-blur-md pb-2 pt-1 px-2 z-40 md:hidden no-print">
+      <footer className="fixed bottom-0 inset-x-0 bg-slate-950 border-t border-slate-900/90 pb-2 pt-1 px-2 z-40 md:hidden no-print">
         <div className="grid grid-cols-5 items-end max-w-md mx-auto relative">
           {/* Tab 1: Dashboard */}
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'dashboard' ? 'text-cyan-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'dashboard' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-400'
             }`}
           >
             <Gauge size={20} />
@@ -1143,7 +1084,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab('vehicles')}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'vehicles' ? 'text-purple-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'vehicles' ? 'text-purple-400 font-bold' : 'text-slate-500 hover:text-slate-400'
             }`}
           >
             <Car size={20} />
@@ -1154,12 +1095,12 @@ export default function App() {
           <div className="flex flex-col items-center justify-end -mt-4 z-50">
             <button
               onClick={() => setActiveTab('refuel')}
-              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 border-2 border-slate-950 shadow-lg shadow-cyan-500/30 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 hover:shadow-cyan-500/50 ${
-                activeTab === 'refuel' ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950 scale-105' : ''
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-cyan-500 border-2 border-slate-950 flex items-center justify-center text-slate-950 transition-all cursor-pointer hover:bg-cyan-400 ${
+                activeTab === 'refuel' ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950' : ''
               }`}
               title={t.tabRefuel}
             >
-              <Flame size={20} className="animate-pulse" />
+              <Flame size={20} className="text-slate-950" />
             </button>
             <span className={`text-[10px] font-extrabold mt-0.5 ${activeTab === 'refuel' ? 'text-cyan-400' : 'text-slate-400'}`}>
               {t.tabRefuel}
@@ -1170,7 +1111,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab('history')}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'history' ? 'text-indigo-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'history' ? 'text-indigo-400 font-bold' : 'text-slate-500 hover:text-slate-400'
             }`}
           >
             <TrendingUp size={20} />
@@ -1181,7 +1122,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab('ai')}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'ai' ? 'text-pink-400 scale-105 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'ai' ? 'text-pink-400 font-bold' : 'text-slate-500 hover:text-slate-400'
             }`}
           >
             <Cpu size={20} />

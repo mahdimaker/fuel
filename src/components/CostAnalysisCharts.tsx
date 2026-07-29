@@ -177,7 +177,7 @@ export default function CostAnalysisCharts({
       {!hideSummary && (
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {/* Total Fuel Spent */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
             <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 mb-1.5 shrink-0">
               <DollarSign size={16} />
             </div>
@@ -188,7 +188,7 @@ export default function CostAnalysisCharts({
           </div>
 
           {/* Total Liters Filled */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
             <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-1.5 shrink-0">
               <Fuel size={16} />
             </div>
@@ -199,7 +199,7 @@ export default function CostAnalysisCharts({
           </div>
 
           {/* Avg Cost Per Liter */}
-          <div className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm backdrop-blur-md flex flex-col items-center justify-center text-center min-w-0">
+          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
             <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-1.5 shrink-0">
               <TrendingUp size={16} />
             </div>
@@ -213,7 +213,7 @@ export default function CostAnalysisCharts({
 
       {/* Efficiency Chart */}
       {!hideEfficiency && (
-        <div className="bg-slate-900/60 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
+        <div className="bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
             <h3 className="text-xs font-bold text-white uppercase tracking-widest">{t.efficiencyChartTitle}</h3>
@@ -252,7 +252,7 @@ export default function CostAnalysisCharts({
                     strokeWidth={2.5}
                     fillOpacity={1} 
                     fill="url(#colorEfficiencyGlow)" 
-                    style={{ filter: 'drop-shadow(0px 3px 6px rgba(6, 182, 212, 0.35))' }}
+                    isAnimationActive={false}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -263,7 +263,7 @@ export default function CostAnalysisCharts({
 
       {/* Refueling Costs Bar Chart */}
       {!hideCost && (
-        <div className="bg-slate-900/60 border border-slate-800 p-4 sm:p-5 rounded-2xl backdrop-blur-md shadow-sm">
+        <div className="bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></div>
             <h3 className="text-xs font-bold text-white uppercase tracking-widest">{t.costChartTitle}</h3>
@@ -289,7 +289,7 @@ export default function CostAnalysisCharts({
                   fill="url(#colorCostBar)" 
                   radius={[6, 6, 0, 0]} 
                   maxBarSize={36}
-                  style={{ filter: 'drop-shadow(0px 2px 4px rgba(168, 85, 247, 0.3))' }}
+                  isAnimationActive={false}
                 />
               </BarChart>
             </ResponsiveContainer>
