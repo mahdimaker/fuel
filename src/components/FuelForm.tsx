@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { PlusCircle, Flame, DollarSign, Hash, Info, Zap } from 'lucide-react';
+import { PlusCircle, Flame, DollarSign, Hash, Info, Zap, Calendar } from 'lucide-react';
 import { FuelEntry, FuelType } from '../types';
 import { translations, Language } from '../utils/translations';
 
@@ -24,6 +24,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
   const isUk = unitSystem === 'uk';
 
   // State
+  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [odometer, setOdometer] = useState<string>('');
   const [liters, setLiters] = useState<string>('');
   const [cost, setCost] = useState<string>('');
@@ -248,7 +249,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
     }
 
     onAddEntry({
-      date: new Date().toISOString().split('T')[0],
+      date: date || new Date().toISOString().split('T')[0],
       odometer: odoNum,
       liters: litNum,
       cost: costNum,
@@ -259,7 +260,8 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
       missedRefuel,
     });
 
-    // Reset odometer and inputs to completely empty string for seamless entry
+    // Reset inputs for seamless entry
+    setDate(new Date().toISOString().split('T')[0]);
     setOdometer('');
     setLiters('');
     setCost('');
@@ -372,11 +374,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <Hash size={13} className="text-indigo-400 shrink-0" />
+                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                  <Hash size={15} className="text-indigo-400 shrink-0" />
                   <span>{lang === 'fa' ? 'کیلومترشمار' : 'Odometer'}</span>
                 </label>
-                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{odoUnit}</span>
+                <span className="text-xs font-mono font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{odoUnit}</span>
               </div>
               <input
                 id="input-odometer"
@@ -388,11 +390,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                   setOdometer(e.target.value);
                   runAutoDetect(liters, e.target.value);
                 }}
-                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+                className="w-full text-center font-mono font-black text-lg sm:text-xl bg-slate-900 border border-slate-700/80 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3 py-2 text-slate-100 outline-none transition-all shadow-inner"
               />
             </div>
             
-            <div className="space-y-1 pt-1">
+            <div className="space-y-1.5 pt-1">
               <input
                 type="range"
                 min={displayPrevOdo}
@@ -406,16 +408,16 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>{Math.round(displayPrevOdo).toLocaleString()}</span>
-                <span>+{(Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500) - displayPrevOdo).toLocaleString()}</span>
+              <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{Math.round(displayPrevOdo).toLocaleString()}</span>
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-400">+{(Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500) - displayPrevOdo).toLocaleString()}</span>
               </div>
             </div>
 
             {lastOdoKm > 0 && (
-              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-300 font-bold">
                 <span>{lang === 'fa' ? 'آخرین کارکرد:' : 'Previous:'}</span>
-                <span className="text-indigo-400 font-bold font-mono">{Math.round(displayPrevOdo).toLocaleString()} {odoUnit}</span>
+                <span className="text-indigo-300 font-black font-mono text-xs sm:text-sm">{Math.round(displayPrevOdo).toLocaleString()} {odoUnit}</span>
               </div>
             )}
           </div>
@@ -424,11 +426,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <Flame size={13} className="text-cyan-400 shrink-0" />
+                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                  <Flame size={15} className="text-cyan-400 shrink-0" />
                   <span>{lang === 'fa' ? 'مقدار سوخت' : 'Volume'}</span>
                 </label>
-                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{volumeUnit}</span>
+                <span className="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{volumeUnit}</span>
               </div>
               <input
                 id="input-liters"
@@ -441,7 +443,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                   setLiters(e.target.value);
                   runAutoDetect(e.target.value, odometer);
                 }}
-                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+                className="w-full text-center font-mono font-black text-lg sm:text-xl bg-slate-900 border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-xl px-3 py-2 text-slate-100 outline-none transition-all shadow-inner"
               />
             </div>
 
@@ -450,20 +452,21 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 type="range"
                 min={0}
                 max={Math.max(10, maxVolCapacity)}
-                step={0.1}
+                step={0.01}
                 value={Number(liters) || 0}
                 onChange={(e) => {
-                  const val = (Math.round(parseFloat(e.target.value) * 100) / 100).toString();
+                  const num = parseFloat(e.target.value);
+                  const val = isNaN(num) ? '0' : (Math.round(num * 100) / 100).toFixed(2);
                   setLiters(val);
                   runAutoDetect(val, odometer);
                 }}
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
               />
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>0</span>
+              <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">0</span>
                 {/* Fine decimal tune buttons */}
-                <div className="flex items-center gap-1 font-mono">
+                <div className="flex items-center gap-1.5 font-mono">
                   <button
                     type="button"
                     onClick={() => {
@@ -472,7 +475,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                       setLiters(val);
                       runAutoDetect(val, odometer);
                     }}
-                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-bold transition-all active:scale-95 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
                     title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
                   >
                     -0.01
@@ -485,22 +488,22 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                       setLiters(val);
                       runAutoDetect(val, odometer);
                     }}
-                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-bold transition-all active:scale-95 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
                     title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
                   >
                     +0.01
                   </button>
                 </div>
-                <span>{Math.max(10, maxVolCapacity)} {volumeUnit}</span>
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{Math.max(10, maxVolCapacity)} {volumeUnit}</span>
               </div>
             </div>
 
             {wasAutoDetected ? (
-              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-cyan-400 font-semibold">
+              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-cyan-300 font-bold">
                 <span>{fullTank ? (lang === 'fa' ? '✨ باک پر تخمین زده شد' : '✨ Full tank estimated') : (lang === 'fa' ? 'ℹ️ باک نیمه‌پر تخمین زده شد' : 'ℹ️ Partial fill estimated')}</span>
               </div>
             ) : (
-              <div className="pt-2 border-t border-slate-800/60 text-[11px] text-slate-500 font-semibold text-center">
+              <div className="pt-2 border-t border-slate-800/60 text-xs text-slate-400 font-semibold text-center">
                 <span>{lang === 'fa' ? 'حجم سوخت واردشده' : 'Fuel volume'}</span>
               </div>
             )}
@@ -510,11 +513,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <DollarSign size={13} className="text-emerald-400 shrink-0" />
+                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                  <DollarSign size={15} className="text-emerald-400 shrink-0" />
                   <span>{lang === 'fa' ? 'مجموع هزینه' : 'Total Cost'}</span>
                 </label>
-                <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">{currencyUnit}</span>
+                <span className="text-xs font-mono font-bold text-emerald-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{currencyUnit}</span>
               </div>
               <input
                 id="input-cost"
@@ -524,7 +527,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 min="0"
                 value={cost}
                 onChange={(e) => setCost(e.target.value)}
-                className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
+                className="w-full text-center font-mono font-black text-lg sm:text-xl bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-slate-100 outline-none transition-all shadow-inner"
               />
             </div>
 
@@ -533,19 +536,20 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 type="range"
                 min={0}
                 max={lang === 'fa' ? 2000000 : 250}
-                step={lang === 'fa' ? 1000 : 0.5}
+                step={lang === 'fa' ? 100 : 0.01}
                 value={Number(cost) || 0}
                 onChange={(e) => {
-                  const val = (Math.round(parseFloat(e.target.value) * 100) / 100).toString();
+                  const num = parseFloat(e.target.value);
+                  const val = isNaN(num) ? '0' : lang === 'fa' ? Math.round(num).toString() : (Math.round(num * 100) / 100).toFixed(2);
                   setCost(val);
                 }}
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>0</span>
+              <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">0</span>
                 {/* Fine decimal tune buttons */}
-                <div className="flex items-center gap-1 font-mono">
+                <div className="flex items-center gap-1.5 font-mono">
                   <button
                     type="button"
                     onClick={() => {
@@ -554,7 +558,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                       const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
                       setCost(val);
                     }}
-                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[10px] font-bold transition-all active:scale-95"
+                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
                     title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
                   >
                     {lang === 'fa' ? '-۱۰۰' : '-0.01'}
@@ -567,13 +571,13 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                       const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
                       setCost(val);
                     }}
-                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[10px] font-bold transition-all active:scale-95"
+                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
                     title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
                   >
                     {lang === 'fa' ? '+۱۰۰' : '+0.01'}
                   </button>
                 </div>
-                <span>{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
               </div>
             </div>
 
@@ -684,8 +688,23 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           </div>
         </div>
 
-        {/* Optional Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Date and Optional Fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <Calendar size={13} className="text-indigo-400 shrink-0" />
+              <span>{lang === 'fa' ? 'تاریخ سوخت‌گیری' : 'Refuel Date'}</span>
+            </label>
+            <input
+              id="input-date"
+              type="date"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2 py-2.5 text-sm text-slate-100 outline-none transition-all font-mono"
+            />
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1">{t.stationLabel}</label>
             <input
