@@ -435,7 +435,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 type="number"
                 step="0.01"
                 required
-                min="0.1"
+                min="0.01"
                 value={liters}
                 onChange={(e) => {
                   setLiters(e.target.value);
@@ -445,22 +445,52 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               />
             </div>
 
-            <div className="space-y-1 pt-1">
+            <div className="space-y-1.5 pt-1">
               <input
                 type="range"
-                min={1}
+                min={0.5}
                 max={Math.max(10, maxVolCapacity)}
-                step={0.5}
-                value={Number(liters) || 1}
+                step={0.1}
+                value={Number(liters) || 0.5}
                 onChange={(e) => {
-                  setLiters(e.target.value);
-                  runAutoDetect(e.target.value, odometer);
+                  const val = (Math.round(parseFloat(e.target.value) * 100) / 100).toString();
+                  setLiters(val);
+                  runAutoDetect(val, odometer);
                 }}
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
               />
 
               <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>1</span>
+                <span>0.5</span>
+                {/* Fine decimal tune buttons */}
+                <div className="flex items-center gap-1 font-mono">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const curr = Math.max(0.01, (Number(liters) || 0) - 0.01);
+                      const val = (Math.round(curr * 100) / 100).toFixed(2);
+                      setLiters(val);
+                      runAutoDetect(val, odometer);
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-bold transition-all active:scale-95 cursor-pointer"
+                    title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
+                  >
+                    -0.01
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const curr = (Number(liters) || 0) + 0.01;
+                      const val = (Math.round(curr * 100) / 100).toFixed(2);
+                      setLiters(val);
+                      runAutoDetect(val, odometer);
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-bold transition-all active:scale-95 cursor-pointer"
+                    title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
+                  >
+                    +0.01
+                  </button>
+                </div>
                 <span>{Math.max(10, maxVolCapacity)} {volumeUnit}</span>
               </div>
             </div>
@@ -489,27 +519,60 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <input
                 id="input-cost"
                 type="number"
+                step="0.01"
                 required
-                min="1"
+                min="0"
                 value={cost}
                 onChange={(e) => setCost(e.target.value)}
                 className="w-full text-center font-mono font-bold text-base bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-1.5 text-slate-100 outline-none transition-all shadow-inner"
               />
             </div>
 
-            <div className="space-y-1 pt-1">
+            <div className="space-y-1.5 pt-1">
               <input
                 type="range"
-                min={lang === 'fa' ? 10000 : 1}
+                min={0}
                 max={lang === 'fa' ? 2000000 : 250}
-                step={lang === 'fa' ? 5000 : 1}
-                value={Number(cost) || (lang === 'fa' ? 10000 : 1)}
-                onChange={(e) => setCost(e.target.value)}
+                step={lang === 'fa' ? 1000 : 0.5}
+                value={Number(cost) || 0}
+                onChange={(e) => {
+                  const val = (Math.round(parseFloat(e.target.value) * 100) / 100).toString();
+                  setCost(val);
+                }}
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
 
               <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>{(lang === 'fa' ? 10000 : 1).toLocaleString()}</span>
+                <span>0</span>
+                {/* Fine decimal tune buttons */}
+                <div className="flex items-center gap-1 font-mono">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const delta = lang === 'fa' ? 100 : 0.01;
+                      const curr = Math.max(0, (Number(cost) || 0) - delta);
+                      const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                      setCost(val);
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[10px] font-bold transition-all active:scale-95"
+                    title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
+                  >
+                    {lang === 'fa' ? '-۱۰۰' : '-0.01'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const delta = lang === 'fa' ? 100 : 0.01;
+                      const curr = (Number(cost) || 0) + delta;
+                      const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                      setCost(val);
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[10px] font-bold transition-all active:scale-95"
+                    title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
+                  >
+                    {lang === 'fa' ? '+۱۰۰' : '+0.01'}
+                  </button>
+                </div>
                 <span>{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
               </div>
             </div>
