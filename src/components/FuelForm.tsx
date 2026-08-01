@@ -435,7 +435,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 type="number"
                 step="0.01"
                 required
-                min="0.01"
+                min="0"
                 value={liters}
                 onChange={(e) => {
                   setLiters(e.target.value);
@@ -448,10 +448,10 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
             <div className="space-y-1.5 pt-1">
               <input
                 type="range"
-                min={0.5}
+                min={0}
                 max={Math.max(10, maxVolCapacity)}
                 step={0.1}
-                value={Number(liters) || 0.5}
+                value={Number(liters) || 0}
                 onChange={(e) => {
                   const val = (Math.round(parseFloat(e.target.value) * 100) / 100).toString();
                   setLiters(val);
@@ -461,13 +461,13 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               />
 
               <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold pt-0.5">
-                <span>0.5</span>
+                <span>0</span>
                 {/* Fine decimal tune buttons */}
                 <div className="flex items-center gap-1 font-mono">
                   <button
                     type="button"
                     onClick={() => {
-                      const curr = Math.max(0.01, (Number(liters) || 0) - 0.01);
+                      const curr = Math.max(0, (Number(liters) || 0) - 0.01);
                       const val = (Math.round(curr * 100) / 100).toFixed(2);
                       setLiters(val);
                       runAutoDetect(val, odometer);
