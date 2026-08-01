@@ -313,7 +313,7 @@ export default function Vehicles({
                   step="any"
                   value={newCapacity}
                   onChange={(e) => setNewCapacity(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base text-slate-100 font-mono outline-none"
                 />
               </div>
 
@@ -328,7 +328,7 @@ export default function Vehicles({
                   placeholder={lang === 'fa' ? 'مثال: ۴۵۰۰۰' : 'e.g. 45000'}
                   value={newOdometer}
                   onChange={(e) => setNewOdometer(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base text-slate-100 font-mono outline-none"
                 />
               </div>
             </div>

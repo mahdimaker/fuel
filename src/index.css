@@ -127,9 +127,13 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 }
 
 /* Neutral backdrop and borders overrides */
-.light .bg-slate-950,
+
 .light .bg-slate-900 {
   background-color: #ffffff !important;
+}
+
+.light .bg-slate-950 {
+  background-color: #fbfbfb !important;
 }
 
 .light .bg-slate-950\/95,
@@ -214,7 +218,7 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light select,
 .light textarea {
   background-color: #f5f5f5 !important;
-  border-color: #cbd5e1 !important;
+  border-color: #eeeeee !important;
   color: #0f172a !important;
 }
 
@@ -236,7 +240,6 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
 .light button.bg-slate-850,
 .light button.bg-slate-800,
 .light button.bg-black,
-.light button[class*="bg-slate-950"],
 .light button[class*="bg-slate-900"],
 .light button[class*="bg-slate-850"],
 .light button[class*="bg-slate-800"],
@@ -246,6 +249,11 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+
+.light button[class*="bg-slate-950"] {
+  border-color: #f8f8f8 !important;
 }
 
 .light button.bg-slate-950:hover,
@@ -510,7 +518,7 @@ color-mix(in oklab, oklch(1 0 0) 80%, transparent);
 .light .border-slate-800\/60, .border-slate-800\/40 {
     @supports (color: color-mix(in lab, red, red)) {
         border-color: 
-color-mix(in oklab, oklch(0.9 0 0) 60%, transparent);
+          color-mix(in oklab, oklch(0.84 0 0) 60%, transparent);
     }
 }
 

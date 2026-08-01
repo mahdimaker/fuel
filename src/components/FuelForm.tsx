@@ -445,6 +445,36 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 }}
                 className="w-full text-center font-mono font-black text-lg sm:text-xl bg-slate-900 border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 rounded-xl px-3 py-2 text-slate-100 outline-none transition-all shadow-inner"
               />
+
+              {/* Fine decimal tune buttons */}
+              <div className="flex items-center justify-center gap-2 pt-1 font-mono">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const curr = Math.max(0, (Number(liters) || 0) - 0.01);
+                    const val = (Math.round(curr * 100) / 100).toFixed(2);
+                    setLiters(val);
+                    runAutoDetect(val, odometer);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
+                >
+                  -0.01
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const curr = (Number(liters) || 0) + 0.01;
+                    const val = (Math.round(curr * 100) / 100).toFixed(2);
+                    setLiters(val);
+                    runAutoDetect(val, odometer);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
+                >
+                  +0.01
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1.5 pt-1">
@@ -465,35 +495,6 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">0</span>
-                {/* Fine decimal tune buttons */}
-                <div className="flex items-center gap-1.5 font-mono">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const curr = Math.max(0, (Number(liters) || 0) - 0.01);
-                      const val = (Math.round(curr * 100) / 100).toFixed(2);
-                      setLiters(val);
-                      runAutoDetect(val, odometer);
-                    }}
-                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-                    title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
-                  >
-                    -0.01
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const curr = (Number(liters) || 0) + 0.01;
-                      const val = (Math.round(curr * 100) / 100).toFixed(2);
-                      setLiters(val);
-                      runAutoDetect(val, odometer);
-                    }}
-                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-                    title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
-                  >
-                    +0.01
-                  </button>
-                </div>
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{Math.max(10, maxVolCapacity)} {volumeUnit}</span>
               </div>
             </div>
@@ -529,6 +530,36 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 onChange={(e) => setCost(e.target.value)}
                 className="w-full text-center font-mono font-black text-lg sm:text-xl bg-slate-900 border border-slate-700/80 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-slate-100 outline-none transition-all shadow-inner"
               />
+
+              {/* Fine decimal tune buttons */}
+              <div className="flex items-center justify-center gap-2 pt-1 font-mono">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const delta = lang === 'fa' ? 100 : 0.01;
+                    const curr = Math.max(0, (Number(cost) || 0) - delta);
+                    const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                    setCost(val);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
+                >
+                  {lang === 'fa' ? '-۱۰۰' : '-0.01'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const delta = lang === 'fa' ? 100 : 0.01;
+                    const curr = (Number(cost) || 0) + delta;
+                    const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                    setCost(val);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
+                >
+                  {lang === 'fa' ? '+۱۰۰' : '+0.01'}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1.5 pt-1">
@@ -548,35 +579,6 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">0</span>
-                {/* Fine decimal tune buttons */}
-                <div className="flex items-center gap-1.5 font-mono">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const delta = lang === 'fa' ? 100 : 0.01;
-                      const curr = Math.max(0, (Number(cost) || 0) - delta);
-                      const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
-                      setCost(val);
-                    }}
-                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-                    title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
-                  >
-                    {lang === 'fa' ? '-۱۰۰' : '-0.01'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const delta = lang === 'fa' ? 100 : 0.01;
-                      const curr = (Number(cost) || 0) + delta;
-                      const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
-                      setCost(val);
-                    }}
-                    className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700/80 text-xs font-black transition-all active:scale-95 cursor-pointer shadow-sm"
-                    title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
-                  >
-                    {lang === 'fa' ? '+۱۰۰' : '+0.01'}
-                  </button>
-                </div>
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
               </div>
             </div>
