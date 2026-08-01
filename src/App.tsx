@@ -811,6 +811,7 @@ export default function App() {
               logs={logs} 
               lang={lang} 
               unitSystem={unitSystem} 
+              onUnitSystemChange={setUnitSystem}
             />
           )}
 
@@ -980,6 +981,7 @@ export default function App() {
                 logs={logs} 
                 lang={lang} 
                 unitSystem={unitSystem} 
+                onUnitSystemChange={setUnitSystem}
               />
             )}
 

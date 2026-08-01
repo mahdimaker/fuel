@@ -20,6 +20,7 @@ interface VehiclesProps {
   logs: FuelEntry[];
   lang: Language;
   unitSystem: 'metric' | 'us' | 'uk';
+  onUnitSystemChange?: (sys: 'metric' | 'us' | 'uk') => void;
 }
 
 export default function Vehicles({
@@ -33,6 +34,7 @@ export default function Vehicles({
   logs,
   lang,
   unitSystem,
+  onUnitSystemChange,
 }: VehiclesProps) {
   const isMetric = unitSystem === 'metric';
   const isUs = unitSystem === 'us';
@@ -263,6 +265,24 @@ export default function Vehicles({
               </div>
 
               <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
+                  <Gauge size={12} className="text-cyan-400" />
+                  <span>{lang === 'fa' ? 'سیستم واحد' : 'Unit System'}</span>
+                </label>
+                <select
+                  value={unitSystem}
+                  onChange={(e) => onUnitSystemChange?.(e.target.value as 'metric' | 'us' | 'uk')}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-200 outline-none cursor-pointer"
+                >
+                  <option value="metric">{lang === 'fa' ? 'متریک (کیلومتر/لیتر)' : 'Metric (km/L)'}</option>
+                  <option value="us">{lang === 'fa' ? 'آمریکایی (مایل/گالن)' : 'US (mi/gal)'}</option>
+                  <option value="uk">{lang === 'fa' ? 'انگلیسی (مایل/گالن)' : 'UK (mi/gal)'}</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1">
                   {lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'} ({isUs ? 'gal' : 'L'}) *
                 </label>
@@ -277,21 +297,21 @@ export default function Vehicles({
                   className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
-                {lang === 'fa' ? 'کیلومتر کارکرد فعلی' : 'Current Odometer'} ({isMetric ? 'km' : 'mi'}) *
-              </label>
-              <input
-                type="number"
-                required
-                min="0"
-                placeholder={lang === 'fa' ? 'مثال: ۴۵۰۰۰' : 'e.g. 45000'}
-                value={newOdometer}
-                onChange={(e) => setNewOdometer(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
-              />
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  {lang === 'fa' ? 'کیلومتر کارکرد فعلی' : 'Current Odometer'} ({isMetric ? 'km' : 'mi'}) *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  placeholder={lang === 'fa' ? 'مثال: ۴۵۰۰۰' : 'e.g. 45000'}
+                  value={newOdometer}
+                  onChange={(e) => setNewOdometer(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
+                />
+              </div>
             </div>
 
             <div className="pt-2">
