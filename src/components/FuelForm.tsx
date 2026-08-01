@@ -456,7 +456,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     setLiters(val);
                     runAutoDetect(val, odometer);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
                   title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
                 >
                   -0.01
@@ -469,7 +469,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     setLiters(val);
                     runAutoDetect(val, odometer);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
                   title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
                 >
                   +0.01
@@ -541,7 +541,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
                     setCost(val);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
                   title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
                 >
                   {lang === 'fa' ? '-۱۰۰' : '-0.01'}
@@ -554,7 +554,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
                     setCost(val);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
                   title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
                 >
                   {lang === 'fa' ? '+۱۰۰' : '+0.01'}
