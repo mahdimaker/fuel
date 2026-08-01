@@ -70,6 +70,25 @@ export default function Vehicles({
     ? baseVehiclesEn.filter(v => v.brand === selectedBrand).map(v => v.model).sort()
     : [];
 
+  // Automatically update capacity when unit system or selected preset changes
+  useEffect(() => {
+    if (selectedBrand && selectedModel && selectedModel !== 'custom') {
+      const match = baseVehiclesEn.find(v => v.brand === selectedBrand && v.model === selectedModel);
+      if (match) {
+        setNewCapacity(isUs ? Number((match.fuelCapacity * LITERS_TO_GALLONS).toFixed(1)) : match.fuelCapacity);
+      }
+    } else {
+      setNewCapacity(prev => {
+        if (isUs && prev > 35) {
+          return Number((prev * LITERS_TO_GALLONS).toFixed(1));
+        } else if (!isUs && prev < 35 && prev > 0) {
+          return Math.round(prev / LITERS_TO_GALLONS);
+        }
+        return prev;
+      });
+    }
+  }, [unitSystem, isUs, selectedBrand, selectedModel]);
+
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const b = e.target.value;
     setSelectedBrand(b);
