@@ -210,92 +210,92 @@ export default function Vehicles({
           <form onSubmit={handleCreateVehicle} className="space-y-4 pt-1 animate-fadeIn">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1">
-                  <Grid size={12} className="text-cyan-400" />
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                  <Grid size={14} className="text-cyan-400 shrink-0" />
                   <span>{lang === 'fa' ? 'انتخاب سریع برند (پیش‌فرض)' : 'Quick Select Brand'}</span>
                 </label>
                 <select
                   value={selectedBrand}
                   onChange={handleBrandChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-200 outline-none cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 font-semibold outline-none cursor-pointer transition-all"
                 >
-                  <option value="">{lang === 'fa' ? '-- انتخاب برند --' : '-- Select Brand --'}</option>
+                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- انتخاب برند --' : '-- Select Brand --'}</option>
                   {uniqueBrands.map((b) => (
-                    <option key={b} value={b}>{b}</option>
+                    <option key={b} value={b} className="bg-slate-900 text-slate-100 text-base sm:text-sm">{b}</option>
                   ))}
-                  <option value="custom">{lang === 'fa' ? '-- برند دلخواه (دستی) --' : '-- Custom Brand --'}</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- برند دلخواه (دستی) --' : '-- Custom Brand --'}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1">
-                  <Grid size={12} className="text-purple-400" />
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                  <Grid size={14} className="text-purple-400 shrink-0" />
                   <span>{lang === 'fa' ? 'انتخاب مدل (پیش‌فرض)' : 'Select Model'}</span>
                 </label>
                 <select
                   value={selectedModel}
                   disabled={!selectedBrand || selectedBrand === 'custom'}
                   onChange={handleModelChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-sm text-slate-200 outline-none disabled:opacity-40 cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 font-semibold outline-none disabled:opacity-40 cursor-pointer transition-all"
                 >
-                  <option value="">{lang === 'fa' ? '-- انتخاب مدل --' : '-- Select Model --'}</option>
+                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- انتخاب مدل --' : '-- Select Model --'}</option>
                   {availableModels.map((m) => (
-                    <option key={m} value={m}>{m}</option>
+                    <option key={m} value={m} className="bg-slate-900 text-slate-100 text-base sm:text-sm">{m}</option>
                   ))}
-                  <option value="custom">{lang === 'fa' ? '-- مدل دلخواه (دستی) --' : '-- Custom Model --'}</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- مدل دلخواه (دستی) --' : '-- Custom Model --'}</option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'برند *' : 'Brand *'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'برند *' : 'Brand *'}</label>
                 <input
                   type="text"
                   required
                   placeholder={lang === 'fa' ? 'پژو / تویوتا' : 'Toyota'}
                   value={newBrand}
                   onChange={(e) => setNewBrand(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'مدل *' : 'Model *'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'مدل *' : 'Model *'}</label>
                 <input
                   type="text"
                   required
                   placeholder={lang === 'fa' ? '۲۰۷ / کمری' : 'Camry'}
                   value={newModel}
                   onChange={(e) => setNewModel(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'سال ساخت' : 'Model Year'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'سال ساخت' : 'Model Year'}</label>
                 <input
                   type="text"
                   placeholder="2026"
                   value={newYear}
                   onChange={(e) => setNewYear(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
-                  <Gauge size={12} className="text-cyan-400" />
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1 flex items-center gap-1.5">
+                  <Gauge size={14} className="text-cyan-400 shrink-0" />
                   <span>{lang === 'fa' ? 'سیستم واحد' : 'Unit System'}</span>
                 </label>
                 <select
                   value={unitSystem}
                   onChange={(e) => onUnitSystemChange?.(e.target.value as 'metric' | 'us' | 'uk')}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-200 outline-none cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm font-semibold text-slate-100 outline-none cursor-pointer"
                 >
-                  <option value="metric">{lang === 'fa' ? 'متریک (کیلومتر/لیتر)' : 'Metric (km/L)'}</option>
-                  <option value="us">{lang === 'fa' ? 'آمریکایی (مایل/گالن)' : 'US (mi/gal)'}</option>
-                  <option value="uk">{lang === 'fa' ? 'انگلیسی (مایل/گالن)' : 'UK (mi/gal)'}</option>
+                  <option value="metric" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'متریک (کیلومتر/لیتر)' : 'Metric (km/L)'}</option>
+                  <option value="us" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'آمریکایی (مایل/گالن)' : 'US (mi/gal)'}</option>
+                  <option value="uk" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'انگلیسی (مایل/گالن)' : 'UK (mi/gal)'}</option>
                 </select>
               </div>
             </div>
