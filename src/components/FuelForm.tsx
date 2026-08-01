@@ -691,7 +691,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
         {/* Date and Optional Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+            <label htmlFor="input-date" className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5 cursor-pointer">
               <Calendar size={13} className="text-indigo-400 shrink-0" />
               <span>{lang === 'fa' ? 'تاریخ سوخت‌گیری' : 'Refuel Date'}</span>
             </label>
@@ -701,7 +701,14 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2 py-2.5 text-sm text-slate-100 outline-none transition-all font-mono"
+              onClick={(e) => {
+                try {
+                  (e.currentTarget as HTMLInputElement).showPicker?.();
+                } catch {
+                  // Fallback for unsupported contexts
+                }
+              }}
+              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all font-mono cursor-pointer"
             />
           </div>
 
