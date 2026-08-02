@@ -152,7 +152,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
     <div id="health-score-container" className={hideScore || hideAlerts ? "" : "space-y-6"}>
       {/* VHS Gauge card */}
       {!hideScore && (
-        <div className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
+        <div className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-900/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
           {/* Subtle grid pattern background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none dark:block hidden"></div>
           <div className="absolute -left-20 -top-20 w-44 h-44 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
@@ -372,7 +372,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
 
       {/* Warnings & Diagnosis Alerts */}
       {!hideAlerts && (
-        <div id="ai-telemetry-warnings" className="cyber-card p-5 sm:p-6 rounded-2xl border border-indigo-500/15 bg-slate-950/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
+        <div id="ai-telemetry-warnings" className="cyber-card p-5 sm:p-6 rounded-2xl border border-indigo-500/15 bg-slate-900/40 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none dark:block hidden"></div>
           
           {/* Header with Dynamic AI Icon */}

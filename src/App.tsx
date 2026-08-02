@@ -497,7 +497,7 @@ export default function App() {
       <PwaInstallBanner lang={lang} />
 
       {/* Header */}
-      <header className="border-b border-slate-900/80 bg-slate-950/95 sticky top-0 z-40 no-print">
+      <header className="border-b border-slate-900/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 no-print">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <AppIcon size={38} />

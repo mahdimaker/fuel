@@ -128,7 +128,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
   }
 
   return (
-    <div id="speed-simulator-card" className="cyber-card p-6 md:p-8 rounded-2xl border border-cyan-500/15 bg-slate-950/40 relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
+    <div id="speed-simulator-card" className="cyber-card p-6 md:p-8 rounded-2xl border border-cyan-500/15 bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
       {/* Visual neon light overlay */}
       <div className="absolute -right-20 -bottom-20 w-44 h-44 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none"></div>
 

@@ -27,7 +27,7 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
 
     if (isDiagnostic) {
       return (
-        <div id="efficiency-hero-diagnostic" className="cyber-card p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-950/40 relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
+        <div id="efficiency-hero-diagnostic" className="cyber-card p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
           <div className="absolute -right-24 -top-24 w-48 h-48 rounded-full bg-rose-500/10 blur-3xl pointer-events-none"></div>
           
           <div className="flex items-center justify-between mb-5">
@@ -235,7 +235,7 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, lang, l
   }
 
   return (
-    <div id="efficiency-hero-card" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-950/40 relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
+    <div id="efficiency-hero-card" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-indigo-500/15 bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:border-indigo-500/30">
       {/* Decorative background glow */}
       <div className={`absolute -right-24 -top-24 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 animate-pulse ${
         rating === 'optimal' ? 'bg-emerald-500' : rating === 'moderate' ? 'bg-cyan-500' : 'bg-amber-500'

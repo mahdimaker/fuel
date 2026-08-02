@@ -69,7 +69,7 @@ export default function EfficiencyIssuesCard({
   };
 
   return (
-    <div id="efficiency-issues-card" className="cyber-card p-4 sm:p-5 rounded-2xl border border-purple-500/15 bg-slate-950/40 relative overflow-hidden transition-all duration-300 hover:border-purple-500/30">
+    <div id="efficiency-issues-card" className="cyber-card p-4 sm:p-5 rounded-2xl border border-purple-500/15 bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:border-purple-500/30">
       {/* Decorative background glow to match standard cards */}
       <div className="absolute -right-20 -bottom-20 w-44 h-44 rounded-full bg-purple-500/5 blur-3xl pointer-events-none"></div>
 

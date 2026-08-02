@@ -374,11 +374,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <Hash size={15} className="text-indigo-400 shrink-0" />
                   <span>{lang === 'fa' ? 'کیلومترشمار' : 'Odometer'}</span>
                 </label>
-                <span className="text-xs font-mono font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{odoUnit}</span>
+                <span className="text-sm font-mono font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{odoUnit}</span>
               </div>
               <input
                 id="input-odometer"
@@ -426,7 +426,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <Flame size={15} className="text-cyan-400 shrink-0" />
                   <span>{lang === 'fa' ? 'مقدار سوخت' : 'Volume'}</span>
                 </label>
@@ -514,7 +514,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
           <div className="bg-slate-950/50 p-3.5 rounded-2xl border border-slate-800/80 space-y-3 flex flex-col justify-between shadow-sm">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-1">
-                <label className="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <DollarSign size={15} className="text-emerald-400 shrink-0" />
                   <span>{lang === 'fa' ? 'مجموع هزینه' : 'Total Cost'}</span>
                 </label>

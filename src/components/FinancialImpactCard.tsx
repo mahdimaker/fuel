@@ -24,7 +24,7 @@ export default function FinancialImpactCard({ logs, fuelEfficiency, unitSystem, 
     const isDiagnostic = logs.length >= 2;
     if (isDiagnostic) {
       return (
-        <div id="financial-impact-diagnostic" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-950/80 relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
+        <div id="financial-impact-diagnostic" className="cyber-card p-5 sm:p-6 md:p-8 rounded-2xl border border-rose-500/30 bg-slate-900/80 relative overflow-hidden transition-all duration-300 hover:border-rose-500/50">
           {/* Subtle grid pattern background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-[0.07] pointer-events-none"></div>
           

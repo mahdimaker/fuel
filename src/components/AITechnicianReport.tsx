@@ -156,7 +156,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
       )}
 
       {loading && (
-        <div className="text-center py-12 bg-slate-950/40 rounded-xl border border-slate-900/60 p-5 flex flex-col items-center justify-center">
+        <div className="text-center py-12 bg-slate-900/40 rounded-xl border border-slate-900/60 p-5 flex flex-col items-center justify-center">
           <div className="relative w-14 h-14 mb-4">
             <div className="absolute inset-0 rounded-full border-2 border-purple-500/10"></div>
             <div className="absolute inset-0 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
