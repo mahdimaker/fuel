@@ -8,7 +8,7 @@ import { Smartphone, Download, X, Share } from 'lucide-react';
 import { Language } from '../utils/translations';
 
 interface PwaInstallBannerProps {
-  lang: Language;
+  lang?: Language;
 }
 
 export default function PwaInstallBanner({ lang }: PwaInstallBannerProps) {
@@ -102,21 +102,15 @@ export default function PwaInstallBanner({ lang }: PwaInstallBannerProps) {
 
         <div className="flex-1 space-y-1.5 pr-4">
           <h4 className="text-xs font-black text-slate-200 uppercase tracking-widest">
-            {lang === 'fa' ? 'افزودن به صفحه اصلی' : 'Add Refuel Tracker to Home Screen'}
+            Add Refuel Tracker to Home Screen
           </h4>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             {isIos ? (
-              lang === 'fa' ? (
-                <span>
-                  برای نصب در آیفون، روی دکمه <Share size={12} className="inline mx-0.5 text-cyan-400" /> اشتراک کلیک کرده و سپس گزینه <strong>Add to Home Screen</strong> را انتخاب کنید.
-                </span>
-              ) : (
-                <span>
-                  On iPhone, tap <Share size={12} className="inline mx-0.5 text-cyan-400" /> then <strong>Add to Home Screen</strong> to install the app.
-                </span>
-              )
+              <span>
+                On iPhone, tap <Share size={12} className="inline mx-0.5 text-cyan-400" /> then <strong>Add to Home Screen</strong> to install the app.
+              </span>
             ) : (
-              lang === 'fa' ? 'نصب برنامه برای دسترسی آفلاین سریع و پایش لحظه‌ای تله‌متری خودرو.' : 'Install our utility for immediate offline access, telemetry sync, and home metrics.'
+              'Install our utility for immediate offline access, telemetry sync, and home metrics.'
             )}
           </p>
 
@@ -127,7 +121,7 @@ export default function PwaInstallBanner({ lang }: PwaInstallBannerProps) {
               className="mt-1 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-black px-4 py-1.5 rounded-xl text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
             >
               <Download size={11} />
-              <span>{lang === 'fa' ? 'نصب برنامه' : 'Install App'}</span>
+              <span>Install App</span>
             </button>
           )}
         </div>

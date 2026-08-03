@@ -12,7 +12,7 @@ import { translations, Language } from '../utils/translations';
 
 interface CostAnalysisChartsProps {
   logs: FuelEntry[];
-  lang: Language;
+  lang?: Language;
   unitSystem?: 'metric' | 'us' | 'uk';
   hideSummary?: boolean;
   hideEfficiency?: boolean;
@@ -21,13 +21,11 @@ interface CostAnalysisChartsProps {
 
 export default function CostAnalysisCharts({ 
   logs, 
-  lang,
   unitSystem = 'metric',
-  hideSummary = false,
   hideEfficiency = false,
   hideCost = false
 }: CostAnalysisChartsProps) {
-  const t = translations[lang];
+  const t = translations['en'];
 
   if (logs.length < 2) {
     return (
@@ -35,12 +33,9 @@ export default function CostAnalysisCharts({
         <div className="p-4 rounded-full bg-slate-950 border border-slate-900 text-slate-500 mb-3">
           <TrendingUp size={28} />
         </div>
-        <h3 className="text-sm font-semibold text-slate-300">{lang === 'fa' ? 'نمودارهای تحلیل آماری و هزینه' : 'Statistical Fuel & Cost Graphs'}</h3>
+        <h3 className="text-sm font-semibold text-slate-300">Statistical Fuel & Cost Graphs</h3>
         <p className="text-xs text-slate-500 mt-1 max-w-[280px] leading-relaxed">
-          {lang === 'fa' 
-            ? 'برای نمایش دقیق روند مصرف سوخت و آنالیز هزینه، لازم است حداقل ۲ رکورد سوخت‌گیری ثبت کنید.'
-            : 'To view fuel trends and statistical graphs, you need to log at least 2 refueling events.'
-          }
+          To view fuel trends and statistical graphs, you need to log at least 2 refueling events.
         </p>
       </div>
     );
@@ -103,56 +98,13 @@ export default function CostAnalysisCharts({
   const isMetric = unitSystem === 'metric';
   const isUs = unitSystem === 'us';
 
-  // Calculate totals for quick counters
-  const totalCost = logs.reduce((sum, log) => sum + log.cost, 0);
-  const totalLiters = logs.reduce((sum, log) => sum + log.liters, 0);
-  const avgCostPerLiter = totalLiters > 0 ? (totalCost / totalLiters) : 0;
-
-  // Format Total Cost String
-  let displayTotalCostStr = '';
-  if (isMetric) {
-    displayTotalCostStr = `${Math.round(totalCost).toLocaleString()} ${t.currency}`;
-  } else if (isUs) {
-    if (lang === 'fa') {
-      const costUsd = totalCost * (1 / 60000);
-      displayTotalCostStr = `${costUsd.toFixed(1)} دلار`;
-    } else {
-      displayTotalCostStr = `$${totalCost.toFixed(2)}`;
-    }
-  } else {
-    if (lang === 'fa') {
-      const costGbp = totalCost * (1 / 75000);
-      displayTotalCostStr = `${costGbp.toFixed(1)} پوند`;
-    } else {
-      displayTotalCostStr = `£${totalCost.toFixed(2)}`;
-    }
-  }
-
-  // Format Total Volume String
-  const displayTotalVolume = isUs ? totalLiters * 0.264172 : totalLiters;
-  const volumeUnitStr = isUs ? (lang === 'fa' ? 'گالن' : 'gal') : (lang === 'fa' ? 'لیتر' : 'L');
-  const displayTotalVolumeStr = `${displayTotalVolume.toFixed(1)} ${volumeUnitStr}`;
-  const displayVolumeLabel = isUs 
-    ? (lang === 'fa' ? 'حجم کل سوخت' : 'Total Gallons Filled')
-    : (lang === 'fa' ? 'حجم کل سوخت' : 'Total Liters Filled');
-
-  // Format Avg Cost String
-  const formatCostPerLiter = (val: number): string => {
-    if (!val || isNaN(val)) return '0';
-    if (val >= 100) return Math.round(val).toLocaleString();
-    if (val >= 10) return val.toFixed(1);
-    if (val >= 0.01) return val.toFixed(2);
-    return val.toFixed(3);
-  };
-  const displayAvgCostStr = `${formatCostPerLiter(avgCostPerLiter)} ${t.currency}`;
-
   // Custom tooltips
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const isEst = payload[0].payload.isEstimated;
       return (
         <div className="bg-slate-950/95 border border-purple-500/30 p-3 rounded-xl text-xs font-mono text-slate-200 shadow-xl backdrop-blur-md">
-          <p className="text-slate-500 mb-1">{lang === 'fa' ? 'تاریخ:' : 'Date:'} {payload[0].payload.date}</p>
+          <p className="text-slate-500 mb-1">Date: {payload[0].payload.date}</p>
           {payload.map((pld: any) => (
             <p key={pld.name} className="font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pld.color }}></span>
@@ -162,7 +114,7 @@ export default function CostAnalysisCharts({
           ))}
           {isEst && (
             <p className="text-cyan-400 text-[10px] mt-1.5 border-t border-slate-900 pt-1.5 font-semibold">
-              {lang === 'fa' ? '⚠️ تحلیل بر اساس تخمین موقت' : '⚠️ Temporary Estimated Data'}
+              ⚠️ Temporary Estimated Data
             </p>
           )}
         </div>
@@ -172,45 +124,7 @@ export default function CostAnalysisCharts({
   };
 
   return (
-    <div id="cost-analysis-charts-view" className={hideSummary && hideEfficiency && hideCost ? "" : "space-y-5"}>
-      {/* Sleek KPI Counters Row */}
-      {!hideSummary && (
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          {/* Total Fuel Spent */}
-          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
-            <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 mb-1.5 shrink-0">
-              <DollarSign size={16} />
-            </div>
-            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{t.costSum || 'Total Fuel Spent'}</span>
-            <span className="text-[14px] font-extrabold text-purple-400 font-mono tracking-tight truncate w-full mt-0.5">
-              {displayTotalCostStr}
-            </span>
-          </div>
-
-          {/* Total Liters Filled */}
-          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
-            <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-1.5 shrink-0">
-              <Fuel size={16} />
-            </div>
-            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{displayVolumeLabel}</span>
-            <span className="text-[14px] font-extrabold text-cyan-400 font-mono tracking-tight truncate w-full mt-0.5">
-              {displayTotalVolumeStr}
-            </span>
-          </div>
-
-          {/* Avg Cost Per Liter */}
-          <div className="bg-slate-900/80 border border-slate-800/80 hover:border-slate-700/80 p-2.5 sm:p-3.5 rounded-xl transition-all shadow-sm flex flex-col items-center justify-center text-center min-w-0">
-            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-1.5 shrink-0">
-              <TrendingUp size={16} />
-            </div>
-            <span className="text-[10px] font-bold text-slate-400 block truncate w-full">{t.avgCostLiter || 'Avg. Cost / Liter'}</span>
-            <span className="text-[14px] font-extrabold text-emerald-400 font-mono tracking-tight truncate w-full mt-0.5">
-              {displayAvgCostStr}
-            </span>
-          </div>
-        </div>
-      )}
-
+    <div id="cost-analysis-charts-view" className="space-y-5">
       {/* Efficiency Chart */}
       {!hideEfficiency && (
         <div className="bg-slate-900/80 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm">
@@ -222,11 +136,9 @@ export default function CostAnalysisCharts({
           {efficiencyData.length === 0 ? (
             <div className="h-[180px] flex flex-col items-center justify-center text-center text-slate-600 bg-slate-950/20 rounded-xl border border-slate-900 p-4">
               <Info size={18} className="mb-1" />
-              <p className="text-xs">{lang === 'fa' ? 'در انتظار محاسبه بازدهی مصرف سوخت...' : 'Waiting for subsequent fueling calculation...'}</p>
+              <p className="text-xs">Waiting for subsequent fueling calculation...</p>
               <p className="text-[10px] text-slate-700 mt-1">
-                {lang === 'fa' 
-                  ? 'پس از سوخت‌گیری بعدی و ثبت مسافت طی شده، محاسبات فعال می‌شود.'
-                  : 'Calculations will enable once you enter your next fueling odometer reading.'}
+                Calculations will enable once you enter your next fueling odometer reading.
               </p>
             </div>
           ) : (
@@ -244,7 +156,7 @@ export default function CostAnalysisCharts({
                   <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Area 
-                    name={lang === 'fa' ? 'مصرف در ۱۰۰ کیلومتر' : 'Fuel Consumption'} 
+                    name="Fuel Consumption" 
                     unit=" L/100km" 
                     type="monotone" 
                     dataKey="efficiency" 
@@ -283,8 +195,8 @@ export default function CostAnalysisCharts({
                 <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar 
-                  name={lang === 'fa' ? 'هزینه سوخت‌گیری' : 'Refueling Cost'} 
-                  unit={` ${t.currency}`} 
+                  name="Refueling Cost" 
+                  unit={` ${isMetric ? '€' : isUs ? '$' : '£'}`} 
                   dataKey="cost" 
                   fill="url(#colorCostBar)" 
                   radius={[6, 6, 0, 0]} 

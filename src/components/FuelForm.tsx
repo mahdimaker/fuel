@@ -152,12 +152,12 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
       averagePricePerUnit = totalVolume > 0 ? totalCost / totalVolume : 0;
     } else if (isUs) {
       // US Units: cost in USD / volume in Gallons
-      const totalCostUsd = logs.reduce((sum, l) => sum + (lang === 'fa' ? l.cost * TOMAN_TO_USD : l.cost), 0);
+      const totalCostUsd = logs.reduce((sum, l) => sum + l.cost, 0);
       const totalVolumeGallons = logs.reduce((sum, l) => sum + (l.liters * LITERS_TO_GALLONS), 0);
       averagePricePerUnit = totalVolumeGallons > 0 ? totalCostUsd / totalVolumeGallons : 0;
     } else {
       // UK Units: cost in GBP / volume in Liters (UK buys fuel in Litres)
-      const totalCostGbp = logs.reduce((sum, l) => sum + (lang === 'fa' ? l.cost * TOMAN_TO_GBP : l.cost), 0);
+      const totalCostGbp = logs.reduce((sum, l) => sum + l.cost, 0);
       const totalVolumeLiters = logs.reduce((sum, l) => sum + l.liters, 0);
       averagePricePerUnit = totalVolumeLiters > 0 ? totalCostGbp / totalVolumeLiters : 0;
     }
@@ -198,37 +198,25 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
     } else if (isUs) {
       odoNum = odoNumEntered / KM_TO_MILES; // Convert Miles to Km
       litNum = litNumEntered / LITERS_TO_GALLONS; // Convert Gallons to Liters
-      if (lang === 'fa') {
-        costNum = costNumEntered * 60000; // Convert entered USD to stored Tomans
-      }
     } else {
       // UK hybrid: distance in Miles, volume in Liters
       odoNum = odoNumEntered / KM_TO_MILES; // Convert Miles to Km
       litNum = litNumEntered; // Already in Liters!
-      if (lang === 'fa') {
-        costNum = costNumEntered * 75000; // Convert entered GBP to stored Tomans
-      }
     }
 
     // Validate fuel capacity
     if (fuelCapacity && litNum > fuelCapacity) {
       const displayCapacity = isUs ? fuelCapacity * LITERS_TO_GALLONS : fuelCapacity;
-      setError(lang === 'fa'
-        ? `مقدار سوخت وارد شده (${litNumEntered.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}) نمی‌تواند بیشتر از ظرفیت باک خودرو (${displayCapacity.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}) باشد.`
-        : `Entered fuel volume (${litNumEntered.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}) cannot exceed the vehicle's fuel capacity (${displayCapacity.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}).`
-      );
+      setError(`Entered fuel volume (${litNumEntered.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}) cannot exceed the vehicle's fuel capacity (${displayCapacity.toLocaleString(undefined, {maximumFractionDigits: 2})} ${volumeUnit}).`);
       return;
     }
 
     // Validate odometer against stored km value
     if (logs.length === 0) {
       if (odoNum < currentOdometer) {
-        const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+        const odoUnit = isMetric ? 'km' : 'mi';
         const displayCurrentOdo = isMetric ? currentOdometer : currentOdometer * KM_TO_MILES;
-        setError(lang === 'fa'
-          ? `کارکرد سوخت‌گیری نمی‌تواند کمتر از کارکرد اولیه خودرو (${Math.round(displayCurrentOdo).toLocaleString()} ${odoUnit}) باشد.`
-          : `Odometer reading cannot be less than the initial vehicle odometer (${Math.round(displayCurrentOdo).toLocaleString()} ${odoUnit}).`
-        );
+        setError(`Odometer reading cannot be less than the initial vehicle odometer (${Math.round(displayCurrentOdo).toLocaleString()} ${odoUnit}).`);
         return;
       }
     } else {
@@ -238,12 +226,9 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
       }
       const maxOdo = Math.max(...logs.map(l => l.odometer));
       if (odoNum <= maxOdo) {
-        const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+        const odoUnit = isMetric ? 'km' : 'mi';
         const displayMaxOdo = isMetric ? maxOdo : maxOdo * KM_TO_MILES;
-        setError(lang === 'fa'
-          ? `کیلومترشمار سوخت‌گیری باید بیشتر از آخرین سوخت‌گیری ثبت‌شده (${Math.round(displayMaxOdo).toLocaleString()} ${odoUnit}) باشد.`
-          : `Odometer reading must be greater than the last recorded refueling (${Math.round(displayMaxOdo).toLocaleString()} ${odoUnit}).`
-        );
+        setError(`Odometer reading must be greater than the last recorded refueling (${Math.round(displayMaxOdo).toLocaleString()} ${odoUnit}).`);
         return;
       }
     }
@@ -271,13 +256,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
     setMissedRefuel(false);
   };
 
-  const fuelTypesList: { value: FuelType; label: string; color: string; activeClass: string }[] = lang === 'fa' ? [
-    { value: 'regular', label: 'بنزین معمولی', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
-    { value: 'super', label: 'بنزین سوپر', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
-    { value: 'diesel', label: 'دیزل / گازوئیل', color: 'from-amber-600 to-yellow-500', activeClass: 'bg-amber-600 border-amber-400 text-white !text-white shadow-md shadow-amber-500/25' },
-    { value: 'hybrid', label: 'هیبرید / برقی', color: 'from-emerald-500 to-teal-400', activeClass: 'bg-emerald-600 border-emerald-400 text-white !text-white shadow-md shadow-emerald-500/25' },
-    { value: 'gas', label: 'گاز CNG/LPG', color: 'from-cyan-500 to-blue-400', activeClass: 'bg-cyan-600 border-cyan-400 text-white !text-white shadow-md shadow-cyan-500/25' },
-  ] : [
+  const fuelTypesList: { value: FuelType; label: string; color: string; activeClass: string }[] = [
     { value: 'regular', label: 'Regular Gas', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
     { value: 'super', label: 'Premium Fuel', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
     { value: 'diesel', label: 'Diesel', color: 'from-amber-600 to-yellow-500', activeClass: 'bg-amber-600 border-amber-400 text-white !text-white shadow-md shadow-amber-500/25' },
@@ -290,15 +269,9 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
   const displayPrevOdo = Math.round(isMetric ? lastOdoKm : lastOdoKm * KM_TO_MILES);
   const maxVolCapacity = Math.round(isUs ? fuelCapacity * LITERS_TO_GALLONS : fuelCapacity);
 
-  const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
-  const volumeUnit = isUs 
-    ? (lang === 'fa' ? 'گالن' : 'Gallons') 
-    : (lang === 'fa' ? 'لیتر' : 'Liters');
-  const currencyUnit = isMetric 
-    ? (lang === 'fa' ? 'تومان' : '€') 
-    : isUs 
-      ? (lang === 'fa' ? 'دلار' : '$') 
-      : (lang === 'fa' ? 'پوند' : '£');
+  const odoUnit = isMetric ? 'km' : 'mi';
+  const volumeUnit = isUs ? 'Gallons' : 'Liters';
+  const currencyUnit = isMetric ? '€' : isUs ? '$' : '£';
 
   // Default values initialization
   React.useEffect(() => {
@@ -316,10 +289,9 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
   React.useEffect(() => {
     if (!cost) {
-      const defaultCost = lang === 'fa' ? '150000' : '50';
-      setCost(defaultCost);
+      setCost('50');
     }
-  }, [lang]);
+  }, []);
 
   return (
     <div id="fuel-form-card" className="cyber-card p-6 rounded-2xl relative overflow-hidden transition-all duration-300 border-indigo-500/20 hover:border-indigo-500/30">
@@ -376,7 +348,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <div className="flex items-center justify-between gap-1">
                 <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <Hash size={15} className="text-indigo-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'کیلومترشمار' : 'Odometer'}</span>
+                  <span>Odometer</span>
                 </label>
                 <span className="text-sm font-mono font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{odoUnit}</span>
               </div>
@@ -416,7 +388,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
             {lastOdoKm > 0 && (
               <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-300 font-bold">
-                <span>{lang === 'fa' ? 'آخرین کارکرد:' : 'Previous:'}</span>
+                <span>Previous:</span>
                 <span className="text-indigo-300 font-black font-mono text-xs sm:text-sm">{Math.round(displayPrevOdo).toLocaleString()} {odoUnit}</span>
               </div>
             )}
@@ -428,7 +400,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <div className="flex items-center justify-between gap-1">
                 <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <Flame size={15} className="text-cyan-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'مقدار سوخت' : 'Volume'}</span>
+                  <span>Volume</span>
                 </label>
                 <span className="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{volumeUnit}</span>
               </div>
@@ -457,7 +429,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     runAutoDetect(val, odometer);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={lang === 'fa' ? 'کاهش ۰.۰۱' : '-0.01'}
+                  title="-0.01"
                 >
                   -0.01
                 </button>
@@ -470,7 +442,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                     runAutoDetect(val, odometer);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={lang === 'fa' ? 'افزایش ۰.۰۱' : '+0.01'}
+                  title="+0.01"
                 >
                   +0.01
                 </button>
@@ -501,11 +473,11 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
             {wasAutoDetected ? (
               <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-cyan-300 font-bold">
-                <span>{fullTank ? (lang === 'fa' ? '✨ باک پر تخمین زده شد' : '✨ Full tank estimated') : (lang === 'fa' ? 'ℹ️ باک نیمه‌پر تخمین زده شد' : 'ℹ️ Partial fill estimated')}</span>
+                <span>{fullTank ? '✨ Full tank estimated' : 'ℹ️ Partial fill estimated'}</span>
               </div>
             ) : (
               <div className="pt-2 border-t border-slate-800/60 text-xs text-slate-400 font-semibold text-center">
-                <span>{lang === 'fa' ? 'حجم سوخت واردشده' : 'Fuel volume'}</span>
+                <span>Fuel volume</span>
               </div>
             )}
           </div>
@@ -516,7 +488,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <div className="flex items-center justify-between gap-1">
                 <label className="text-sm sm:text-sm font-bold text-slate-200 flex items-center gap-1.5">
                   <DollarSign size={15} className="text-emerald-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'مجموع هزینه' : 'Total Cost'}</span>
+                  <span>Total Cost</span>
                 </label>
                 <span className="text-xs font-mono font-bold text-emerald-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">{currencyUnit}</span>
               </div>
@@ -536,28 +508,28 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 <button
                   type="button"
                   onClick={() => {
-                    const delta = lang === 'fa' ? 100 : 0.01;
+                    const delta = 0.01;
                     const curr = Math.max(0, (Number(cost) || 0) - delta);
-                    const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                    const val = (Math.round(curr * 100) / 100).toFixed(2);
                     setCost(val);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={lang === 'fa' ? 'کاهش دوتایی' : '-0.01'}
+                  title="-0.01"
                 >
-                  {lang === 'fa' ? '-۱۰۰' : '-0.01'}
+                  -0.01
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    const delta = lang === 'fa' ? 100 : 0.01;
+                    const delta = 0.01;
                     const curr = (Number(cost) || 0) + delta;
-                    const val = lang === 'fa' ? Math.round(curr).toString() : (Math.round(curr * 100) / 100).toFixed(2);
+                    const val = (Math.round(curr * 100) / 100).toFixed(2);
                     setCost(val);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-800 text-sm font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={lang === 'fa' ? 'افزایش دوتایی' : '+0.01'}
+                  title="+0.01"
                 >
-                  {lang === 'fa' ? '+۱۰۰' : '+0.01'}
+                  +0.01
                 </button>
               </div>
             </div>
@@ -566,12 +538,12 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <input
                 type="range"
                 min={0}
-                max={lang === 'fa' ? 2000000 : 250}
-                step={lang === 'fa' ? 100 : 0.01}
+                max={250}
+                step={0.01}
                 value={Number(cost) || 0}
                 onChange={(e) => {
                   const num = parseFloat(e.target.value);
-                  const val = isNaN(num) ? '0' : lang === 'fa' ? Math.round(num).toString() : (Math.round(num * 100) / 100).toFixed(2);
+                  const val = isNaN(num) ? '0' : (Math.round(num * 100) / 100).toFixed(2);
                   setCost(val);
                 }}
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -579,7 +551,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">0</span>
-                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{(lang === 'fa' ? 2000000 : 250).toLocaleString()}</span>
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">250</span>
               </div>
             </div>
 
@@ -592,16 +564,12 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 }`}>
                   <Zap size={10} className="shrink-0" />
                   <span>
-                    {priceDiffPct > 0 ? (
-                      lang === 'fa' ? `${Math.round(priceDiffPct)}٪ بالاتر از میانگین` : `${priceDiffPct.toFixed(1)}% above avg`
-                    ) : (
-                      lang === 'fa' ? `${Math.round(Math.abs(priceDiffPct))}٪ اقتصادی‌تر از میانگین` : `${Math.abs(priceDiffPct).toFixed(1)}% below avg`
-                    )}
+                    {priceDiffPct > 0 ? `${priceDiffPct.toFixed(1)}% above avg` : `${Math.abs(priceDiffPct).toFixed(1)}% below avg`}
                   </span>
                 </span>
               ) : (
                 <span className="text-[11px] text-slate-500 font-semibold text-center w-full">
-                  {lang === 'fa' ? 'هزینه کل سوخت‌گیری' : 'Total refuel cost'}
+                  Total refuel cost
                 </span>
               )}
             </div>
@@ -616,21 +584,16 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               ? 'bg-indigo-950/20 border-indigo-500/30 shadow-[0_4px_20px_rgba(99,102,241,0.08)]' 
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
-            <div className={`space-y-1 flex-1 ${lang === 'fa' ? 'text-right pl-3' : 'text-left pr-3'}`}>
+            <div className="space-y-1 flex-1 text-left pr-3">
               <label className="text-xs sm:text-sm font-bold text-slate-100 block tracking-wide">
-                {lang === 'fa' ? 'آیا باک کاملاً پر شد؟' : 'Did you fill the tank fully?'}
+                Did you fill the tank fully?
               </label>
               <span className="text-xs text-slate-400 leading-relaxed font-normal block">
-                {lang === 'fa'
-                  ? 'فعال نگه دارید تا محاسبات مصرف سوخت دقیق انجام شود.'
-                  : 'Keep active for accurate fuel economy calculations.'}
+                Keep active for accurate fuel economy calculations.
               </span>
               {wasAutoDetected && (
                 <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-md mt-1 border border-cyan-500/20">
-                  {fullTank
-                    ? (lang === 'fa' ? 'تخمین خودکار: باک پر' : 'Auto-detected: Full Tank')
-                    : (lang === 'fa' ? 'تخمین خودکار: نیمه‌پر' : 'Auto-detected: Partial')
-                  }
+                  {fullTank ? 'Auto-detected: Full Tank' : 'Auto-detected: Partial'}
                 </span>
               )}
             </div>
@@ -649,7 +612,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)] transition duration-200 ease-in-out ${
-                  fullTank ? (lang === 'fa' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'
+                  fullTank ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
             </button>
@@ -661,14 +624,12 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               ? 'bg-amber-950/20 border-amber-500/30 shadow-[0_4px_20px_rgba(245,158,11,0.08)]' 
               : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/60'
           }`}>
-            <div className={`space-y-1 flex-1 ${lang === 'fa' ? 'text-right pl-3' : 'text-left pr-3'}`}>
+            <div className="space-y-1 flex-1 text-left pr-3">
               <label className="text-xs sm:text-sm font-bold text-slate-100 block tracking-wide">
-                {lang === 'fa' ? 'سوخت‌گیری قبلی ثبت نشده؟' : 'Missed a previous refuel?'}
+                Missed a previous refuel?
               </label>
               <span className="text-xs text-slate-400 leading-relaxed font-normal block">
-                {lang === 'fa'
-                  ? 'اگر سوخت‌گیری‌های قبل را ثبت نکرده‌اید فعال کنید.'
-                  : 'Check this if you forgot to log any prior fill-ups.'}
+                Check this if you forgot to log any prior fill-ups.
               </span>
             </div>
             <button
@@ -683,7 +644,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-[0_2px_5px_rgba(0,0,0,0.3)] transition duration-200 ease-in-out ${
-                  missedRefuel ? (lang === 'fa' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'
+                  missedRefuel ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
             </button>
@@ -692,26 +653,53 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
         {/* Date and Optional Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label htmlFor="input-date" className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5 cursor-pointer">
-              <Calendar size={13} className="text-indigo-400 shrink-0" />
-              <span>{lang === 'fa' ? 'تاریخ سوخت‌گیری' : 'Refuel Date'}</span>
-            </label>
-            <input
-              id="input-date"
-              type="date"
-              required
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              onClick={(e) => {
-                try {
-                  (e.currentTarget as HTMLInputElement).showPicker?.();
-                } catch {
-                  // Fallback for unsupported contexts
+          <div className="full-clickable-date">
+            <label 
+              htmlFor="input-date" 
+              className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5 cursor-pointer"
+              onClick={() => {
+                const el = document.getElementById('input-date') as HTMLInputElement;
+                if (el) {
+                  try {
+                    el.showPicker?.();
+                  } catch {
+                    el.focus();
+                  }
                 }
               }}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all font-mono cursor-pointer"
-            />
+            >
+              <Calendar size={13} className="text-indigo-400 shrink-0" />
+              <span>Refuel Date</span>
+            </label>
+            <div 
+              className="relative cursor-pointer"
+              onClick={() => {
+                const el = document.getElementById('input-date') as HTMLInputElement;
+                if (el) {
+                  try {
+                    el.showPicker?.();
+                  } catch {
+                    el.focus();
+                  }
+                }
+              }}
+            >
+              <input
+                id="input-date"
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                onClick={(e) => {
+                  try {
+                    (e.currentTarget as HTMLInputElement).showPicker?.();
+                  } catch {
+                    // Fallback for unsupported contexts
+                  }
+                }}
+                className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none transition-all font-mono cursor-pointer"
+              />
+            </div>
           </div>
 
           <div>
@@ -719,7 +707,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
             <input
               id="input-station"
               type="text"
-              placeholder={lang === 'fa' ? "مثال: جایگاه ۲۸ آزادی" : "e.g. Shell Station"}
+              placeholder="e.g. Shell Station"
               value={stationName}
               onChange={(e) => setStationName(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"
@@ -731,7 +719,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
             <input
               id="input-notes"
               type="text"
-              placeholder={lang === 'fa' ? "مثال: بنزین سوپر زدم، باد چرخ تنظیم شد" : "e.g. Cleared injector, aligned tires"}
+              placeholder="e.g. Cleared injector, aligned tires"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"

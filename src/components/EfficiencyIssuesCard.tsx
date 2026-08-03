@@ -16,9 +16,6 @@ interface EfficiencyIssuesCardProps {
 }
 
 export default function EfficiencyIssuesCard({ 
-  lastLogEfficiency, 
-  averageEfficiency, 
-  lang = 'en',
   currentOdometer,
   unitSystem
 }: EfficiencyIssuesCardProps) {
@@ -26,7 +23,7 @@ export default function EfficiencyIssuesCard({
   
   // Calculate display odometer in current unit system
   const odo = isMetric ? currentOdometer : currentOdometer * 0.621371;
-  const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+  const odoUnit = isMetric ? 'km' : 'mi';
 
   // Intervals in display units (km or mi)
   const tireInterval = isMetric ? 1000 : 600;
@@ -39,32 +36,24 @@ export default function EfficiencyIssuesCard({
   const oilNext = (Math.floor(odo / oilInterval) + 1) * oilInterval;
 
   // Translation Dictionaries
-  const titleText = lang === 'fa' ? 'چک‌لیست سلامت و راندمان' : 'Efficiency Health Checklist';
-  const subtitleText = lang === 'fa'
-    ? 'اقدامات کاربردی متصل به کارکرد خودروی شما برای بیشترین صرفه‌جویی در سوخت.'
-    : "Actionable tasks connected to your vehicle's odometer to maximize fuel savings.";
+  const titleText = 'Efficiency Health Checklist';
+  const subtitleText = "Actionable tasks connected to your vehicle's odometer to maximize fuel savings.";
 
   const tasks = {
     tires: {
-      title: lang === 'fa' ? 'بررسی و تنظیم باد لاستیک‌ها' : 'Check Tire Pressure',
-      desc: lang === 'fa' ? 'تا ۳٪ صرفه‌جویی در سوخت (کاهش اصطکاک و هدررفت انرژی)' : 'Saves up to 3% fuel (reduces friction)',
-      due: lang === 'fa' 
-        ? `بررسی بعدی پس از: ${Math.round(tireRemaining).toLocaleString()} ${odoUnit}` 
-        : `Next due in ${Math.round(tireRemaining).toLocaleString()} ${odoUnit}`,
+      title: 'Check Tire Pressure',
+      desc: 'Saves up to 3% fuel (reduces friction)',
+      due: `Next due in ${Math.round(tireRemaining).toLocaleString()} ${odoUnit}`,
     },
     plugs: {
-      title: lang === 'fa' ? 'بررسی و تعویض شمع‌ها' : 'Inspect Spark Plugs',
-      desc: lang === 'fa' ? 'بهبود اتمیزه شدن سوخت و راندمان احتراق موتور' : 'Improves fuel atomization',
-      due: lang === 'fa'
-        ? `تعویض بعدی در کارکرد: ${Math.round(sparkNext).toLocaleString()} ${odoUnit}`
-        : `Next change: ${Math.round(sparkNext).toLocaleString()} ${odoUnit}`,
+      title: 'Inspect Spark Plugs',
+      desc: 'Improves fuel atomization',
+      due: `Next change: ${Math.round(sparkNext).toLocaleString()} ${odoUnit}`,
     },
     oil: {
-      title: lang === 'fa' ? 'تعویض روغن موتور' : 'Low-Viscosity Engine Oil',
-      desc: lang === 'fa' ? 'تا ۲٪ بهبود راندمان با استفاده از روغن باکیفیت و مناسب' : 'Up to 2% efficiency improvement',
-      due: lang === 'fa'
-        ? `تعویض بعدی در کارکرد: ${Math.round(oilNext).toLocaleString()} ${odoUnit}`
-        : `Next change: ${Math.round(oilNext).toLocaleString()} ${odoUnit}`,
+      title: 'Low-Viscosity Engine Oil',
+      desc: 'Up to 2% efficiency improvement',
+      due: `Next change: ${Math.round(oilNext).toLocaleString()} ${odoUnit}`,
     },
   };
 
@@ -78,7 +67,7 @@ export default function EfficiencyIssuesCard({
         <div className="p-2 rounded-xl bg-slate-900 text-emerald-400 border border-slate-800 shrink-0">
           <CheckCircle size={20} />
         </div>
-        <div className={lang === 'fa' ? 'text-right' : 'text-left'}>
+        <div className="text-left">
           <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-white leading-tight">
             {titleText}
           </h2>
@@ -104,7 +93,7 @@ export default function EfficiencyIssuesCard({
                 <path d="M16 7l-1 1" />
               </svg>
             </div>
-            <div className={`min-w-0 flex-1 ${lang === 'fa' ? 'text-right' : 'text-left'}`}>
+            <div className="min-w-0 flex-1 text-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
                 <span className="text-xs sm:text-sm font-bold text-slate-100">
                   {tasks.tires.title}
@@ -126,7 +115,7 @@ export default function EfficiencyIssuesCard({
             <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 shrink-0">
               <Zap size={16} className="text-amber-400" />
             </div>
-            <div className={`min-w-0 flex-1 ${lang === 'fa' ? 'text-right' : 'text-left'}`}>
+            <div className="min-w-0 flex-1 text-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
                 <span className="text-xs sm:text-sm font-bold text-slate-100">
                   {tasks.plugs.title}
@@ -148,7 +137,7 @@ export default function EfficiencyIssuesCard({
             <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 shrink-0">
               <Droplet size={16} className="text-emerald-400" />
             </div>
-            <div className={`min-w-0 flex-1 ${lang === 'fa' ? 'text-right' : 'text-left'}`}>
+            <div className="min-w-0 flex-1 text-left">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
                 <span className="text-xs sm:text-sm font-bold text-slate-100">
                   {tasks.oil.title}

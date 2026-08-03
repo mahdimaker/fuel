@@ -10,24 +10,20 @@ import { Language } from '../utils/translations';
 interface FirstRefuelBaselineCardProps {
   odometer: number; // in km (standard stored unit)
   unitSystem: 'metric' | 'us' | 'uk';
-  lang: Language;
+  lang?: Language;
 }
 
-export default function FirstRefuelBaselineCard({ odometer, unitSystem, lang }: FirstRefuelBaselineCardProps) {
+export default function FirstRefuelBaselineCard({ odometer, unitSystem }: FirstRefuelBaselineCardProps) {
   const isMetric = unitSystem === 'metric';
   const displayOdo = isMetric ? odometer : odometer * 0.621371;
-  const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+  const odoUnit = isMetric ? 'km' : 'mi';
 
-  const title = lang === 'fa' ? 'اولین سوخت‌گیری ثبت شد!' : 'First Refuel Tracked!';
-  const subtitle = lang === 'fa' 
-    ? `ما نقطه شروع کارکرد شما را روی ${Math.round(displayOdo).toLocaleString()} ${odoUnit} تنظیم کردیم. هنوز داده‌ای برای محاسبه مصرف سوخت وجود ندارد.`
-    : `We've set your starting baseline at ${Math.round(displayOdo).toLocaleString()} ${odoUnit}. No fuel consumption data to show yet.`;
+  const title = 'First Refuel Tracked!';
+  const subtitle = `We've set your starting baseline at ${Math.round(displayOdo).toLocaleString()} ${odoUnit}. No fuel consumption data to show yet.`;
 
-  const barText = lang === 'fa' ? 'باک ۱۰۰٪ پر' : '100% Full';
-  const barLabel = lang === 'fa' ? 'وضعیت باک سوخت' : 'Tank Status';
-  const ctaText = lang === 'fa'
-    ? 'راندمان واقعی سوخت شما (لیتر در ۱۰۰ کیلومتر یا MPG) به‌طور خودکار در سوخت‌گیری بعدی محاسبه و در اینجا نمایش داده خواهد شد.'
-    : 'Your real-time efficiency (L/100km or MPG) will automatically calculate and display here on your next fill-up.';
+  const barText = '100% Full';
+  const barLabel = 'Tank Status';
+  const ctaText = 'Your real-time efficiency (L/100km or MPG) will automatically calculate and display here on your next fill-up.';
 
   return (
     <div 

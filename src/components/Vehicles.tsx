@@ -185,13 +185,11 @@ export default function Vehicles({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg sm:text-xl font-extrabold text-white">
-                  {lang === 'fa' ? 'گاراژ خودرو' : 'Vehicle Garage'}
+                  Vehicle Garage
                 </h1>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                {lang === 'fa' 
-                  ? 'مدیریت و ثبت خودروهای شما در گاراژ هوشمند.' 
-                  : 'Manage and register your vehicles in the smart garage.'}
+                Manage and register your vehicles in the smart garage.
               </p>
             </div>
           </div>
@@ -201,7 +199,7 @@ export default function Vehicles({
             className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 hover:text-white text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer transition-all shrink-0"
           >
             <Plus size={16} />
-            <span>{showAddForm ? (lang === 'fa' ? 'پنهان‌سازی فرم ثبت' : 'Hide Registration Form') : (lang === 'fa' ? 'افزودن خودرو جدید' : 'Register New Vehicle')}</span>
+            <span>{showAddForm ? 'Hide Registration Form' : 'Register New Vehicle'}</span>
           </button>
         </div>
 
@@ -212,48 +210,48 @@ export default function Vehicles({
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Grid size={14} className="text-cyan-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'انتخاب سریع برند (پیش‌فرض)' : 'Quick Select Brand'}</span>
+                  <span>Quick Select Brand</span>
                 </label>
                 <select
                   value={selectedBrand}
                   onChange={handleBrandChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 font-semibold outline-none cursor-pointer transition-all"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm sm:text-sm text-slate-100 font-semibold outline-none cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- انتخاب برند --' : '-- Select Brand --'}</option>
+                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">-- Select Brand --</option>
                   {uniqueBrands.map((b) => (
                     <option key={b} value={b} className="bg-slate-900 text-slate-100 text-base sm:text-sm">{b}</option>
                   ))}
-                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- برند دلخواه (دستی) --' : '-- Custom Brand --'}</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">-- Custom Brand --</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Grid size={14} className="text-purple-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'انتخاب مدل (پیش‌فرض)' : 'Select Model'}</span>
+                  <span>Select Model</span>
                 </label>
                 <select
                   value={selectedModel}
                   disabled={!selectedBrand || selectedBrand === 'custom'}
                   onChange={handleModelChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 font-semibold outline-none disabled:opacity-40 cursor-pointer transition-all"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm sm:text-sm text-slate-100 font-semibold outline-none disabled:opacity-40 cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- انتخاب مدل --' : '-- Select Model --'}</option>
+                  <option value="" className="bg-slate-900 text-slate-200 text-sm sm:text-sm">-- Select Model --</option>
                   {availableModels.map((m) => (
-                    <option key={m} value={m} className="bg-slate-900 text-slate-100 text-base sm:text-sm">{m}</option>
+                    <option key={m} value={m} className="bg-slate-900 text-slate-100 text-sm sm:text-sm">{m}</option>
                   ))}
-                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">{lang === 'fa' ? '-- مدل دلخواه (دستی) --' : '-- Custom Model --'}</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200 text-sm sm:text-sm">-- Custom Model --</option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'برند *' : 'Brand *'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Brand *</label>
                 <input
                   type="text"
                   required
-                  placeholder={lang === 'fa' ? 'پژو / تویوتا' : 'Toyota'}
+                  placeholder="Toyota"
                   value={newBrand}
                   onChange={(e) => setNewBrand(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
@@ -261,11 +259,11 @@ export default function Vehicles({
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'مدل *' : 'Model *'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Model *</label>
                 <input
                   type="text"
                   required
-                  placeholder={lang === 'fa' ? '۲۰۷ / کمری' : 'Camry'}
+                  placeholder="Camry"
                   value={newModel}
                   onChange={(e) => setNewModel(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
@@ -273,29 +271,29 @@ export default function Vehicles({
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">{lang === 'fa' ? 'سال ساخت' : 'Model Year'}</label>
+                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Model Year</label>
                 <input
                   type="text"
                   placeholder="2026"
                   value={newYear}
                   onChange={(e) => setNewYear(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm sm:text-sm text-slate-100 outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1 flex items-center gap-1.5">
                   <Gauge size={14} className="text-cyan-400 shrink-0" />
-                  <span>{lang === 'fa' ? 'سیستم واحد' : 'Unit System'}</span>
+                  <span>Unit System</span>
                 </label>
                 <select
                   value={unitSystem}
                   onChange={(e) => onUnitSystemChange?.(e.target.value as 'metric' | 'us' | 'uk')}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm font-semibold text-slate-100 outline-none cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm sm:text-sm text-slate-100 outline-none cursor-pointer"
                 >
-                  <option value="metric" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'متریک (کیلومتر/لیتر)' : 'Metric (km/L)'}</option>
-                  <option value="us" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'آمریکایی (مایل/گالن)' : 'US (mi/gal)'}</option>
-                  <option value="uk" className="bg-slate-900 text-slate-100 text-base sm:text-sm">{lang === 'fa' ? 'انگلیسی (مایل/گالن)' : 'UK (mi/gal)'}</option>
+                  <option value="metric" className="bg-slate-900 text-slate-100 text-base sm:text-sm">Metric (km/L)</option>
+                  <option value="us" className="bg-slate-900 text-slate-100 text-base sm:text-sm">US (mi/gal)</option>
+                  <option value="uk" className="bg-slate-900 text-slate-100 text-base sm:text-sm">UK (mi/gal)</option>
                 </select>
               </div>
             </div>
@@ -303,7 +301,7 @@ export default function Vehicles({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  {lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'} ({isUs ? 'gal' : 'L'}) *
+                  Tank Cap ({isUs ? 'gal' : 'L'}) *
                 </label>
                 <input
                   type="number"
@@ -313,22 +311,22 @@ export default function Vehicles({
                   step="any"
                   value={newCapacity}
                   onChange={(e) => setNewCapacity(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base text-slate-100 font-mono outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  {lang === 'fa' ? 'کیلومتر کارکرد فعلی' : 'Current Odometer'} ({isMetric ? 'km' : 'mi'}) *
+                  Current Odometer ({isMetric ? 'km' : 'mi'}) *
                 </label>
                 <input
                   type="number"
                   required
                   min="0"
-                  placeholder={lang === 'fa' ? 'مثال: ۴۵۰۰۰' : 'e.g. 45000'}
+                  placeholder="e.g. 45000"
                   value={newOdometer}
                   onChange={(e) => setNewOdometer(e.target.value === '' ? '' : Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base text-slate-100 font-mono outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 font-mono outline-none"
                 />
               </div>
             </div>
@@ -339,7 +337,7 @@ export default function Vehicles({
                 className="w-full sm:w-auto tech-gradient hover:opacity-90 active:scale-95 text-white font-bold py-2.5 px-6 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-500/20"
               >
                 <Plus size={16} />
-                <span>{lang === 'fa' ? 'افزودن و فعال‌سازی خودرو در گاراژ' : 'Register & Activate Vehicle'}</span>
+                <span>Register & Activate Vehicle</span>
               </button>
             </div>
           </form>
@@ -354,11 +352,11 @@ export default function Vehicles({
           <div className="flex items-center gap-2">
             <Layers size={18} className="text-purple-400" />
             <h3 className="text-sm font-bold text-white">
-              {lang === 'fa' ? 'خودروهای شما' : 'Your Vehicles'}
+              Your Vehicles
             </h3>
           </div>
           <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">
-            {vehicles.length} {lang === 'fa' ? 'خودرو' : 'Vehicle(s)'}
+            {vehicles.length} Vehicle(s)
           </span>
         </div>
 
@@ -368,10 +366,10 @@ export default function Vehicles({
               <Car size={24} />
             </div>
             <h4 className="text-base font-bold text-slate-100">
-              {lang === 'fa' ? 'هنوز هیچ خودرویی ثبت نشده است' : 'No vehicles registered yet'}
+              No vehicles registered yet
             </h4>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              {lang === 'fa' ? 'لطفاً با استفاده از فرم بالا، اولین خودروی خود را تعریف کنید تا امکان سوخت‌گیری و تحلیل فراهم شود.' : 'Please use the registration form above to define your vehicle.'}
+              Please use the registration form above to define your vehicle.
             </p>
           </div>
         )}
@@ -401,7 +399,7 @@ export default function Vehicles({
                     <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-1">
                       <span className="text-sm font-bold text-cyan-400 flex items-center gap-1.5">
                         <Pencil size={15} />
-                        {lang === 'fa' ? 'ویرایش مشخصات خودرو' : 'Edit Vehicle Details'}
+                        Edit Vehicle Details
                       </span>
                       <button
                         type="button"
@@ -414,7 +412,7 @@ export default function Vehicles({
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'برند' : 'Brand'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Brand</label>
                         <input
                           type="text"
                           required
@@ -424,7 +422,7 @@ export default function Vehicles({
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'مدل' : 'Model'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Model</label>
                         <input
                           type="text"
                           required
@@ -437,7 +435,7 @@ export default function Vehicles({
 
                     <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'سال' : 'Year'}</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Year</label>
                         <input
                           type="text"
                           value={editYear}
@@ -446,7 +444,7 @@ export default function Vehicles({
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'ظرفیت باک' : 'Tank Cap'} ({isUs ? 'gal' : 'L'})</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Tank Cap ({isUs ? 'gal' : 'L'})</label>
                         <input
                           type="number"
                           required
@@ -457,7 +455,7 @@ export default function Vehicles({
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">{lang === 'fa' ? 'کارکرد' : 'Odometer'} ({isMetric ? 'km' : 'mi'})</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Odometer ({isMetric ? 'km' : 'mi'})</label>
                         <input
                           type="number"
                           required
@@ -474,14 +472,14 @@ export default function Vehicles({
                         className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-sm hover:bg-cyan-400 flex items-center gap-1.5 cursor-pointer transition-all"
                       >
                         <Check size={16} />
-                        <span>{lang === 'fa' ? 'ذخیره تغییرات' : 'Save Changes'}</span>
+                        <span>Save Changes</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditingVehicleId(null)}
                         className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold text-sm hover:bg-slate-700 cursor-pointer"
                       >
-                        {lang === 'fa' ? 'انصراف' : 'Cancel'}
+                        Cancel
                       </button>
                     </div>
                   </form>
@@ -496,10 +494,10 @@ export default function Vehicles({
                           </div>
                           <div>
                             <h4 className="text-base sm:text-lg font-extrabold text-white tracking-wide">
-                              {v.brand || (lang === 'fa' ? 'بدون نام' : 'Unnamed')} {v.model}
+                              {v.brand || 'Unnamed'} {v.model}
                             </h4>
                             <span className="text-xs sm:text-sm text-slate-400 font-mono font-medium">
-                              {lang === 'fa' ? 'مدل:' : 'Year:'} {v.year || '2026'}
+                              Year: {v.year || '2026'}
                             </span>
                           </div>
                         </div>
@@ -507,14 +505,14 @@ export default function Vehicles({
                         {isActive ? (
                           <span className="px-3 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-400 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
                             <CheckCircle2 size={14} />
-                            <span>{lang === 'fa' ? 'فعال' : 'Active'}</span>
+                            <span>Active</span>
                           </span>
                         ) : (
                           <button
                             onClick={() => v.id && onSelectVehicle(v.id)}
                             className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:text-cyan-300 text-slate-200 text-xs sm:text-sm font-bold cursor-pointer transition-all"
                           >
-                            {lang === 'fa' ? 'انتخاب' : 'Select'}
+                            Select
                           </button>
                         )}
                       </div>
@@ -522,7 +520,7 @@ export default function Vehicles({
                       <div className="w-full grid grid-cols-3 gap-2 sm:gap-3 my-3.5 text-center">
                         <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
-                            {lang === 'fa' ? 'ظرفیت باک' : 'TANK CAP'}
+                            TANK CAP
                           </span>
                           <span className="font-mono font-bold text-base sm:text-lg text-slate-100 whitespace-nowrap flex items-baseline gap-1">
                             <span>{isUs ? (v.fuelCapacity * LITERS_TO_GALLONS).toFixed(1) : v.fuelCapacity}</span>
@@ -532,7 +530,7 @@ export default function Vehicles({
 
                         <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
-                            {lang === 'fa' ? 'کارکرد' : 'ODOMETER'}
+                            ODOMETER
                           </span>
                           <span className="font-mono font-bold text-base sm:text-lg text-emerald-400 whitespace-nowrap flex items-baseline gap-1">
                             <span>{Math.round(isMetric ? v.currentOdometer : v.currentOdometer * KM_TO_MILES).toLocaleString()}</span>
@@ -542,11 +540,11 @@ export default function Vehicles({
 
                         <div className="w-full px-2.5 py-3 sm:px-4 sm:py-3.5 rounded-xl bg-slate-950/90 border border-slate-900/90 flex flex-col justify-center items-center shadow-inner min-w-0">
                           <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap mb-1 block">
-                            {lang === 'fa' ? 'ثبت سوخت' : 'FUEL LOGS'}
+                            FUEL LOGS
                           </span>
                           <span className="font-mono font-bold text-base sm:text-lg text-cyan-400 whitespace-nowrap flex items-baseline gap-1">
                             <span>{vLogsCount}</span>
-                            <span className="text-xs font-normal text-slate-400">{lang === 'fa' ? 'ثبت' : 'logs'}</span>
+                            <span className="text-xs font-normal text-slate-400">logs</span>
                           </span>
                         </div>
                       </div>
@@ -554,28 +552,28 @@ export default function Vehicles({
 
                     <div className="flex items-center justify-between pt-3 border-t border-slate-900/60 mt-3">
                       <span className="text-xs font-medium text-slate-400">
-                        {isActive ? (lang === 'fa' ? 'خودروی فعلی برای سوخت‌گیری و تحلیل‌ها' : 'Currently active for fueling & stats') : (lang === 'fa' ? 'جهت سوئیچ کلیک کنید' : 'Click select to set active')}
+                        {isActive ? 'Currently active for fueling & stats' : 'Click select to set active'}
                       </span>
 
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleStartEdit(v)}
                           className="px-2.5 py-1.5 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm font-semibold"
-                          title={lang === 'fa' ? 'ویرایش خودرو' : 'Edit vehicle'}
+                          title="Edit vehicle"
                         >
                           <Pencil size={15} />
-                          <span>{lang === 'fa' ? 'ویرایش' : 'Edit'}</span>
+                          <span>Edit</span>
                         </button>
 
                         {vehicles.length > 1 && (
                           <button
                             onClick={() => {
-                              if (confirm(lang === 'fa' ? `آیا از حذف خودروی ${v.brand} ${v.model} اطمینان دارید؟` : `Delete ${v.brand} ${v.model}?`)) {
+                              if (confirm(`Delete ${v.brand} ${v.model}?`)) {
                                 if (v.id) onDeleteVehicle(v.id);
                               }
                             }}
                             className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer"
-                            title={lang === 'fa' ? 'حذف خودرو' : 'Delete vehicle'}
+                            title="Delete vehicle"
                           >
                             <Trash2 size={15} />
                           </button>

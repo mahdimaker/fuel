@@ -12,13 +12,12 @@ import { exportLogsToCSV, importLogsFromCSV } from '../utils/csv';
 interface CSVDataManagementCardProps {
   logs: FuelEntry[];
   onImportLogs?: (newLogs: FuelEntry[]) => void;
-  lang: Language;
+  lang?: Language;
 }
 
 export default function CSVDataManagementCard({
   logs,
   onImportLogs,
-  lang,
 }: CSVDataManagementCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importNotice, setImportNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -49,19 +48,17 @@ export default function CSVDataManagementCard({
         if (onImportLogs) {
           onImportLogs(result.importedLogs);
         }
-        const msg = lang === 'fa' 
-          ? `تعداد ${result.newCount} رکورد جدید با موفقیت وارد شد.${result.duplicateCount > 0 ? ` (${result.duplicateCount} رکورد تکراری نادیده گرفته شد)` : ''}`
-          : `Successfully imported ${result.newCount} new record(s).${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
+        const msg = `Successfully imported ${result.newCount} new record(s).${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
         setImportNotice({ type: 'success', message: msg });
       } else if (result.success && result.newCount === 0) {
         setImportNotice({
           type: 'error',
-          message: result.error || (lang === 'fa' ? 'هیچ رکورد جدیدی وارد نشد.' : 'No new records imported.'),
+          message: result.error || 'No new records imported.',
         });
       } else {
         setImportNotice({
           type: 'error',
-          message: result.error || (lang === 'fa' ? 'خطا در بارگذاری فایل CSV.' : 'Failed to import CSV file.'),
+          message: result.error || 'Failed to import CSV file.',
         });
       }
     };
@@ -86,10 +83,10 @@ export default function CSVDataManagementCard({
           </div>
           <div>
             <h3 className="text-xs font-bold text-slate-200">
-              {lang === 'fa' ? 'مدیریت و پشتیبان‌گیری داده‌ها (CSV)' : 'CSV Data Backup & Management'}
+              CSV Data Backup & Management
             </h3>
             <p className="text-[11px] text-slate-400">
-              {lang === 'fa' ? 'دریافت خروجی یا بارگذاری تاریخچه سوخت‌گیری' : 'Export logs to Excel/CSV or import existing data'}
+              Export logs to Excel/CSV or import existing data
             </p>
           </div>
         </div>
@@ -106,7 +103,7 @@ export default function CSVDataManagementCard({
             title="Download CSV Backup"
           >
             <Download size={14} />
-            <span>{lang === 'fa' ? 'خروجی CSV' : 'Export CSV'}</span>
+            <span>Export CSV</span>
           </button>
 
           <button
@@ -115,7 +112,7 @@ export default function CSVDataManagementCard({
             title="Import CSV File"
           >
             <Upload size={14} />
-            <span>{lang === 'fa' ? 'ورودی CSV' : 'Import CSV'}</span>
+            <span>Import CSV</span>
           </button>
         </div>
       </div>

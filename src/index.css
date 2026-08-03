@@ -109,6 +109,13 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
   }
 }
 
+.border-slate-800\/60, .border-slate-800\/40 {
+    @supports (color: color-mix(in lab, red, red)) {
+        border-color: 
+          color-mix(in oklab, oklch(0.41 0 0) 60%, transparent);
+    }
+}
+
 /* --- LIGHT MODE CUSTOM STYLES & OVERRIDES --- */
 .light {
   background-color: #f8fafc; /* slate-50 */
@@ -348,8 +355,9 @@ input[type="range"].cyber-slider::-moz-range-thumb:hover {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.light .mt-5.px-3\.5.py-2\.5.rounded-xl.border.backdrop-blur-md.flex.items-center.gap-2\.5.transition-all.bg-emerald-950\/30.border-emerald-500\/20 {
+.light .bg-emerald-950\/30 {
     background-color: #fff;
+    border-color: #ffffff !important;
 }
 
 .light .bg-emerald-950\/20 {
@@ -414,7 +422,7 @@ color-mix(in oklab, oklch(1 0 0) 20%, transparent);
 .light .bg-rose-950\/30,
 .light .bg-amber-950\/30 {
   background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
+  border-color: #fbfbfb !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
@@ -537,16 +545,96 @@ color-mix(in oklab, oklch(1 0 0) 80%, transparent);
     background-color: #eef6ff;
 }
 
-.light .border-slate-800\/60, .border-slate-800\/40 {
-    @supports (color: color-mix(in lab, red, red)) {
-        border-color: 
-          color-mix(in oklab, oklch(0.84 0 0) 60%, transparent);
-    }
+.light .flex.items-center.justify-between.text-xs.text-slate-400.pt-1.border-t.border-slate-800\/40
+ {
+    border-top: 2px solid #e4e4e4;
+}
+
+.light .pt-2.border-t.border-slate-800\/40.space-y-1\.5 {
+    border-top: solid 2px #e4e4e4;
+}
+
+.light .flex.items-center.justify-between.gap-2.border-b.border-slate-800\/60.pb-2\.5 {
+    border-bottom: solid 2px #e4e4e4;
 }
 
 .light button#reset-all-data-history-mobile {
     background-color: #fff;
 }
+
+.light .bg-indigo-950 {
+    background-color: oklch(0.96 0.02 290.01);
+    color: #8329bf !important;
+}
+
+.light .bg-cyan-950\/40 {
+    background-color: #0bd7ee;
+    color: rgb(255, 255, 255);
+}
+
+.light .bg-teal-950\/40 {
+    background-color: #f5fffbd6;
+    color: #05c6bc;
+    border-color: #91f0e9;
+}
+
+.light .bg-teal-500\/20 {
+    background-color: azure;
+}
+
+.light .bg-indigo-500\/20 {
+    background-color: aliceblue;
+}
+
+.light .bg-emerald-500\/20 {
+    background-color: azure;
+}
+
+.light .bg-amber-500\/20 {
+    background-color: cornsilk;
+}
+
+.light .text-amber-300 {
+    color: oklch(0.79 0.19 72.53);
+}
+
+.light .text-emerald-300 {
+    color: oklch(0.71 0.16 163.04);
+}
+
+.light .text-indigo-300 {
+    color: oklch(0.69 0.15 273.14);
+}
+
+.light .text-teal-300 {
+    color: oklch(0.78 0.13 180.73);
+}
+
+.light .text-cyan-300 {
+    color: oklch(0.73 0.14 207.96);
+}
+
+.light .bg-indigo-950\/40 {
+  
+    background-color: #f0f4ff;
+}
+
+.light .bg-purple-500\/20 {
+    background-color: oklch(0.97 0.02 307.85);
+}
+
+.light .text-purple-300 {
+    color: oklch(0.63 0.21 303.25);
+}
+
+.light .bg-emerald-950\/90 {
+    @supports (color: color-mix(in lab, red, red)) {
+        background-color: 
+color-mix(in oklab, oklch(0.8 0.17 171.38) 90%, transparent);
+        color: #ffffff !important;
+    }
+}
+
 
 /* Navigation Tabs Base Styles - Anti Flash & Layout Shift Fixes */
 .nav-tab-inactive {
@@ -568,5 +656,31 @@ color-mix(in oklab, oklch(1 0 0) 80%, transparent);
 .nav-tab-inactive:focus-visible,
 .btn-refuel-cta:focus-visible {
   outline: none !important;
+}
+
+/* Light mode bottom menu frosted glass blur effect */
+.light footer {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Make date picker input clickable across its full bounding box */
+.full-clickable-date {
+  position: relative;
+}
+
+.full-clickable-date input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 

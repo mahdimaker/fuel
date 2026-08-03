@@ -186,7 +186,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
             <span className="text-sm font-bold text-slate-200">
               {isUs 
                 ? Number((vehicle.fuelCapacity * LITERS_TO_GALLONS).toFixed(1))
-                : vehicle.fuelCapacity} <span className="text-xs font-medium text-slate-500">{isUs ? (lang === 'fa' ? 'گالن' : 'Gallons') : (lang === 'fa' ? 'لیتر' : 'Liters')}</span>
+                : vehicle.fuelCapacity} <span className="text-xs font-medium text-slate-500">{isUs ? 'Gallons' : 'Liters'}</span>
             </span>
           </div>
 
@@ -201,7 +201,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
             <span className="text-sm font-extrabold text-slate-200 font-mono">
               {isMetric 
                 ? vehicle.currentOdometer.toLocaleString() 
-                : Math.round(vehicle.currentOdometer * KM_TO_MILES).toLocaleString()} <span className="text-xs font-medium text-slate-500">{isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi')}</span>
+                : Math.round(vehicle.currentOdometer * KM_TO_MILES).toLocaleString()} <span className="text-xs font-medium text-slate-500">{isMetric ? 'km' : 'mi'}</span>
             </span>
           </div>
         </div>
@@ -230,7 +230,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
               <Grid size={12} className="text-cyan-400" />
-              <span>{lang === 'fa' ? 'انتخاب برند' : 'Select Brand'}</span>
+              <span>Select Brand</span>
             </label>
             <select
               id="brand-presets-select"
@@ -238,18 +238,18 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               onChange={handleBrandChange}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3 py-2.5 text-sm text-slate-200 outline-none transition-all cursor-pointer"
             >
-              <option value="">{lang === 'fa' ? '-- انتخاب برند --' : '-- Select Brand --'}</option>
+              <option value="">-- Select Brand --</option>
               {uniqueBrands.map((b) => (
                 <option key={b} value={b}>{b}</option>
               ))}
-              <option value="custom">{lang === 'fa' ? '-- برند دلخواه (دستی) --' : '-- Custom Brand --'}</option>
+              <option value="custom">-- Custom Brand --</option>
             </select>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
               <Grid size={12} className="text-purple-400" />
-              <span>{lang === 'fa' ? 'انتخاب مدل' : 'Select Model'}</span>
+              <span>Select Model</span>
             </label>
             <select
               id="model-presets-select"
@@ -258,18 +258,18 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               onChange={handleModelChange}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3 py-2.5 text-sm text-slate-200 outline-none transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <option value="">{lang === 'fa' ? '-- انتخاب مدل --' : '-- Select Model --'}</option>
+              <option value="">-- Select Model --</option>
               {availableModels.map((m) => (
                 <option key={m} value={m}>{m}</option>
               ))}
-              <option value="custom">{lang === 'fa' ? '-- مدل دلخواه (دستی) --' : '-- Custom Model --'}</option>
+              <option value="custom">-- Custom Model --</option>
             </select>
           </div>
         </div>
 
         {(selectedBrand === 'custom' || selectedModel === 'custom') && (
           <p className="text-[10px] text-purple-400 font-semibold">
-            {lang === 'fa' ? 'مشخصات برند و مدل را به صورت دستی در کادرهای زیر وارد کنید:' : 'Please enter your custom brand and model in the boxes below:'}
+            Please enter your custom brand and model in the boxes below:
           </p>
         )}
 
@@ -280,7 +280,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               id="car-brand-input"
               type="text"
               required
-              placeholder={lang === 'fa' ? "مثال: پژو، دنا، تارا" : "e.g. Toyota, Ford, BMW"}
+              placeholder="e.g. Toyota, Ford, BMW"
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"
@@ -292,7 +292,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               id="car-model-input"
               type="text"
               required
-              placeholder={lang === 'fa' ? "مثال: 206، پلاس" : "e.g. Camry, Civic"}
+              placeholder="e.g. Camry, Civic"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"
@@ -306,7 +306,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
             <input
               id="car-year-input"
               type="text"
-              placeholder={lang === 'fa' ? "۱۴۰۵" : "2026"}
+              placeholder="2026"
               value={year}
               onChange={(e) => setYear(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600/60 outline-none transition-all"
@@ -315,7 +315,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1">
-              {t.capacity} <span className="text-[10px] text-purple-400 font-normal">({isMetric ? (lang === 'fa' ? 'لیتر' : 'L') : (lang === 'fa' ? 'گالن' : 'gal')})</span> *
+              {t.capacity} <span className="text-[10px] text-purple-400 font-normal">({isMetric ? 'L' : 'gal'})</span> *
             </label>
             <input
               id="car-capacity-input"
@@ -332,14 +332,14 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1">
-              {t.currentOdo} <span className="text-[10px] text-emerald-400 font-normal">({isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi')})</span> *
+              {t.currentOdo} <span className="text-[10px] text-emerald-400 font-normal">({isMetric ? 'km' : 'mi'})</span> *
             </label>
             <input
               id="car-odometer-input"
               type="number"
               required
               min="0"
-              placeholder={lang === 'fa' ? (isMetric ? "مثال: ۴۵۲۰۰" : "مثال: ۲۸۰۰۰") : (isMetric ? "e.g. 45200" : "e.g. 28000")}
+              placeholder={isMetric ? "e.g. 45200" : "e.g. 28000"}
               value={currentOdometer}
               onChange={(e) => {
                 const val = e.target.value;

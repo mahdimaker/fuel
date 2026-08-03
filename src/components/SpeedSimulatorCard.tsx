@@ -79,14 +79,14 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
   if (isMetric) {
     const extraLitersPer100km = currentLitersPer100km - baseLitersPer100km;
     extraCost = extraLitersPer100km * avgPricePerLiter;
-    unitLabel = lang === 'fa' ? '۱۰۰ کیلومتر رانندگی' : '100 km driving';
+    unitLabel = '100 km driving';
   } else {
     // 100 miles driven (US or UK)
     const distanceKm = 100 / KM_TO_MILES; // miles to km
     const baseLiters = (baseLitersPer100km / 100) * distanceKm;
     const extraLiters = baseLiters * (penaltyPct / 100);
     extraCost = extraLiters * avgPricePerLiter;
-    unitLabel = lang === 'fa' ? '۱۰۰ مایل رانندگی' : '100 miles driving';
+    unitLabel = '100 miles driving';
   }
 
   // Fraction across slider range
@@ -103,7 +103,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
     glowShadow: 'drop-shadow-[0_0_14px_rgba(16,185,129,0.85)]',
     accentHex: '#10b981',
     trackGlow: '0 0 16px rgba(16,185,129,0.6)',
-    badgeText: lang === 'fa' ? 'سرعت ایمن و بهینه' : 'Safe Speed',
+    badgeText: 'Safe Speed',
     badgeStyle: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
   };
 
@@ -113,7 +113,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
       glowShadow: 'drop-shadow-[0_0_14px_rgba(244,63,94,0.85)]',
       accentHex: '#f43f5e',
       trackGlow: '0 0 16px rgba(244,63,94,0.6)',
-      badgeText: lang === 'fa' ? 'افت شدید راندمان (High Drag)' : 'High Drag / Waste',
+      badgeText: 'High Drag / Waste',
       badgeStyle: 'bg-rose-500/15 text-rose-400 border-rose-500/30'
     };
   } else if (normSpeed > 95) {
@@ -122,7 +122,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
       glowShadow: 'drop-shadow-[0_0_14px_rgba(245,158,11,0.85)]',
       accentHex: '#f59e0b',
       trackGlow: '0 0 16px rgba(245,158,11,0.6)',
-      badgeText: lang === 'fa' ? 'سرعت متعادل' : 'Moderate Speed',
+      badgeText: 'Moderate Speed',
       badgeStyle: 'bg-amber-500/15 text-amber-400 border-amber-500/30'
     };
   }
@@ -138,43 +138,41 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
         </div>
         <div>
           <h2 className="text-sm font-extrabold uppercase tracking-widest text-white">
-            {lang === 'fa' ? 'شبیه‌ساز سرعت و راندمان سوخت' : 'Speed vs. Efficiency Simulator'}
+            Speed vs. Efficiency Simulator
           </h2>
           <p className="text-[11px] text-slate-500">
-            {lang === 'fa' ? 'تأثیر مقاومت هوا بر مصرف سوخت در سرعت‌های مختلف' : 'Visualize how speed alters wind resistance and fuel economy'}
+            Visualize how speed alters wind resistance and fuel economy
           </p>
         </div>
       </div>
 
       <p className="text-xs text-slate-300 leading-relaxed mb-6">
-        {lang === 'fa' 
-          ? 'بیشتر خودروها تا سرعت ۹۰ کیلومتر بر ساعت (۵۵ مایل) در بهترین وضعیت آیرودینامیک قرار دارند. افزایش سرعت بیش از این حد، مقاومت هوا را به صورت درجه دوم افزایش می‌دهد.'
-          : 'Most vehicles are aerodynamically optimized up to 55 mph (90 km/h). Increasing velocity past this threshold compounds drag quadratically.'}
+        Most vehicles are aerodynamically optimized up to 55 mph (90 km/h). Increasing velocity past this threshold compounds drag quadratically.
       </p>
 
       {/* Interactive Simulation Dashboard Grid */}
       <div className="grid grid-cols-2 gap-4 mb-5">
         <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-            {lang === 'fa' ? 'افزایش مصرف سوخت' : 'Fuel Burn Increase'}
+            Fuel Burn Increase
           </span>
           <span className="text-2xl font-black font-mono text-rose-400 block tracking-tight">
             +{penaltyPct.toFixed(1)}%
           </span>
           <span className="text-[10px] text-slate-400 mt-1 block font-semibold">
-            {lang === 'fa' ? 'سوخت اضافه سوخته‌شده' : 'Extra gasoline burnt'}
+            Extra gasoline burnt
           </span>
         </div>
 
         <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-            {lang === 'fa' ? 'هزینه اتلاف شده' : 'Wasted Cost Leak'}
+            Wasted Cost Leak
           </span>
           <span className="text-2xl font-black font-mono text-amber-400 block tracking-tight">
             {currencyLabel === '$' ? `$${extraCost.toFixed(2)}` : currencyLabel === '£' ? `£${extraCost.toFixed(2)}` : `${extraCost.toFixed(2)} ${currencyLabel}`}
           </span>
           <span className="text-[10px] text-slate-400 mt-1 block font-semibold">
-            {lang === 'fa' ? `به ازای ${unitLabel}` : `Per ${unitLabel}`}
+            Per {unitLabel}
           </span>
         </div>
       </div>
@@ -183,7 +181,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
       <div className="bg-slate-950/70 border border-slate-900/80 p-4 rounded-2xl space-y-3 mb-6 shadow-sm">
         <div className="flex items-center gap-2 text-amber-400/90 font-extrabold text-xs uppercase tracking-widest">
           <SlidersHorizontal size={14} className="text-amber-400" />
-          <span>{lang === 'fa' ? 'متغیرهای محیطی (ENVIRONMENTAL VARIABLES)' : 'ENVIRONMENTAL VARIABLES'}</span>
+          <span>ENVIRONMENTAL VARIABLES</span>
         </div>
 
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
@@ -201,8 +199,8 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
             <Sun size={16} className={acOn ? '!text-white animate-spin-slow shrink-0' : 'text-slate-400 shrink-0'} />
             <span className={acOn ? 'tracking-wide !text-white' : 'tracking-wide'}>
               {acOn 
-                ? (lang === 'fa' ? `کولر روشن (+${acPenaltyPct}٪)` : `A/C ON (+${acPenaltyPct}%)`)
-                : (lang === 'fa' ? 'کولر خاموش' : 'A/C OFF')}
+                ? `A/C ON (+${acPenaltyPct}%)`
+                : 'A/C OFF'}
             </span>
           </button>
 
@@ -220,8 +218,8 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
             <Wind size={16} className={windowsOpen ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
             <span className={windowsOpen ? 'tracking-wide !text-white' : 'tracking-wide'}>
               {windowsOpen 
-                ? (lang === 'fa' ? `پنجره باز (+${windowsPenaltyPct}٪)` : `Windows Open (+${windowsPenaltyPct}%)`)
-                : (lang === 'fa' ? 'پنجره‌ها بسته' : 'Windows Closed')}
+                ? `Windows Open (+${windowsPenaltyPct}%)`
+                : 'Windows Closed'}
             </span>
           </button>
 
@@ -239,8 +237,8 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
             <Box size={16} className={roofRackLoaded ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
             <span className={roofRackLoaded ? 'tracking-wide !text-white' : 'tracking-wide'}>
               {roofRackLoaded 
-                ? (lang === 'fa' ? `باربند سقف (+${roofRackPenaltyPct}٪)` : `Roof Rack (+${roofRackPenaltyPct}%)`)
-                : (lang === 'fa' ? 'بدون باربند' : 'Roof Rack None')}
+                ? `Roof Rack (+${roofRackPenaltyPct}%)`
+                : 'Roof Rack None'}
             </span>
           </button>
         </div>
@@ -251,7 +249,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              {lang === 'fa' ? 'تنظیم سرعت پیمایش:' : 'Set Your Cruising Speed:'}
+              Set Your Cruising Speed:
             </span>
             <span className={`inline-block text-[10px] font-extrabold px-3 py-0.5 rounded-full border tracking-wide uppercase ${speedSeverity.badgeStyle}`}>
               {speedSeverity.badgeText}
@@ -298,7 +296,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
         <div className="flex justify-between items-center text-xs font-mono font-bold text-slate-400 px-1">
           <div className="flex flex-col items-start">
             <span className="text-slate-300 font-mono tracking-tight">{minSpeed} {isMetric ? 'km/h' : 'mph'}</span>
-            <span className="text-[10px] text-slate-500 font-sans font-normal">{lang === 'fa' ? 'حداقل' : 'Min'}</span>
+            <span className="text-[10px] text-slate-500 font-sans font-normal">Min</span>
           </div>
 
           <div className="flex flex-col items-center">
@@ -306,12 +304,12 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block"></span>
               {isMetric ? '90 km/h' : '55 mph'}
             </span>
-            <span className="text-[10px] text-cyan-400/90 font-bold uppercase tracking-wider font-mono">{lang === 'fa' ? 'محدوده بهینه (Sweet Spot)' : 'Sweet Spot'}</span>
+            <span className="text-[10px] text-cyan-400/90 font-bold uppercase tracking-wider font-mono">Sweet Spot</span>
           </div>
 
           <div className="flex flex-col items-end">
             <span className="text-slate-300 font-mono tracking-tight">{maxSpeed} {isMetric ? 'km/h' : 'mph'}</span>
-            <span className="text-[10px] text-slate-500 font-sans font-normal">{lang === 'fa' ? 'حداکثر' : 'Max'}</span>
+            <span className="text-[10px] text-slate-500 font-sans font-normal">Max</span>
           </div>
         </div>
       </div>

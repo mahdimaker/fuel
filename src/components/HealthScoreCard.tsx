@@ -54,22 +54,18 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
 
   // Translate warning recommendations or messages
   const getTranslatedMessage = (msg: string) => {
-    if (lang === 'en') {
-      // Basic dictionary mapping of typical messages from engine to english
-      if (msg.includes('نوسان شدید')) return 'Warning: High volatility in consumption efficiency detected.';
-      if (msg.includes('فشار کارکرد موتور')) return 'Odometer suggests maintenance cycle is near.';
-      if (msg.includes('سوخت باکیفیت')) return 'Switch to premium/super fuel occasionally to clear engine residue.';
-      if (msg.includes('راندمان سوخت عالی')) return 'Excellent fuel efficiency. Maintain current driving habits!';
-      if (msg.includes('سرویس دوره‌ای')) return 'Spark plugs and throttle body cleaning recommended.';
-      return msg;
-    }
+    if (msg.includes('نوسان شدید')) return 'Warning: High volatility in consumption efficiency detected.';
+    if (msg.includes('فشار کارکرد موتور')) return 'Odometer suggests maintenance cycle is near.';
+    if (msg.includes('سوخت باکیفیت')) return 'Switch to premium/super fuel occasionally to clear engine residue.';
+    if (msg.includes('راندمان سوخت عالی')) return 'Excellent fuel efficiency. Maintain current driving habits!';
+    if (msg.includes('سرویس دوره‌ای')) return 'Spark plugs and throttle body cleaning recommended.';
     return msg;
   };
 
   // Clean raw message text by stripping leading emojis, bullet points, or raw markers
   const cleanMessageText = (rawMsg: string) => {
     let text = getTranslatedMessage(rawMsg);
-    // Remove leading emojis, bullet points, colons, or symbols safely without wiping unicode/Persian text
+    // Remove leading emojis, bullet points, colons, or symbols safely
     text = text.replace(/^[\s•\u2022\u2600-\u27BF\uFE0F:✅🚨⚠️🔧📊🚘⚙️💡•-]+/gu, '').trim();
     return text || getTranslatedMessage(rawMsg);
   };
@@ -82,16 +78,13 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
     if (
       rawMsg.includes('🚨') ||
       msgLower.includes('critical') ||
-      msgLower.includes('sudden increase') ||
-      msgLower.includes('افزایش ناگهانی') ||
-      msgLower.includes('خطر') ||
-      msgLower.includes('ضروری')
+      msgLower.includes('sudden increase')
     ) {
       return {
         container: 'bg-rose-950/30 border-rose-500/25 text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.1)] hover:border-rose-500/40',
         iconBadge: 'bg-rose-500/15 border border-rose-500/30 text-rose-400 p-2 rounded-xl shrink-0 shadow-[0_0_10px_rgba(244,63,94,0.3)]',
         labelBadge: 'text-rose-400 bg-rose-500/10 border border-rose-500/30',
-        labelText: lang === 'fa' ? 'هشدار جدی' : 'CRITICAL',
+        labelText: 'CRITICAL',
         Icon: AlertOctagon,
       };
     }
@@ -100,17 +93,13 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
     if (
       rawMsg.includes('✅') ||
       msgLower.includes('optimal') ||
-      msgLower.includes('excellent') ||
-      msgLower.includes('بهینه') ||
-      msgLower.includes('عالی') ||
-      msgLower.includes('بهبود') ||
-      msgLower.includes('اقتصادی')
+      msgLower.includes('excellent')
     ) {
       return {
         container: 'bg-emerald-950/30 border-emerald-500/25 text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.1)] hover:border-emerald-500/40',
         iconBadge: 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 p-2 rounded-xl shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.3)]',
         labelBadge: 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30',
-        labelText: lang === 'fa' ? 'وضعیت بهینه' : 'OPTIMAL',
+        labelText: 'OPTIMAL',
         Icon: CheckCircle2,
       };
     }
@@ -122,18 +111,13 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
       rawMsg.includes('📊') ||
       msgLower.includes('warning') ||
       msgLower.includes('check') ||
-      msgLower.includes('higher than') ||
-      msgLower.includes('بالاتر از') ||
-      msgLower.includes('نوسان') ||
-      msgLower.includes('فشار') ||
-      msgLower.includes('سرویس') ||
-      msgLower.includes('تخمین')
+      msgLower.includes('higher than')
     ) {
       return {
         container: 'bg-amber-950/30 border-amber-500/25 text-amber-200 shadow-[0_0_12px_rgba(245,158,11,0.1)] hover:border-amber-500/40',
         iconBadge: 'bg-amber-500/15 border border-amber-500/30 text-amber-400 p-2 rounded-xl shrink-0 shadow-[0_0_10px_rgba(245,158,11,0.3)]',
         labelBadge: 'text-amber-400 bg-amber-500/10 border border-amber-500/30',
-        labelText: lang === 'fa' ? 'نیازمند توجه' : 'ATTENTION',
+        labelText: 'ATTENTION',
         Icon: AlertTriangle,
       };
     }
@@ -143,7 +127,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
       container: 'bg-cyan-950/30 border-cyan-500/25 text-cyan-200 shadow-[0_0_12px_rgba(6,182,212,0.1)] hover:border-cyan-500/40',
       iconBadge: 'bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 p-2 rounded-xl shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.3)]',
       labelBadge: 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30',
-      labelText: lang === 'fa' ? 'پایش هوشمند' : 'INFO',
+      labelText: 'INFO',
       Icon: Info,
     };
   };
@@ -163,7 +147,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
               <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
                 <Shield size={22} className="text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
               </div>
-              <div className={lang === 'fa' ? 'text-right' : 'text-left'}>
+              <div className="text-left">
                 <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white leading-tight">
                   {t.vhsTitle}
                 </h2>
@@ -176,7 +160,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
               <button
                 onClick={onRecalculate}
                 className="p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all cursor-pointer shrink-0"
-                title={lang === 'fa' ? 'بروزرسانی داده‌ها' : 'Recalculate data'}
+                title="Recalculate data"
               >
                 <RefreshCw size={16} />
               </button>
@@ -196,7 +180,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
               </div>
               {metrics.isUnrated ? (
                 <span className="text-[11px] font-bold px-3.5 py-1 rounded-full border text-slate-400 bg-slate-900/80 border-slate-700/50 uppercase tracking-wider shadow-sm">
-                  {lang === 'fa' ? 'بدون ارزیابی' : 'Unrated'}
+                  Unrated
                 </span>
               ) : (
                 <span className={`text-[11px] font-extrabold px-4 py-1.5 rounded-full border uppercase tracking-wider ${levelInfo.color}`}>
@@ -222,20 +206,20 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
                   </span>
                 </div>
                 {/* Floating overhanging badge */}
-                <div className={`absolute -bottom-2.5 ${lang === 'fa' ? '-right-2 sm:-right-2.5' : '-left-2 sm:-left-2.5'} z-10`}>
+                <div className="absolute -bottom-2.5 -left-2 sm:-left-2.5 z-10">
                   {metrics.isUnrated ? (
                     <span className="text-[10px] text-slate-400 font-bold bg-slate-950/90 backdrop-blur-md border border-slate-800 px-2.5 py-0.5 rounded-full shadow-md block whitespace-nowrap">
-                      {lang === 'fa' ? 'نیازمند داده سوخت' : 'Pending log'}
+                      Pending log
                     </span>
                   ) : metrics.fuelEfficiencyChange <= 0 ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-400 bg-slate-950/90 backdrop-blur-md border border-emerald-500/40 px-2.5 py-0.5 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.3)] whitespace-nowrap">
                       <ArrowDownRight size={12} className="text-emerald-400" />
-                      {-metrics.fuelEfficiencyChange.toFixed(1)}% {lang === 'fa' ? 'بهبود' : 'improvement'}
+                      {-metrics.fuelEfficiencyChange.toFixed(1)}% improvement
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-rose-400 bg-slate-950/90 backdrop-blur-md border border-rose-500/40 px-2.5 py-0.5 rounded-full shadow-[0_0_12px_rgba(244,63,94,0.3)] whitespace-nowrap">
                       <ArrowUpRight size={12} className="text-rose-400" />
-                      {metrics.fuelEfficiencyChange.toFixed(1)}% {lang === 'fa' ? 'افزایش' : 'increased'}
+                      {metrics.fuelEfficiencyChange.toFixed(1)}% increased
                     </span>
                   )}
                 </div>
@@ -256,7 +240,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-medium block mt-2">
-                  {lang === 'fa' ? 'برآورد مسافت باک پر' : 'Est. full tank distance'}
+                  Est. full tank distance
                 </span>
               </div>
 
@@ -275,10 +259,10 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
                   </span>
                 </div>
                 {/* Floating overhanging badge */}
-                <div className={`absolute -bottom-2.5 ${lang === 'fa' ? '-right-2 sm:-right-2.5' : '-left-2 sm:-left-2.5'} z-10`}>
+                <div className="absolute -bottom-2.5 -left-2 sm:-left-2.5 z-10">
                   <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-teal-400 bg-slate-950/90 backdrop-blur-md border border-teal-500/40 px-2.5 py-0.5 rounded-full shadow-[0_0_12px_rgba(20,184,166,0.3)] whitespace-nowrap">
                     <Zap size={10} className="text-teal-400 fill-teal-400/20" />
-                    <span>{lang === 'fa' ? 'حامی محیط زیست' : 'Eco-conscious'}</span>
+                    <span>Eco-conscious</span>
                   </span>
                 </div>
               </div>
@@ -296,7 +280,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-medium block mt-2">
-                  {lang === 'fa' ? 'انحراف معیار مصرف' : 'Std Dev deviation'}
+                  Std Dev deviation
                 </span>
               </div>
             </div>
@@ -380,12 +364,12 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
             <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
               <Cpu size={22} className="text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
             </div>
-            <div className={lang === 'fa' ? 'text-right' : 'text-left'}>
+            <div className="text-left">
               <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white leading-tight">
                 {t.warningsTitle}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5 leading-snug">
-                {lang === 'fa' ? 'پایش الگوریتمی و هشدارهای تله‌متری سلامت خودرو' : 'Real-time telemetry and algorithmic health diagnostics'}
+                Real-time telemetry and algorithmic health diagnostics
               </p>
             </div>
           </div>

@@ -5,8 +5,8 @@
 
 import React from 'react';
 import { 
-  Car, Gauge, Fuel, Flame, ShieldCheck, Zap, Settings, 
-  TrendingDown, KeyRound, Radio
+  Car, Gauge, Fuel, ShieldCheck, Zap, Settings, 
+  Receipt
 } from 'lucide-react';
 import { VehicleInfo, HealthMetrics, FuelEntry } from '../types';
 import { Language } from '../utils/translations';
@@ -39,7 +39,7 @@ export default function QuickVehicleStatusCard({
   const displayOdo = isMetric 
     ? (vehicle.currentOdometer || 0)
     : Math.round((vehicle.currentOdometer || 0) * KM_TO_MILES);
-  const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+  const odoUnit = isMetric ? 'km' : 'mi';
 
   // Efficiency formatting
   let effValue = '---';
@@ -62,14 +62,21 @@ export default function QuickVehicleStatusCard({
     ? Math.round(healthMetrics.estimatedRange || 0)
     : Math.round((healthMetrics.estimatedRange || 0) * KM_TO_MILES);
 
+  // Last Refuel Cost formatting
+  const lastLog = logs && logs.length > 0 ? logs[0] : null;
+  const currencySymbol = isMetric ? '€' : isUk ? '£' : '$';
+  const lastCostStr = lastLog 
+    ? `${currencySymbol}${lastLog.cost < 100 ? lastLog.cost.toFixed(2) : Math.round(lastLog.cost).toLocaleString()}`
+    : '---';
+
   // VHS Level badge color & styles (flat, no glowing shadow)
   const levelBadge = healthMetrics.level === 'excellent'
-    ? { bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', text: 'text-emerald-400', label: lang === 'fa' ? 'عالی' : 'Excellent' }
+    ? { bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', text: 'text-emerald-400', label: 'Excellent' }
     : healthMetrics.level === 'good'
-      ? { bg: 'bg-cyan-500/10', border: 'border-cyan-500/40', text: 'text-cyan-400', label: lang === 'fa' ? 'خوب' : 'Good' }
+      ? { bg: 'bg-cyan-500/10', border: 'border-cyan-500/40', text: 'text-cyan-400', label: 'Good' }
       : healthMetrics.level === 'fair'
-        ? { bg: 'bg-amber-500/10', border: 'border-amber-500/40', text: 'text-amber-400', label: lang === 'fa' ? 'متوسط' : 'Fair' }
-        : { bg: 'bg-rose-500/10', border: 'border-rose-500/40', text: 'text-rose-400', label: lang === 'fa' ? 'نیاز به تعمیر' : 'Needs Check' };
+        ? { bg: 'bg-amber-500/10', border: 'border-amber-500/40', text: 'text-amber-400', label: 'Fair' }
+        : { bg: 'bg-rose-500/10', border: 'border-rose-500/40', text: 'text-rose-400', label: 'Needs Check' };
 
   return (
     <div className="relative rounded-2xl bg-slate-900 border border-slate-800 p-5 sm:p-6 overflow-hidden">
@@ -85,7 +92,7 @@ export default function QuickVehicleStatusCard({
           <div>
             {/* Model Name */}
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              {vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : (lang === 'fa' ? 'خودروی ثبت نشده' : 'BMW 1 Series')}
+              {vehicle.brand ? `${vehicle.brand} ${vehicle.model}` : 'BMW 1 Series'}
             </h2>
 
             {/* Year Badge + Active Telemetry */}
@@ -96,7 +103,7 @@ export default function QuickVehicleStatusCard({
               <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <span className="lowercase text-slate-300 font-mono text-[11px]">
-                  {lang === 'fa' ? 'تله‌متری زنده فعال' : 'active telemetry'}
+                  active telemetry
                 </span>
               </div>
             </div>
@@ -107,7 +114,7 @@ export default function QuickVehicleStatusCard({
         <button
           onClick={onNavigateToVehicles}
           className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-cyan-400 transition-all cursor-pointer shrink-0"
-          title={lang === 'fa' ? 'مدیریت مشخصات خودرو' : 'Manage Vehicle Specs'}
+          title="Manage Vehicle Specs"
         >
           <Settings size={18} />
         </button>
@@ -119,7 +126,7 @@ export default function QuickVehicleStatusCard({
         {/* KPI 1: Odometer */}
         <div className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide">{lang === 'fa' ? 'کارکرد فعلی' : 'Odometer'}</span>
+            <span className="text-[11px] font-medium tracking-wide">Odometer</span>
             <Gauge size={15} className="text-cyan-400" />
           </div>
           <p className="text-base sm:text-lg font-mono font-black text-slate-100 tracking-tight">
@@ -130,7 +137,7 @@ export default function QuickVehicleStatusCard({
         {/* KPI 2: Est. Range */}
         <div className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide">{lang === 'fa' ? 'پیمایش باک' : 'Est. Range'}</span>
+            <span className="text-[11px] font-medium tracking-wide">Est. Range</span>
             <Fuel size={15} className="text-indigo-400" />
           </div>
           <div className="flex items-center justify-between">
@@ -148,30 +155,28 @@ export default function QuickVehicleStatusCard({
           </div>
         </div>
 
-        {/* KPI 3: Avg. Consumption */}
+        {/* KPI 3: Last Refuel Cost */}
         <div className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide">{lang === 'fa' ? 'میانگین مصرف' : 'Avg. Consumption'}</span>
-            <Flame size={15} className="text-cyan-400" />
+            <span className="text-[11px] font-medium tracking-wide">Last Refuel</span>
+            <Receipt size={15} className="text-cyan-400" />
           </div>
           <div className="flex items-center justify-between gap-1">
-            <p className="text-sm sm:text-base font-mono font-black text-slate-100 tracking-tight whitespace-nowrap flex items-baseline gap-1">
-              <span>{effValue}</span>
-              {effUnit && (
-                <span className="text-xs font-sans font-normal text-slate-400 whitespace-nowrap">{effUnit}</span>
-              )}
+            <p className="text-base sm:text-lg font-mono font-black text-slate-100 tracking-tight">
+              {lastCostStr}
             </p>
-            {/* Consumption Trend Arrow */}
-            <span className="shrink-0 flex items-center gap-0.5 text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md" title="Optimal consumption rate">
-              <TrendingDown size={12} className="stroke-[2.5]" />
-            </span>
+            {lastLog && (
+              <span className="shrink-0 text-[10px] font-mono font-bold text-slate-400 bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded-md" title={`Refueled on ${lastLog.date}`}>
+                {lastLog.date}
+              </span>
+            )}
           </div>
         </div>
 
         {/* KPI 4: Health Score */}
         <div className="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-1.5">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-medium tracking-wide">{lang === 'fa' ? 'امتیاز سلامت (VHS)' : 'Health Score'}</span>
+            <span className="text-[11px] font-medium tracking-wide">Health Score</span>
             <ShieldCheck size={15} className="text-purple-400" />
           </div>
           <div className="flex items-center justify-between gap-1">
@@ -197,16 +202,14 @@ export default function QuickVehicleStatusCard({
           <div className="flex items-center gap-2 text-xs text-slate-300">
             <Zap size={16} className="text-cyan-400 shrink-0" />
             <span>
-              {lang === 'fa' 
-                ? 'برای محاسبه دقیق مصرف سوخت، اولین نوبت سوخت‌گیری خود را ثبت کنید.' 
-                : 'Log your first refuel to activate precise consumption tracking.'}
+              Log your first refuel to activate precise consumption tracking.
             </span>
           </div>
           <button
             onClick={onNavigateToRefuel}
             className="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 text-xs font-bold hover:bg-cyan-400 transition-all shrink-0 cursor-pointer"
           >
-            {lang === 'fa' ? 'ثبت سوخت‌گیری' : 'Refuel Now'}
+            Refuel Now
           </button>
         </div>
       )}

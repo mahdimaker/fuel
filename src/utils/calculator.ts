@@ -94,7 +94,7 @@ export function calculateLogEfficiencies(logs: FuelEntry[]): { id: string; effic
 /**
  * Analyzes the vehicle data and returns structural stats and health scores
  */
-export function analyzeVehicleHealth(vehicle: VehicleInfo, logs: FuelEntry[], lang: 'fa' | 'en' = 'en'): HealthMetrics {
+export function analyzeVehicleHealth(vehicle: VehicleInfo, logs: FuelEntry[], lang: 'en' = 'en'): HealthMetrics {
   // Defaults
   const defaultMetrics: HealthMetrics = {
     score: 100,
@@ -181,7 +181,6 @@ export function analyzeVehicleHealth(vehicle: VehicleInfo, logs: FuelEntry[], la
   else if (currentOdometer > 80000) odometerDeduction = 8;
   
   // Fuel efficiency health factor
-  // Average standard is ~7-9 L/100km. If efficiency is high, deduct
   let efficiencyDeduction = 0;
   if (overallEfficiency > 12) efficiencyDeduction = 20;
   else if (overallEfficiency > 9.5) efficiencyDeduction = 12;
@@ -205,7 +204,7 @@ export function analyzeVehicleHealth(vehicle: VehicleInfo, logs: FuelEntry[], la
     }
   }
 
-  // Cost tracking health factor (Deduct if refueling cost is unusually high compared to mileage)
+  // Cost tracking health factor
   const totalSpent = logs.reduce((sum, log) => sum + log.cost, 0);
   const costScore = Math.max(40, 100 - Math.min(60, (totalSpent / (totalDistance || 1)) * 10));
 
@@ -226,52 +225,36 @@ export function analyzeVehicleHealth(vehicle: VehicleInfo, logs: FuelEntry[], la
   const messages: string[] = [];
   
   if (isEstimated) {
-    if (lang === 'fa') {
-      messages.push(
-        "📊 تحلیل بر اساس تخمین موقت:\nاز آنجا که هنوز باک را کاملاً پر نکرده‌اید، این تحلیل با دقت حدود ۸۰٪ و بر اساس الگوریتم تخمینی صادر شده است. برای دریافت گزارش قطعی و ۱۰۰٪ دقیق، در سوخت‌گیری بعدی باک را کامل پر کنید."
-      );
-    } else {
-      messages.push(
-        "📊 Analysis based on temporary estimation:\nSince you haven't fully filled the tank yet, this analysis is calculated with ~80% accuracy based on an estimated algorithm. To get a definitive and 100% accurate report, fill your tank completely on your next refuel."
-      );
-    }
+    messages.push(
+      "📊 Analysis based on temporary estimation:\nSince you haven't fully filled the tank yet, this analysis is calculated with ~80% accuracy based on an estimated algorithm. To get a definitive and 100% accurate report, fill your tank completely on your next refuel."
+    );
   }
 
   if (overallEfficiency > 10) {
     messages.push(
-      lang === 'fa' 
-        ? "⚠️ مصرف سوخت بالاتر از حد استاندارد است. لطفا شمع‌ها، سنسور اکسیژن یا فیلتر سوخت را بررسی کنید."
-        : "⚠️ Fuel consumption is higher than standard. Please check spark plugs, oxygen sensor, or fuel filter."
+      "⚠️ Fuel consumption is higher than standard. Please check spark plugs, oxygen sensor, or fuel filter."
     );
   } else if (overallEfficiency > 0) {
     messages.push(
-      lang === 'fa'
-        ? "✅ راندمان مصرف سوخت در بازه بهینه و اقتصادی قرار دارد."
-        : "✅ Fuel efficiency is in optimal and highly economic parameters."
+      "✅ Fuel efficiency is in optimal and highly economic parameters."
     );
   }
 
   if (currentOdometer > 100000 && currentOdometer % 50000 < 5000) {
     messages.push(
-      lang === 'fa'
-        ? "🔧 کیلومترشمار دوره سرویس دوره‌ای را پیشنهاد می‌دهد (بررسی تسمه تایم و شمع‌ها)."
-        : "🔧 Odometer suggests a routine maintenance cycle (timing belt, spark plugs checkup) is recommended."
+      "🔧 Odometer suggests a routine maintenance cycle (timing belt, spark plugs checkup) is recommended."
     );
   }
 
   if (fuelEfficiencyChange > 10) {
     messages.push(
-      lang === 'fa'
-        ? "🚨 افزایش ناگهانی در مصرف سوخت در آخرین ثبت مشاهده شد. لطفا باد لاستیک‌ها را بررسی کنید."
-        : "🚨 Sudden increase in fuel consumption detected in the last entry. Please check tire pressure."
+      "🚨 Sudden increase in fuel consumption detected in the last entry. Please check tire pressure."
     );
   }
 
   if (messages.length === 0 && overallEfficiency > 0) {
     messages.push(
-      lang === 'fa'
-        ? "🚘 عیب‌یابی تله‌متری عمومی وضعیت عالی را نشان می‌دهد. به ثبت منظم سوخت‌گیری ادامه دهید."
-        : "🚘 General telemetry diagnostics indicate excellent status. Keep logging regularly."
+      "🚘 General telemetry diagnostics indicate excellent status. Keep logging regularly."
     );
   }
 

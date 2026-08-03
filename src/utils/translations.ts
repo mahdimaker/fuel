@@ -5,9 +5,9 @@
 
 import { generatePopularVehiclesEn, VehiclePreset } from './popularVehicles';
 
-export type Language = 'en' | 'fa';
+export type Language = 'en';
 
-const englishTranslations = {
+export const englishTranslations = {
   title: 'Fuel Analyzer',
   subtitle: 'Vehicle Health Intelligence',
   saveVehicle: 'Save Vehicle Profile',
@@ -69,7 +69,7 @@ const englishTranslations = {
   avgCostLiter: 'Avg. Cost Per Liter',
   efficiencyChartTitle: 'Fuel Consumption Trend (L/100km)',
   costChartTitle: 'Refueling Cost Analysis',
-  currency: 'USD',
+  currency: '€',
   liters: 'Liters',
   km: 'km',
   tabDashboard: 'Dashboard',
@@ -99,7 +99,6 @@ const englishTranslations = {
 };
 
 export const translations = {
-  fa: englishTranslations,
   en: englishTranslations,
 };
 

@@ -12,11 +12,11 @@ import { generateLocalReport } from '../utils/localAI';
 interface AITechnicianReportProps {
   vehicle: VehicleInfo;
   logs: FuelEntry[];
-  lang: Language;
+  lang?: Language;
 }
 
-export default function AITechnicianReport({ vehicle, logs, lang }: AITechnicianReportProps) {
-  const t = translations[lang];
+export default function AITechnicianReport({ vehicle, logs }: AITechnicianReportProps) {
+  const t = translations['en'];
 
   // State 1: Saved report retrieved from localStorage
   const [report, setReport] = useState<string>(() => {
@@ -82,7 +82,6 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
         body: JSON.stringify({
           vehicle,
           logs,
-          lang, // pass down language so backend can translate if possible
         }),
       });
 
@@ -103,7 +102,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
         localStorage.setItem('en_last_analyzed_log_count', currentCount.toString());
       } else {
         // Fallback to local AI generator
-        const localRep = generateLocalReport(vehicle, logs, lang);
+        const localRep = generateLocalReport(vehicle, logs);
         setReport(localRep);
         localStorage.setItem('en_saved_ai_report', localRep);
         localStorage.setItem('en_ai_report_fallback', 'true');
@@ -116,7 +115,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
       }
     } catch (err: any) {
       console.warn('Backend unavailable, falling back to local diagnostic analyzer', err);
-      const localRep = generateLocalReport(vehicle, logs, lang);
+      const localRep = generateLocalReport(vehicle, logs);
       setReport(localRep);
       localStorage.setItem('en_saved_ai_report', localRep);
       localStorage.setItem('en_ai_report_fallback', 'true');
@@ -163,12 +162,10 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
             <div className="absolute inset-2 rounded-full border-2 border-cyan-500 border-b-transparent animate-spin-reverse"></div>
           </div>
           <h3 className="text-xs font-bold text-slate-300 animate-pulse">
-            {lang === 'fa' ? 'عیب‌یابی هوشمند در حال تحلیل داده‌های خودرو...' : 'AI diagnostics analyzing vehicular logs...'}
+            AI diagnostics analyzing vehicular logs...
           </h3>
           <p className="text-[10px] text-slate-500 mt-1 max-w-[250px] leading-relaxed">
-            {lang === 'fa'
-              ? 'محاسبه شاخص‌های مصرف سوخت، جرقه شمع‌ها، سنسور اکسیژن و پیش‌بینی چرخه نگهداری پیشرانه...'
-              : 'Calculating mileage performance indexes, ignition timings, catalyst temperatures, and maintenance alert cycles.'}
+            Calculating mileage performance indexes, ignition timings, catalyst temperatures, and maintenance alert cycles.
           </p>
         </div>
       )}
@@ -201,19 +198,17 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-slate-200">
-                          {lang === 'fa' ? 'گزارش عیب‌یابی قفل است' : 'AI Diagnostics Locked'}
+                          AI Diagnostics Locked
                         </h3>
                         <p className="text-[11px] text-slate-400 mt-1 max-w-[280px] leading-relaxed mx-auto">
-                          {lang === 'fa' 
-                            ? 'برای باز کردن قفل اولین گزارش عیب‌یابی عمیق، نیاز به ثبت ۳ سوخت‌گیری جدید است.' 
-                            : 'Unlock your next deep AI Diagnostics report after logging 3 new refuels.'}
+                          Unlock your next deep AI Diagnostics report after logging 3 new refuels.
                         </p>
                       </div>
 
                       {/* Progress tracking */}
                       <div className="space-y-1.5 max-w-[200px] mx-auto pt-1">
                         <div className="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
-                          <span>{lang === 'fa' ? 'پیشرفت سوخت‌گیری' : 'PROGRESS'}</span>
+                          <span>PROGRESS</span>
                           <span className="text-purple-400">{newLogsCount}/3</span>
                         </div>
                         <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-900/60">
@@ -233,12 +228,10 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                     <Sparkles size={24} />
                   </div>
                   <h3 className="text-sm font-bold text-slate-200">
-                    {lang === 'fa' ? 'آماده آنالیز فنی خودرو' : 'AI Diagnostics Ready'}
+                    AI Diagnostics Ready
                   </h3>
                   <p className="text-xs text-slate-400 mt-1.5 max-w-sm mx-auto leading-relaxed">
-                    {lang === 'fa' 
-                      ? 'داده‌های تله‌متری خودروی شما همگام‌سازی شده است. برای دریافت گزارش تخصصی عیب‌یابی کلیک کنید.'
-                      : 'Vehicular data successfully synchronized. Tap below to synthesize fuel logs and mileage through our diagnostic modeling engine.'}
+                    Vehicular data successfully synchronized. Tap below to synthesize fuel logs and mileage through our diagnostic modeling engine.
                   </p>
 
                   <button
@@ -247,7 +240,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                     className="mt-5 px-6 py-2.5 rounded-xl tech-gradient hover:opacity-95 text-white font-bold text-xs flex items-center gap-2 mx-auto cursor-pointer transition-all active:scale-95 shadow-md shadow-purple-500/20 border border-purple-400/25 animate-pulse"
                   >
                     <Sparkles size={14} />
-                    <span>{lang === 'fa' ? 'شروع آنالیز با هوش مصنوعی' : 'Analyze with AI'}</span>
+                    <span>Analyze with AI</span>
                   </button>
                 </div>
               )}
@@ -301,7 +294,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                 <CheckCircle2 size={12} className="shrink-0" />
                 <span>
                   {isUsingLocalFallback 
-                    ? (lang === 'fa' ? 'پردازش محلی: این گزارش تله‌متری به دلیل همگام‌سازی سریع کاملاً به صورت آفلاین ایجاد شده است.' : 'Local Processing: This telemetry report was generated client-side for sandbox compatibility.')
+                    ? 'Local Processing: This telemetry report was generated client-side for sandbox compatibility.'
                     : t.aiFooterNote
                   }
                 </span>
@@ -317,17 +310,15 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-slate-200">
-                        {lang === 'fa' ? 'به‌روزرسانی بعدی قفل است' : 'Next AI Analysis Locked'}
+                        Next AI Analysis Locked
                       </h4>
                       <p className="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
-                        {lang === 'fa' 
-                          ? '۳ سوخت‌گیری جدید ثبت کنید تا قفل تحلیل عمیق بعدی باز شود.' 
-                          : 'Unlock your next deep AI Diagnostics report after logging 3 new refuels.'}
+                        Unlock your next deep AI Diagnostics report after logging 3 new refuels.
                       </p>
                     </div>
                   </div>
                   <div className="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-xs font-mono font-black text-purple-400 shrink-0">
-                    {lang === 'fa' ? `پیشرفت: ${newLogsCount}/۳` : `Progress: ${newLogsCount}/3`}
+                    Progress: {newLogsCount}/3
                   </div>
                 </div>
               ) : (
@@ -336,12 +327,10 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                   <div className="space-y-1">
                     <h4 className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
                       <Sparkles size={13} className="animate-pulse" />
-                      <span>{lang === 'fa' ? 'به‌روزرسانی آماده است!' : 'Update Ready!'}</span>
+                      <span>Update Ready!</span>
                     </h4>
                     <p className="text-[10px] text-slate-400 leading-relaxed">
-                      {lang === 'fa'
-                        ? '۳ سوخت‌گیری جدید ثبت شده است. برای به‌روزرسانی گزارش عیب‌یابی کلیک کنید.'
-                        : 'At least 3 new refuels recorded. Re-run diagnostics to refresh and update vehicle health insights.'}
+                      At least 3 new refuels recorded. Re-run diagnostics to refresh and update vehicle health insights.
                     </p>
                   </div>
                   <button
@@ -350,7 +339,7 @@ export default function AITechnicianReport({ vehicle, logs, lang }: AITechnician
                     className="px-4 py-2 rounded-xl tech-gradient hover:opacity-95 text-white font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shrink-0 border border-purple-400/20"
                   >
                     <RefreshCw size={11} />
-                    <span>{lang === 'fa' ? 'به‌روزرسانی گزارش' : 'Update Report'}</span>
+                    <span>Update Report</span>
                   </button>
                 </div>
               )}

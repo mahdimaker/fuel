@@ -10,7 +10,7 @@ import { FuelEntry, VehicleInfo } from '../types';
  * Generates an extremely robust, detailed markdown report in English.
  * Dynamically tailored using the vehicle's fuel type and estimated engine category.
  */
-export function generateLocalReport(vehicle: VehicleInfo, logs: FuelEntry[], lang: 'fa' | 'en' = 'en'): string {
+export function generateLocalReport(vehicle: VehicleInfo, logs: FuelEntry[], lang: 'en' = 'en'): string {
   const sorted = [...logs].sort((a, b) => a.odometer - b.odometer);
   
   // Calculate average stats

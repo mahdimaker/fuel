@@ -16,7 +16,8 @@ import {
   Award,
   Sun,
   Moon,
-  ChevronDown
+  ChevronDown,
+  CheckCircle2
 } from 'lucide-react';
 import { FuelEntry, VehicleInfo } from './types';
 import { analyzeVehicleHealth } from './utils/calculator';
@@ -40,14 +41,6 @@ import { calculateLogEfficiencies } from './utils/calculator';
 import { translations, Language } from './utils/translations';
 
 // Pre-populate with high-quality sample logs for demonstration
-const defaultVehicleFa: VehicleInfo = {
-  brand: 'پژو',
-  model: '207i MC',
-  year: '',
-  fuelCapacity: 50,
-  currentOdometer: 64250,
-};
-
 const defaultVehicleEn: VehicleInfo = {
   brand: 'Toyota',
   model: 'Camry',
@@ -55,47 +48,6 @@ const defaultVehicleEn: VehicleInfo = {
   fuelCapacity: 60,
   currentOdometer: 45200,
 };
-
-const defaultLogsFa: FuelEntry[] = [
-  {
-    id: 'sample-1',
-    date: '2026-06-15',
-    odometer: 62800,
-    liters: 41.5,
-    cost: 124500,
-    fuelType: 'regular',
-    stationName: 'جایگاه ۲۸ آزادی',
-    notes: 'بنزین زدم، فیلتر هوا تعویض شد',
-  },
-  {
-    id: 'sample-2',
-    date: '2026-06-28',
-    odometer: 63280,
-    liters: 39.0,
-    cost: 117000,
-    fuelType: 'regular',
-    stationName: 'جایگاه نیاوران',
-  },
-  {
-    id: 'sample-3',
-    date: '2026-07-12',
-    odometer: 63790,
-    liters: 42.0,
-    cost: 126000,
-    fuelType: 'super',
-    stationName: 'جایگاه پاسداران',
-    notes: 'بنزین سوپر برای مقایسه مصرف زدم',
-  },
-  {
-    id: 'sample-4',
-    date: '2026-07-14',
-    odometer: 64250,
-    liters: 37.5,
-    cost: 112500,
-    fuelType: 'regular',
-    stationName: 'جایگاه آزادی',
-  }
-];
 
 const defaultLogsEn: FuelEntry[] = [
   {
@@ -317,10 +269,10 @@ export default function App() {
 
   // Sync lang to localStorage & update HTML root attributes
   useEffect(() => {
-    localStorage.setItem('en_lang', lang);
-    document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-  }, [lang]);
+    localStorage.setItem('en_lang', 'en');
+    document.documentElement.dir = 'ltr';
+    document.documentElement.lang = 'en';
+  }, []);
 
   // Sync unitSystem to localStorage
   useEffect(() => {
@@ -363,8 +315,6 @@ export default function App() {
     };
     const wasEmpty = vehicles.length === 0;
     setVehicles(prev => {
-      // If there is only 1 vehicle in garage and it's an unnamed vehicle OR the initial default vehicle with 0 fuel logs,
-      // replace it so user doesn't end up with an extra default vehicle!
       if (prev.length === 1) {
         const first = prev[0];
         if (!first.brand || first.brand.trim() === '' || (logs.length === 0 && first.id === 'veh-1')) {
@@ -427,15 +377,15 @@ export default function App() {
     setShowResetConfirm(false);
   };
 
-  const handleShareReport = () => {
-    const metrics = analyzeVehicleHealth(vehicle, activeLogs, lang);
+  const handleShareReport = async () => {
+    const metrics = analyzeVehicleHealth(vehicle, activeLogs);
     const vhsLevel = metrics.level === 'excellent' ? t.levelExcellent : metrics.level === 'good' ? t.levelGood : metrics.level === 'fair' ? t.levelFair : t.levelPoor;
     
     // Convert shared output based on selected units
     const isMetric = unitSystem === 'metric';
     const isUs = unitSystem === 'us';
     const displayOdo = isMetric ? vehicle.currentOdometer : vehicle.currentOdometer * 0.621371;
-    const odoUnit = isMetric ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi');
+    const odoUnit = isMetric ? 'km' : 'mi';
     
     let displayEff = 'N/A';
     if (metrics.fuelEfficiency > 0) {
@@ -446,21 +396,42 @@ export default function App() {
           : `${(282.481 / metrics.fuelEfficiency).toFixed(1)} UK MPG`;
     }
 
-    const summaryText = lang === 'fa' 
-      ? `🚗 گزارش هوشمند مصرف سوخت و سلامت خودروی ${vehicle.brand} ${vehicle.model}
-📊 امتیاز سلامت خودرو (VHS): ${metrics.score}/۱۰۰ (${vhsLevel})
-📈 میانگین مصرف سوخت: ${displayEff}
-⛽️ تعداد نوبت سوخت‌گیری ثبت شده: ${activeLogs.length} نوبت
-⚙️ کیلومترشمار فعلی: ${Math.round(displayOdo).toLocaleString()} ${odoUnit}
-📱 ایجاد شده توسط پایشگر هوشمند عیب‌یابی مصرف سوخت`
-      : `🚗 Vehicle Fuel & Health Report for ${vehicle.brand} ${vehicle.model}
+    const vehicleTitle = `${vehicle.brand || ''} ${vehicle.model || ''}`.trim() || 'Vehicle';
+
+    const summaryText = `🚗 Vehicle Fuel & Health Report for ${vehicleTitle}
 📊 Vehicle Health Score (VHS): ${metrics.score}/100 (${vhsLevel})
 📈 Average Fuel Efficiency: ${displayEff}
 ⛽️ Fuel Logs count: ${activeLogs.length} logs
 ⚙️ Current Mileage: ${Math.round(displayOdo).toLocaleString()} ${odoUnit}
 📱 Generated dynamically via Fuel Analyzer Intelligent Telemetry`;
 
-    navigator.clipboard.writeText(summaryText);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Vehicle Fuel Report - ${vehicleTitle}`,
+          text: summaryText,
+        });
+        return;
+      } catch (err) {
+        // User canceled or share failed, fallback to clipboard
+      }
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(summaryText);
+      } else {
+        throw new Error('Clipboard API unavailable');
+      }
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = summaryText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+
     setShowShareNotification(true);
     setTimeout(() => {
       setShowShareNotification(false);
@@ -471,18 +442,14 @@ export default function App() {
     window.print();
   };
 
-  // Pre-calculate vehicle metrics (using active language)
-  const healthMetrics = analyzeVehicleHealth(vehicle, activeLogs, lang);
+  // Pre-calculate vehicle metrics
+  const healthMetrics = analyzeVehicleHealth(vehicle, activeLogs);
 
   // Calculate average and last log efficiency
   const averageEfficiency = healthMetrics.fuelEfficiency; // L/100km
   
   const stepEfficiencies = calculateLogEfficiencies(activeLogs);
   const lastLogEfficiency = stepEfficiencies.length > 0 ? stepEfficiencies[stepEfficiencies.length - 1].efficiency : 0;
-
-  // Direction handling (RTL for Persian, LTR for English)
-  const isRtl = lang === 'fa';
-  const textDirection = isRtl ? 'rtl' : 'ltr';
 
   return (
     <div 
@@ -491,7 +458,7 @@ export default function App() {
           ? 'dark bg-gradient-to-b from-[#0b0f19] to-[#05070c] text-slate-100' 
           : 'light bg-slate-50 text-slate-800'
       }`} 
-      dir={textDirection}
+      dir="ltr"
     >
       {/* PWA Prompt Banner */}
       <PwaInstallBanner lang={lang} />
@@ -503,37 +470,12 @@ export default function App() {
             <AppIcon size={38} />
             <div>
               <h1 className="text-sm font-extrabold text-white tracking-wider">
-                {lang === 'fa' ? 'آنالایزر مصرف سوخت' : 'Fuel Analyzer'}
+                Fuel Analyzer
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Global Unit System Dropdown Selector */}
-            <div className="relative flex items-center">
-              <Gauge size={12} className="text-cyan-400 absolute left-2.5 pointer-events-none z-10 shrink-0" />
-              <select
-                id="unit-system-selector"
-                value={unitSystem}
-                onChange={(e) => setUnitSystem(e.target.value as 'metric' | 'us' | 'uk')}
-                className="pl-7 pr-7 sm:pr-8 py-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-300 hover:text-white hover:border-cyan-500/30 text-[10px] sm:text-xs font-semibold appearance-none cursor-pointer transition-all focus:outline-none focus:border-cyan-500/40"
-                title={lang === 'fa' ? 'سیستم واحدها' : 'Unit system'}
-              >
-                <option value="metric" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'متریک' : 'Metric'}
-                </option>
-                <option value="us" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'آمریکایی' : 'US'}
-                </option>
-                <option value="uk" className="bg-slate-950 text-slate-300">
-                  {lang === 'fa' ? 'انگلیسی' : 'UK'}
-                </option>
-              </select>
-              <div className="absolute right-2.5 pointer-events-none z-10 flex items-center text-slate-500">
-                <ChevronDown size={11} />
-              </div>
-            </div>
-
             {/* Theme Toggler */}
             <button
               id="theme-toggler-btn"
@@ -567,17 +509,17 @@ export default function App() {
       </header>
 
       {/* Print View Only Area */}
-      <div className="hidden print:block p-8 space-y-6 text-black" dir={textDirection}>
+      <div className="hidden print:block p-8 space-y-6 text-black" dir="ltr">
         <div className="border-b pb-4 mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">{t.printableTitle}</h1>
             <p className="text-sm text-gray-500 mt-1">{t.printableSub}</p>
           </div>
-          <div className={isRtl ? 'text-right' : 'text-left'}>
+          <div className="text-left">
             <span className="text-xs text-gray-500 block">{t.printableDate}: {new Date().toLocaleDateString()}</span>
             <span className="text-xs text-gray-500 block">
               {t.currentOdo}: {Math.round(unitSystem === 'metric' ? vehicle.currentOdometer : vehicle.currentOdometer * 0.621371).toLocaleString()}{' '}
-              {unitSystem === 'metric' ? (lang === 'fa' ? 'کیلومتر' : 'km') : (lang === 'fa' ? 'مایل' : 'mi')}
+              {unitSystem === 'metric' ? 'km' : 'mi'}
             </span>
           </div>
         </div>
@@ -589,7 +531,7 @@ export default function App() {
             <p className="text-sm">{t.year}: {vehicle.year || '2026'}</p>
             <p className="text-sm">
               {t.capacity}: {unitSystem === 'metric' ? vehicle.fuelCapacity : (vehicle.fuelCapacity * 0.264172).toFixed(1)}{' '}
-              {unitSystem === 'metric' ? (lang === 'fa' ? 'لیتر' : 'Liters') : (lang === 'fa' ? 'گالن' : 'Gallons')}
+              {unitSystem === 'metric' ? 'Liters' : 'Gallons'}
             </p>
           </div>
           <div className="border p-4 rounded-xl text-center flex flex-col justify-center">
@@ -721,7 +663,7 @@ export default function App() {
                   <>
                     {/* 2. Fuel Consumption */}
                     <div>
-                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
+                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} fuelCapacity={vehicle.fuelCapacity} />
                     </div>
 
                     {/* 3. Vehicle Health Score (VHS) */}
@@ -767,7 +709,7 @@ export default function App() {
                   <>
                     {/* 2. Financial Impact */}
                     <div>
-                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} vehicle={vehicle} />
                     </div>
 
                     {/* 3. Speed vs. Efficiency Simulator */}
@@ -926,10 +868,10 @@ export default function App() {
                   ) : (
                     <div className="space-y-6">
                       {/* 1. Fuel Consumption */}
-                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} />
+                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} fuelCapacity={vehicle.fuelCapacity} />
                       
                       {/* 2. Financial Impact */}
-                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
+                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} vehicle={vehicle} />
                       
                       {/* 3. Speed vs. Efficiency Simulator */}
                       <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
@@ -1069,7 +1011,7 @@ export default function App() {
       </main>
 
       {/* Bottom Sticky Navigation Rail for mobile (5-Tab Layout with Center Hero/FAB) */}
-      <footer className="fixed bottom-0 inset-x-0 bg-slate-950 border-t border-slate-900/90 pb-2 pt-1 px-2 z-40 md:hidden no-print">
+      <footer className="fixed bottom-0 inset-x-0 bg-slate-950/85 backdrop-blur-md border-t border-slate-900/90 pb-2 pt-1 px-2 z-40 md:hidden no-print">
         <div className="grid grid-cols-5 items-end max-w-md mx-auto relative">
           {/* Tab 1: Dashboard */}
           <button
@@ -1132,6 +1074,14 @@ export default function App() {
           </button>
         </div>
       </footer>
+
+      {/* Toast Notification for Share */}
+      {showShareNotification && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs sm:text-sm font-semibold backdrop-blur-md animate-fadeIn">
+          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+          <span>Report copied to clipboard!</span>
+        </div>
+      )}
 
       {/* Custom Reset Confirmation Modal */}
       {showResetConfirm && (
