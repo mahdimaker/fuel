@@ -4,10 +4,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Car, Fuel, Calendar, Gauge, Save, Edit3, Settings, Grid } from 'lucide-react';
+import { Car, Fuel, Calendar, Gauge, Save, Edit3, Settings, Grid, Check } from 'lucide-react';
 import { VehicleInfo } from '../types';
 import { translations, Language } from '../utils/translations';
 import { baseVehiclesEn } from '../utils/popularVehicles';
+import BrandLogo, { ALL_BRAND_LOGOS } from './BrandLogo';
 
 interface VehicleProfileProps {
   vehicle: VehicleInfo;
@@ -145,9 +146,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       <div id="vehicle-profile-view" className="cyber-card p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              <Car size={24} />
-            </div>
+            <BrandLogo brand={vehicle.brand} size={24} showBadge />
             <div>
               <h3 className="text-sm text-slate-400 font-medium">{t.profileTitle}</h3>
               <h2 className="text-xl font-bold text-white tracking-wide">{vehicle.brand} {vehicle.model}</h2>
@@ -225,6 +224,40 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Car Brand Logos Visual Picker */}
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+            <Grid size={13} className="text-cyan-400" />
+            <span>Select Car Brand Logo</span>
+          </label>
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-1.5 p-2 bg-slate-950/80 border border-slate-900 rounded-xl max-h-48 overflow-y-auto custom-scrollbar">
+            {ALL_BRAND_LOGOS.map((b) => {
+              const isSelected = selectedBrand === b || brand.toLowerCase() === b.toLowerCase();
+              return (
+                <button
+                  type="button"
+                  key={b}
+                  onClick={() => {
+                    setSelectedBrand(b);
+                    setSelectedModel('');
+                    setBrand(b);
+                    setModel('');
+                  }}
+                  className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center group ${
+                    isSelected
+                      ? 'bg-cyan-950/60 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/40 shadow-lg shadow-cyan-950/50'
+                      : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-900'
+                  }`}
+                  title={b}
+                >
+                  <BrandLogo brand={b} size={22} className={isSelected ? 'text-cyan-400' : 'text-slate-300 group-hover:text-cyan-300'} />
+                  <span className="text-[9px] font-semibold tracking-tight mt-1 truncate w-full">{b}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Brand & Model cascading selection */}
         <div className="grid grid-cols-2 gap-3">
           <div>

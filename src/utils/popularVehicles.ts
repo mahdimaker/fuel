@@ -150,6 +150,24 @@ export const baseVehiclesEn = [
   { brand: 'Tesla', model: 'Model Y Long Range', fuelCapacity: 75 },
   { brand: 'Tesla', model: 'Model S Plaid', fuelCapacity: 100 },
   { brand: 'Tesla', model: 'Model X', fuelCapacity: 100 },
+
+  { brand: 'Peugeot', model: '208', fuelCapacity: 44 },
+  { brand: 'Peugeot', model: '308', fuelCapacity: 53 },
+  { brand: 'Peugeot', model: '408', fuelCapacity: 52 },
+  { brand: 'Peugeot', model: '508', fuelCapacity: 62 },
+  { brand: 'Peugeot', model: '2008', fuelCapacity: 44 },
+  { brand: 'Peugeot', model: '3008', fuelCapacity: 53 },
+  { brand: 'Peugeot', model: '5008', fuelCapacity: 56 },
+  { brand: 'Peugeot', model: 'Rifter', fuelCapacity: 50 },
+
+  { brand: 'Suzuki', model: 'Swift', fuelCapacity: 37 },
+  { brand: 'Suzuki', model: 'Vitara', fuelCapacity: 47 },
+  { brand: 'Suzuki', model: 'Grand Vitara', fuelCapacity: 55 },
+  { brand: 'Suzuki', model: 'Jimny', fuelCapacity: 40 },
+  { brand: 'Suzuki', model: 'SX4 S-Cross', fuelCapacity: 47 },
+  { brand: 'Suzuki', model: 'Ignis', fuelCapacity: 32 },
+  { brand: 'Suzuki', model: 'Baleno', fuelCapacity: 37 },
+  { brand: 'Suzuki', model: 'Ertiga', fuelCapacity: 45 },
 ];
 
 const popularYears = ['2025', '2024', '2023', '2022', '2021', '2020'];

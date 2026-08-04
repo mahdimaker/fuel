@@ -36,6 +36,7 @@ import SponsoredAdCard from './components/SponsoredAdCard';
 import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
 import CSVDataManagementCard from './components/CSVDataManagementCard';
 import AppIcon from './components/AppIcon';
+import BrandLogo from './components/BrandLogo';
 import { calculateLogEfficiencies } from './utils/calculator';
 import { translations, Language } from './utils/translations';
 
@@ -468,6 +469,14 @@ export default function App() {
               <h1 className="text-sm font-extrabold text-white tracking-wider">
                 Fuel Analyzer
               </h1>
+              {vehicle.brand && (
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <BrandLogo brand={vehicle.brand} size={14} className="text-cyan-400" />
+                  <span className="text-[10px] text-cyan-400 font-bold tracking-tight">
+                    {vehicle.brand} {vehicle.model}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

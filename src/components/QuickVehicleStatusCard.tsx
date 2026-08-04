@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { VehicleInfo, HealthMetrics, FuelEntry } from '../types';
 import { Language } from '../utils/translations';
+import BrandLogo from './BrandLogo';
 
 interface QuickVehicleStatusCardProps {
   vehicle: VehicleInfo;
@@ -84,10 +85,8 @@ export default function QuickVehicleStatusCard({
       {/* HEADER */}
       <div className="relative z-10 flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3.5">
-          {/* Car Icon */}
-          <div className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 text-cyan-400">
-            <Car size={24} />
-          </div>
+          {/* Brand Logo Badge */}
+          <BrandLogo brand={vehicle.brand || 'BMW'} size={28} showBadge />
 
           <div>
             {/* Model Name */}
