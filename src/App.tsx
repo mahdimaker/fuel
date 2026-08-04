@@ -32,7 +32,6 @@ import EfficiencyHeroCard from './components/EfficiencyHeroCard';
 import FinancialImpactCard from './components/FinancialImpactCard';
 import SpeedSimulatorCard from './components/SpeedSimulatorCard';
 import EfficiencyIssuesCard from './components/EfficiencyIssuesCard';
-import PwaInstallBanner from './components/PwaInstallBanner';
 import SponsoredAdCard from './components/SponsoredAdCard';
 import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
 import CSVDataManagementCard from './components/CSVDataManagementCard';
@@ -460,9 +459,6 @@ export default function App() {
       }`} 
       dir="ltr"
     >
-      {/* PWA Prompt Banner */}
-      <PwaInstallBanner lang={lang} />
-
       {/* Header */}
       <header className="border-b border-slate-900/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 no-print">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
