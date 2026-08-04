@@ -86,7 +86,7 @@ export default function QuickVehicleStatusCard({
       <div className="relative z-10 flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3.5">
           {/* Brand Logo Badge */}
-          <BrandLogo brand={vehicle.brand || 'BMW'} size={28} showBadge />
+          <BrandLogo brand={vehicle.brand || 'BMW'} size={52} showBadge />
 
           <div>
             {/* Model Name */}

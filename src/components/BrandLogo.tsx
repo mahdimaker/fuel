@@ -60,15 +60,17 @@ export default function BrandLogo({
     }
   }
 
-  const renderContent = () => {
+  const renderContent = (isBadge = false) => {
     if (svgPath && !imgError) {
       return (
         <img
           src={svgPath}
           alt={brand || 'Car brand'}
           onError={() => setImgError(true)}
-          style={{ width: size, height: size }}
-          className={`object-contain transition-transform duration-200 hover:scale-105 ${className}`}
+          style={isBadge ? undefined : { width: size, height: size }}
+          className={`object-contain transition-transform duration-200 hover:scale-105 ${
+            isBadge ? 'w-full h-full p-0.5' : className
+          }`}
         />
       );
     }
@@ -77,8 +79,8 @@ export default function BrandLogo({
     return (
       <svg
         viewBox="0 0 24 24"
-        width={size}
-        height={size}
+        width={isBadge ? '100%' : size}
+        height={isBadge ? '100%' : size}
         className={className}
         fill="none"
         stroke="currentColor"
@@ -97,10 +99,10 @@ export default function BrandLogo({
   if (showBadge) {
     return (
       <div
-        className="rounded-xl bg-slate-900/90 border border-slate-800/80 flex items-center justify-center shrink-0 text-cyan-400 shadow-inner overflow-hidden p-1.5"
-        style={{ width: size + 16, height: size + 16 }}
+        className="rounded-xl bg-white flex items-center justify-center shrink-0 shadow-md p-1 overflow-hidden"
+        style={{ width: size, height: size }}
       >
-        {renderContent()}
+        {renderContent(true)}
       </div>
     );
   }

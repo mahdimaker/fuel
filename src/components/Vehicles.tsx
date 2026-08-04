@@ -213,7 +213,7 @@ export default function Vehicles({
                 <Grid size={13} className="text-cyan-400" />
                 <span>Select Car Brand Logo</span>
               </label>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-1.5 p-2 bg-slate-950/80 border border-slate-900 rounded-xl max-h-48 overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-2 p-2.5 bg-slate-950/80 border border-slate-900 rounded-xl max-h-64 overflow-y-auto custom-scrollbar">
                 {ALL_BRAND_LOGOS.map((b) => {
                   const isSelected = selectedBrand === b || newBrand.toLowerCase() === b.toLowerCase();
                   return (
@@ -226,15 +226,15 @@ export default function Vehicles({
                         setNewBrand(b);
                         setNewModel('');
                       }}
-                      className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center group ${
+                      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all cursor-pointer text-center group ${
                         isSelected
-                          ? 'bg-cyan-950/60 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/40 shadow-lg shadow-cyan-950/50'
-                          : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-900'
+                          ? 'bg-cyan-950/70 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-lg shadow-cyan-950/50 scale-[1.02]'
+                          : 'bg-slate-900/60 border-slate-800/90 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-900'
                       }`}
                       title={b}
                     >
-                      <BrandLogo brand={b} size={22} className={isSelected ? 'text-cyan-400' : 'text-slate-300 group-hover:text-cyan-300'} />
-                      <span className="text-[9px] font-semibold tracking-tight mt-1 truncate w-full">{b}</span>
+                      <BrandLogo brand={b} size={38} className={isSelected ? 'text-cyan-400' : 'text-slate-300 group-hover:text-cyan-300'} />
+                      <span className="text-xs font-bold tracking-tight mt-1.5 truncate w-full">{b}</span>
                     </button>
                   );
                 })}
@@ -524,7 +524,7 @@ export default function Vehicles({
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <BrandLogo brand={v.brand} size={22} showBadge />
+                          <BrandLogo brand={v.brand} size={48} showBadge />
                           <div>
                             <h4 className="text-base sm:text-lg font-extrabold text-white tracking-wide">
                               {v.brand || 'Unnamed'} {v.model}

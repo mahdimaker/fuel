@@ -471,8 +471,7 @@ export default function App() {
               </h1>
               {vehicle.brand && (
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <BrandLogo brand={vehicle.brand} size={14} className="text-cyan-400" />
-                  <span className="text-[10px] text-cyan-400 font-bold tracking-tight">
+                  <span className="text-[11px] text-cyan-400 font-bold tracking-tight">
                     {vehicle.brand} {vehicle.model}
                   </span>
                 </div>
