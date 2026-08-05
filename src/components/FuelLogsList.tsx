@@ -285,7 +285,7 @@ export default function FuelLogsList({
               {importNotice.type === 'success' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
               <span>{importNotice.message}</span>
             </span>
-            <button onClick={() => setImportNotice(null)} className="p-1 text-slate-400 hover:text-white" aria-label="بستن اعلان">
+            <button onClick={() => setImportNotice(null)} className="p-1 text-slate-400 hover:text-white" aria-label="Dismiss notification">
               <X size={12} />
             </button>
           </div>
@@ -668,7 +668,7 @@ export default function FuelLogsList({
                         <button
                           onClick={() => setDeletingId(null)}
                           className="p-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
-                          aria-label="انصراف از حذف"
+                          aria-label="Cancel deletion"
                         >
                           <X size={12} />
                         </button>
@@ -679,7 +679,7 @@ export default function FuelLogsList({
                         onClick={() => setDeletingId(log.id)}
                         className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500 hover:text-red-400 hover:border-red-500/30 transition-all cursor-pointer opacity-80 sm:opacity-0 sm:group-hover:opacity-100"
                         title="Delete record"
-                        aria-label="حذف سابقه سوخت‌گیری"
+                        aria-label="Delete fuel log entry"
                       >
                         <Trash2 size={13} />
                       </button>

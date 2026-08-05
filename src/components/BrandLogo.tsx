@@ -65,7 +65,7 @@ export default function BrandLogo({
       return (
         <img
           src={svgPath}
-          alt={brand ? `لوگو خودرو ${brand}` : 'لوگو برند خودرو'}
+          alt={brand ? `${brand} car logo` : 'Car brand logo'}
           width={size}
           height={size}
           loading="lazy"
