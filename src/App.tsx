@@ -505,6 +505,7 @@ export default function App() {
               onClick={handleShareReport}
               className="p-1.5 rounded-xl bg-slate-950 border border-slate-900 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/20 transition-all cursor-pointer"
               title="Share Report"
+              aria-label="Share Report"
             >
               <Share2 size={14} />
             </button>

@@ -65,7 +65,11 @@ export default function BrandLogo({
       return (
         <img
           src={svgPath}
-          alt={brand || 'Car brand'}
+          alt={brand ? `لوگو خودرو ${brand}` : 'لوگو برند خودرو'}
+          width={size}
+          height={size}
+          loading="lazy"
+          decoding="async"
           onError={() => setImgError(true)}
           style={isBadge ? undefined : { width: size, height: size }}
           className={`object-contain transition-transform duration-200 hover:scale-105 ${
