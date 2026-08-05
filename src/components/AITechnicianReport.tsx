@@ -15,6 +15,22 @@ interface AITechnicianReportProps {
   lang?: Language;
 }
 
+// Helper function to render inline markdown like **bold text**
+function renderMarkdownInline(text: string) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return (
+        <strong key={i} className="font-bold text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
+
 export default function AITechnicianReport({ vehicle, logs }: AITechnicianReportProps) {
   const t = translations['en'];
 
@@ -251,41 +267,52 @@ export default function AITechnicianReport({ vehicle, logs }: AITechnicianReport
           {report && (
             <div className="space-y-5">
               {/* Rendered report output */}
-              <div className="bg-slate-950/50 p-5 rounded-xl border border-slate-900 leading-relaxed text-sm text-slate-300 max-h-[360px] overflow-y-auto space-y-4">
+              <div className="bg-slate-950/70 p-5 sm:p-6 rounded-xl border border-slate-900 leading-relaxed text-sm text-slate-200 max-h-[480px] sm:max-h-[580px] overflow-y-auto space-y-4">
                 {report.split('\n').map((line, index) => {
                   const trimmed = line.trim();
                   if (trimmed.startsWith('###')) {
                     return (
-                      <h4 key={index} className="text-xs font-bold text-cyan-400 mt-4 mb-2 uppercase tracking-wide border-l-2 border-cyan-500 pl-2">
-                        {trimmed.replace('###', '').trim()}
+                      <h4 key={index} className="text-sm font-bold text-cyan-400 mt-5 mb-2 uppercase tracking-wide border-l-2 border-cyan-500 pl-2.5">
+                        {renderMarkdownInline(trimmed.replace('###', '').trim())}
                       </h4>
                     );
                   }
                   if (trimmed.startsWith('##')) {
                     return (
-                      <h3 key={index} className="text-sm font-black text-white flex items-center gap-2 mt-5 mb-2.5 pb-1 border-b border-slate-900">
-                        <Sparkles size={14} className="text-purple-400" />
-                        <span>{trimmed.replace('##', '').trim()}</span>
+                      <h3 key={index} className="text-base sm:text-lg font-black text-white flex items-center gap-2 mt-6 mb-3 pb-1.5 border-b border-slate-800/80">
+                        <Sparkles size={16} className="text-purple-400 shrink-0" />
+                        <span>{renderMarkdownInline(trimmed.replace('##', '').trim())}</span>
                       </h3>
                     );
                   }
                   if (trimmed.startsWith('#')) {
                     return (
-                      <h2 key={index} className="text-base font-black text-transparent bg-clip-text tech-gradient-text mt-6 mb-3">
-                        {trimmed.replace('#', '').trim()}
+                      <h2 key={index} className="text-lg sm:text-xl font-black text-transparent bg-clip-text tech-gradient-text mt-7 mb-4">
+                        {renderMarkdownInline(trimmed.replace('#', '').trim())}
                       </h2>
                     );
                   }
                   if (trimmed.startsWith('*') || trimmed.startsWith('-')) {
+                    const cleanItem = trimmed.replace(/^[*+-]\s*/, '');
+                    if (cleanItem === '--' || cleanItem === '---') {
+                      return <hr key={index} className="border-slate-800/60 my-3" />;
+                    }
                     return (
-                      <div key={index} className="flex items-start gap-2 my-1 text-xs text-slate-300 ml-2">
-                        <span className="text-purple-500 mt-1 shrink-0">•</span>
-                        <span>{trimmed.replace(/^[*+-]\s*/, '')}</span>
+                      <div key={index} className="flex items-start gap-2.5 my-2 text-sm sm:text-[15px] text-slate-200 leading-relaxed ml-1 sm:ml-2">
+                        <span className="text-purple-400 mt-1 shrink-0 font-bold">•</span>
+                        <span className="break-words">{renderMarkdownInline(cleanItem)}</span>
                       </div>
                     );
                   }
                   if (!trimmed) return <div key={index} className="h-2"></div>;
-                  return <p key={index} className="text-xs text-slate-300 text-justify leading-relaxed">{trimmed}</p>;
+                  if (trimmed === '--' || trimmed === '---') {
+                    return <hr key={index} className="border-slate-800/60 my-3" />;
+                  }
+                  return (
+                    <p key={index} className="text-sm sm:text-[15px] text-slate-200 text-justify leading-relaxed sm:leading-7">
+                      {renderMarkdownInline(trimmed)}
+                    </p>
+                  );
                 })}
               </div>
 
