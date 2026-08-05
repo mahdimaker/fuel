@@ -176,7 +176,7 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
                 ) : (
                   <span className={`${levelInfo.scoreColor} font-black`}>{metrics.score}</span>
                 )}
-                <span className="text-sm sm:text-base text-slate-400 font-bold mr-1.5 ml-1.5 font-mono opacity-80">/100</span>
+                <span className="text-sm sm:text-base text-slate-300 font-bold mr-1.5 ml-1.5 font-mono">/100</span>
               </div>
               {metrics.isUnrated ? (
                 <span className="text-[11px] font-bold px-3.5 py-1 rounded-full border text-slate-400 bg-slate-900/80 border-slate-700/50 uppercase tracking-wider shadow-sm">

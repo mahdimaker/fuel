@@ -1021,19 +1021,21 @@ export default function App() {
           {/* Tab 1: Dashboard */}
           <button
             onClick={() => setActiveTab('dashboard')}
+            aria-label={t.tabDashboard}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'dashboard' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'dashboard' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Gauge size={20} />
             <span className="text-[10px] font-bold mt-1">{t.tabDashboard}</span>
           </button>
 
-          {/* Tab 2: Vehicles (New) */}
+          {/* Tab 2: Vehicles */}
           <button
             onClick={() => setActiveTab('vehicles')}
+            aria-label={t.tabVehicles}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'vehicles' ? 'text-purple-400 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'vehicles' ? 'text-purple-400 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Car size={20} />
@@ -1048,10 +1050,11 @@ export default function App() {
                 activeTab === 'refuel' ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950' : ''
               }`}
               title={t.tabRefuel}
+              aria-label={t.tabRefuel}
             >
               <Flame size={20} className="text-slate-950" />
             </button>
-            <span className={`text-[10px] font-extrabold mt-0.5 ${activeTab === 'refuel' ? 'text-cyan-400' : 'text-slate-400'}`}>
+            <span className={`text-[10px] font-extrabold mt-0.5 ${activeTab === 'refuel' ? 'text-cyan-400' : 'text-slate-300'}`}>
               {t.tabRefuel}
             </span>
           </div>
@@ -1059,8 +1062,9 @@ export default function App() {
           {/* Tab 4: History */}
           <button
             onClick={() => setActiveTab('history')}
+            aria-label={t.tabHistory}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'history' ? 'text-indigo-400 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'history' ? 'text-indigo-400 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <TrendingUp size={20} />
@@ -1070,8 +1074,9 @@ export default function App() {
           {/* Tab 5: AI Technician */}
           <button
             onClick={() => setActiveTab('ai')}
+            aria-label={t.tabAi}
             className={`flex flex-col items-center justify-center py-1 cursor-pointer transition-all ${
-              activeTab === 'ai' ? 'text-pink-400 font-bold' : 'text-slate-500 hover:text-slate-400'
+              activeTab === 'ai' ? 'text-pink-400 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Cpu size={20} />

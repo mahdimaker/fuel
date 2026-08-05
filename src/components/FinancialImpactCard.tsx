@@ -582,6 +582,8 @@ export default function FinancialImpactCard({ logs, fuelEfficiency, unitSystem, 
               <span className="font-mono text-cyan-400">{customTripDist} {distUnitName}</span>
             </div>
             <input
+              id="trip-distance-slider"
+              aria-label="Select Trip Distance"
               type="range"
               min="10"
               max="1000"

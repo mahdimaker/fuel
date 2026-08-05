@@ -140,7 +140,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
           <h2 className="text-sm font-extrabold uppercase tracking-widest text-white">
             Speed vs. Efficiency Simulator
           </h2>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-xs text-slate-400">
             Visualize how speed alters wind resistance and fuel economy
           </p>
         </div>
@@ -153,25 +153,25 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
       {/* Interactive Simulation Dashboard Grid */}
       <div className="grid grid-cols-2 gap-4 mb-5">
         <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">
             Fuel Burn Increase
           </span>
           <span className="text-2xl font-black font-mono text-rose-400 block tracking-tight">
             +{penaltyPct.toFixed(1)}%
           </span>
-          <span className="text-[10px] text-slate-400 mt-1 block font-semibold">
+          <span className="text-[10px] text-slate-300 mt-1 block font-semibold">
             Extra gasoline burnt
           </span>
         </div>
 
         <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">
             Wasted Cost Leak
           </span>
           <span className="text-2xl font-black font-mono text-amber-400 block tracking-tight">
             {currencyLabel === '$' ? `$${extraCost.toFixed(2)}` : currencyLabel === '£' ? `£${extraCost.toFixed(2)}` : `${extraCost.toFixed(2)} ${currencyLabel}`}
           </span>
-          <span className="text-[10px] text-slate-400 mt-1 block font-semibold">
+          <span className="text-[10px] text-slate-300 mt-1 block font-semibold">
             Per {unitLabel}
           </span>
         </div>
@@ -279,6 +279,7 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
 
           <input
             id="speed-simulator-slider"
+            aria-label="Cruising Speed"
             type="range"
             min={minSpeed}
             max={maxSpeed}

@@ -15,16 +15,16 @@ export default function SponsoredAdCard({ lang }: SponsoredAdCardProps) {
   return (
     <div id="sponsored-ad-card" className="cyber-card p-5 rounded-2xl border border-slate-900 bg-slate-950/80 text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/10">
       
-      <div className="flex items-center justify-between text-[10px] text-slate-600 font-extrabold tracking-widest uppercase mb-2">
+      <div className="flex items-center justify-between text-[10px] text-slate-400 font-extrabold tracking-widest uppercase mb-2">
         <span>Sponsored Diagnostics</span>
-        <span className="px-2 py-0.5 rounded bg-slate-900/80 border border-slate-800 text-[8px] font-sans">AD</span>
+        <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300 text-[9px] font-sans">AD</span>
       </div>
 
       <div className="flex flex-col items-center py-2 space-y-1.5">
-        <p className="text-xs font-black text-slate-300">
+        <p className="text-xs font-black text-slate-200">
           Premium Fuel Additives & Injector Cleaners
         </p>
-        <p className="text-[10px] text-slate-500 leading-relaxed max-w-md">
+        <p className="text-xs text-slate-300 leading-relaxed max-w-md">
           Using certified carbon-cleaning additives removes gum and combustion residues, recovering up to 5% engine output.
         </p>
         
