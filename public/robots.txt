@@ -1,3 +1,9 @@
 User-agent: *
 Allow: /
-Sitemap: https://fuel.cartools.app/sitemap.xml
+
+# Block Serverless / Cloudflare Functions and Backend endpoints
+Disallow: /functions/
+Disallow: /api/
+
+# Specify main site sitemap
+Sitemap: https://cartools.app/sitemap.xml

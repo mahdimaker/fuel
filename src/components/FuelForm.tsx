@@ -370,9 +370,9 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
               <input
                 type="range"
                 min={displayPrevOdo}
-                max={Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500)}
+                max={displayPrevOdo + 2000}
                 step={10}
-                value={Number(odometer) || displayPrevOdo}
+                value={Math.min(displayPrevOdo + 2000, Math.max(displayPrevOdo, Number(odometer) || displayPrevOdo))}
                 onChange={(e) => {
                   setOdometer(e.target.value);
                   runAutoDetect(liters, e.target.value);
@@ -382,7 +382,7 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
 
               <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
                 <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{Math.round(displayPrevOdo).toLocaleString()}</span>
-                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-400">+{(Math.max(displayPrevOdo + 2000, (Number(odometer) || displayPrevOdo) + 500) - displayPrevOdo).toLocaleString()}</span>
+                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-400">+2,000 {odoUnit}</span>
               </div>
             </div>
 

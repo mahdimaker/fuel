@@ -689,13 +689,6 @@ export default function App() {
                   </>
                 )}
 
-                {/* Technical Footer inside Left Column */}
-                <div className="pt-4 text-center bg-slate-950/10 p-4 rounded-2xl border border-slate-900/40">
-                  <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 font-medium">
-                    <Heart size={10} className="text-red-500/50" />
-                    <span>{t.offlineNote}</span>
-                  </div>
-                </div>
               </div>
 
               {/* Right Column (md:col-span-6) */}
@@ -770,9 +763,7 @@ export default function App() {
                 <div className="text-center py-16 bg-slate-950/40 border border-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={40} />
                   <p className="text-sm font-semibold text-slate-300">
-                    {lang === 'fa' 
-                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
-                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                    Please complete and save your vehicle profile in the Vehicles tab first.
                   </p>
                   <button
                     onClick={() => setActiveTab('vehicles')}
@@ -828,9 +819,7 @@ export default function App() {
                 <div className="text-center py-16 bg-slate-950/40 border border-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={40} />
                   <p className="text-sm font-semibold text-slate-300">
-                    {lang === 'fa' 
-                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
-                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                    Please complete and save your vehicle profile in the Vehicles tab first.
                   </p>
                 </div>
               )}
@@ -860,12 +849,10 @@ export default function App() {
                     <div className="space-y-4">
                       <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-cyan-500/20 p-4 rounded-2xl">
                         <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
-                          {lang === 'fa' ? 'ثبت اولین سوخت‌گیری' : 'Log Your First Refuel'}
+                          Log Your First Refuel
                         </h4>
                         <p className="text-[11px] text-slate-400 leading-relaxed">
-                          {lang === 'fa'
-                            ? 'برای فعال‌سازی سنسورهای تحلیلی و محاسبه امتیاز سلامت خودرو، لطفاً اولین سوخت‌گیری خود را در کادر زیر ثبت کنید.'
-                            : 'To activate diagnostic charts and calibrate your health index, please log your first fuel entry below.'}
+                          To activate diagnostic charts and calibrate your health index, please log your first fuel entry below.
                         </p>
                       </div>
                       <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={activeLogs} fuelCapacity={vehicle.fuelCapacity} />
@@ -901,15 +888,13 @@ export default function App() {
                   <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
                     <Car className="mx-auto text-slate-600 mb-2" size={32} />
                     <p className="text-xs text-slate-400">
-                      {lang === 'fa' 
-                        ? 'لطفاً ابتدا مشخصات خودروی خود را در تب خودروها تکمیل و ذخیره کنید تا امکان ثبت سوخت‌گیری فعال شود.' 
-                        : 'Please complete and save your vehicle profile in the Vehicles tab first to enable logs tracking.'}
+                      Please complete and save your vehicle profile in the Vehicles tab first to enable logs tracking.
                     </p>
                     <button
                       onClick={() => setActiveTab('vehicles')}
                       className="mt-3 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
                     >
-                      {lang === 'fa' ? 'ورود به تب خودروها' : 'Go to Vehicles'}
+                      Go to Vehicles
                     </button>
                   </div>
                 )}
@@ -939,15 +924,13 @@ export default function App() {
                 <div className="text-center py-12 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={36} />
                   <p className="text-xs font-semibold text-slate-300">
-                    {lang === 'fa' 
-                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
-                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                    Please complete and save your vehicle profile in the Vehicles tab first.
                   </p>
                   <button
                     onClick={() => setActiveTab('vehicles')}
                     className="mt-3 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
                   >
-                    {lang === 'fa' ? 'ورود به تب خودروها' : 'Go to Vehicles'}
+                    Go to Vehicles
                   </button>
                 </div>
               )
@@ -961,7 +944,7 @@ export default function App() {
                   onImportLogs={setLogs}
                   lang={lang} 
                   unitSystem={unitSystem} 
-                  title={lang === 'fa' ? 'خلاصه آخرین سوخت‌گیری‌ها' : 'Quick refuel overview'} 
+                  title="Quick refuel overview" 
                 />
                 {activeLogs.length === 1 ? (
                   <FirstRefuelBaselineCard 
@@ -996,21 +979,35 @@ export default function App() {
                 <div className="text-center py-12 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col items-center justify-center">
                   <Car className="mx-auto text-slate-600 mb-3 animate-pulse" size={36} />
                   <p className="text-xs font-semibold text-slate-300">
-                    {lang === 'fa' 
-                      ? 'لطفاً ابتدا در تب خودروها، مشخصات خودروی خود را تکمیل و ذخیره کنید.' 
-                      : 'Please complete and save your vehicle profile in the Vehicles tab first.'}
+                    Please complete and save your vehicle profile in the Vehicles tab first.
                   </p>
                 </div>
               )
             )}
           </div>
+        </div>
 
-          {/* Technical Footer for Mobile */}
-          <div className="pt-6 border-t border-slate-950 text-center">
-            <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-600 font-medium">
-              <Heart size={10} className="text-red-500/50" />
-              <span>{t.offlineNote}</span>
-            </div>
+        {/* Technical Footer (Desktop & Mobile) */}
+        <div className="pt-8 border-t border-slate-900/80 text-center space-y-2.5 pb-20 md:pb-6">
+          <div className="max-w-xl mx-auto px-4 text-xs text-slate-400 leading-relaxed">
+            <p>
+              Fuel Analyzer is a smart vehicle fuel consumption calculator and mileage log tracker designed to monitor fuel efficiency, calculate expenses, and optimize driving costs.
+            </p>
+            <p className="pt-1 font-medium">
+              <a 
+                href="https://cartools.app/tools/fuel-calculator" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-4 decoration-cyan-500/40 hover:decoration-cyan-400 transition-all inline-flex items-center gap-1"
+              >
+                <span>Fuel Calculator Tool Overview</span>
+                <span className="text-[10px]">↗</span>
+              </a>
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-600 font-medium">
+            <Heart size={10} className="text-red-500/50" />
+            <span>{t.offlineNote}</span>
           </div>
         </div>
       </main>
@@ -1102,7 +1099,7 @@ export default function App() {
             </div>
             <div className="space-y-1.5">
               <h3 className="text-base font-bold text-slate-100">
-                {lang === 'fa' ? 'حذف کل اطلاعات؟' : 'Reset All Local Analytics?'}
+                Reset All Local Analytics?
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 {t.confirmReset}
@@ -1114,14 +1111,14 @@ export default function App() {
                 onClick={handleConfirmReset}
                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer transition-all active:scale-95"
               >
-                {lang === 'fa' ? 'بله، بازنشانی شود' : 'Yes, reset everything'}
+                Yes, reset everything
               </button>
               <button
                 id="cancel-reset-btn"
                 onClick={() => setShowResetConfirm(false)}
                 className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 px-4 rounded-xl text-xs cursor-pointer transition-all"
               >
-                {lang === 'fa' ? 'انصراف' : 'Cancel'}
+                Cancel
               </button>
             </div>
           </div>

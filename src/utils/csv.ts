@@ -110,13 +110,13 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
     // Strip BOM if present
     const cleanText = csvText.replace(/^\uFEFF/, '').trim();
     if (!cleanText) {
-      return { success: false, importedLogs: existingLogs, newCount: 0, duplicateCount: 0, error: 'فایل CSV خالی است.' };
+      return { success: false, importedLogs: existingLogs, newCount: 0, duplicateCount: 0, error: 'CSV file is empty.' };
     }
 
     // Split lines cleanly handling \r\n and \n
     const lines = cleanText.split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (lines.length < 2) {
-      return { success: false, importedLogs: existingLogs, newCount: 0, duplicateCount: 0, error: 'فایل CSV شامل داده‌های کافی نیست.' };
+      return { success: false, importedLogs: existingLogs, newCount: 0, duplicateCount: 0, error: 'CSV file does not contain enough data.' };
     }
 
     const rawHeaders = parseCSVLine(lines[0]).map((h) => h.toLowerCase().trim());
@@ -126,16 +126,16 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
       return rawHeaders.findIndex((h) => keys.some((k) => h === k.toLowerCase() || h.includes(k.toLowerCase())));
     };
 
-    const idIdx = getIndex('id', 'آیدی');
-    const dateIdx = getIndex('date', 'تاریخ');
-    const odoIdx = getIndex('odometer', 'کیلومتر', 'کارکرد', 'km', 'odo');
-    const litersIdx = getIndex('liters', 'لیتر', 'حجم', 'volume', 'lit');
-    const costIdx = getIndex('cost', 'مبلغ', 'هزینه', 'قیمت', 'price');
-    const fuelTypeIdx = getIndex('fueltype', 'نوع سوخت', 'سوخت', 'fuel');
-    const fullTankIdx = getIndex('fulltank', 'باک کامل', 'پر');
-    const stationIdx = getIndex('stationname', 'جایگاه', 'پمپ بنزین', 'station');
-    const missedIdx = getIndex('missedrefuel', 'جاماندگی');
-    const notesIdx = getIndex('notes', 'یادداشت', 'توضیحات', 'note');
+    const idIdx = getIndex('id');
+    const dateIdx = getIndex('date');
+    const odoIdx = getIndex('odometer', 'km', 'odo');
+    const litersIdx = getIndex('liters', 'volume', 'lit');
+    const costIdx = getIndex('cost', 'price');
+    const fuelTypeIdx = getIndex('fueltype', 'fuel');
+    const fullTankIdx = getIndex('fulltank', 'full');
+    const stationIdx = getIndex('stationname', 'station');
+    const missedIdx = getIndex('missedrefuel');
+    const notesIdx = getIndex('notes', 'note');
 
     if (dateIdx === -1 || odoIdx === -1 || litersIdx === -1 || costIdx === -1) {
       return {
@@ -143,7 +143,7 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
         importedLogs: existingLogs,
         newCount: 0,
         duplicateCount: 0,
-        error: 'ستون‌های اصلی (تاریخ، کیلومتر، لیتر، هزینه) در فایل پیدا نشدند.',
+        error: 'Required columns (Date, Odometer, Liters, Cost) were not found in CSV.',
       };
     }
 
@@ -178,17 +178,17 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
       let fuelType: FuelType = 'regular';
       if (fuelTypeIdx !== -1 && row[fuelTypeIdx]) {
         const ft = row[fuelTypeIdx].toLowerCase();
-        if (ft.includes('super') || ft.includes('سوپر')) fuelType = 'super';
-        else if (ft.includes('diesel') || ft.includes('دیزل')) fuelType = 'diesel';
-        else if (ft.includes('hybrid') || ft.includes('هیبرید')) fuelType = 'hybrid';
-        else if (ft.includes('gas') || ft.includes('گاز') || ft.includes('cng') || ft.includes('lpg')) fuelType = 'gas';
+        if (ft.includes('super') || ft.includes('premium')) fuelType = 'super';
+        else if (ft.includes('diesel')) fuelType = 'diesel';
+        else if (ft.includes('hybrid')) fuelType = 'hybrid';
+        else if (ft.includes('gas') || ft.includes('cng') || ft.includes('lpg')) fuelType = 'gas';
       }
 
       const rawFullTank = fullTankIdx !== -1 ? row[fullTankIdx] : 'true';
       const fullTank = rawFullTank.toLowerCase() !== 'false' && rawFullTank !== '0' && rawFullTank.toLowerCase() !== 'no';
 
       const rawMissed = missedIdx !== -1 ? row[missedIdx] : 'false';
-      const missedRefuel = rawMissed.toLowerCase() === 'true' || rawMissed === '1' || rawMissed.toLowerCase() === 'yes' || rawMissed.toLowerCase() === 'بله';
+      const missedRefuel = rawMissed.toLowerCase() === 'true' || rawMissed === '1' || rawMissed.toLowerCase() === 'yes';
 
       const entryId = rawId || `imported-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
@@ -216,7 +216,7 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
         importedLogs: existingLogs,
         newCount: 0,
         duplicateCount,
-        error: duplicateCount > 0 ? 'تمام رکوردهای این فایل قبلاً در سیستم وجود داشته‌اند.' : 'هیچ رکورد معتبری در فایل پیدا نشد.',
+        error: duplicateCount > 0 ? 'All records in this file already exist in the system.' : 'No valid records found in the CSV file.',
       };
     }
 
@@ -236,7 +236,7 @@ export function importLogsFromCSV(csvText: string, existingLogs: FuelEntry[]): C
       importedLogs: existingLogs,
       newCount: 0,
       duplicateCount: 0,
-      error: err?.message || 'خطا در خوندن فایل CSV',
+      error: err?.message || 'Error reading CSV file',
     };
   }
 }

@@ -52,13 +52,8 @@ export default function HealthScoreCard({ metrics, onRecalculate, lang, hideScor
 
   const levelInfo = getLevelInfo(metrics.level);
 
-  // Translate warning recommendations or messages
+  // Return message text directly
   const getTranslatedMessage = (msg: string) => {
-    if (msg.includes('نوسان شدید')) return 'Warning: High volatility in consumption efficiency detected.';
-    if (msg.includes('فشار کارکرد موتور')) return 'Odometer suggests maintenance cycle is near.';
-    if (msg.includes('سوخت باکیفیت')) return 'Switch to premium/super fuel occasionally to clear engine residue.';
-    if (msg.includes('راندمان سوخت عالی')) return 'Excellent fuel efficiency. Maintain current driving habits!';
-    if (msg.includes('سرویس دوره‌ای')) return 'Spark plugs and throttle body cleaning recommended.';
     return msg;
   };
 

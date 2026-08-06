@@ -11,7 +11,12 @@ interface SponsoredAdCardProps {
   lang?: Language;
 }
 
+// Set to true when you want to enable advertisements again
+const SHOW_ADS = false;
+
 export default function SponsoredAdCard({ lang }: SponsoredAdCardProps) {
+  if (!SHOW_ADS) return null;
+
   return (
     <div id="sponsored-ad-card" className="cyber-card p-5 rounded-2xl border border-slate-900 bg-slate-950/80 text-center relative overflow-hidden transition-all duration-300 hover:border-cyan-500/10">
       
