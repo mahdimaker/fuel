@@ -5,18 +5,20 @@
 
 import React, { useState, useRef } from 'react';
 import { Download, Upload, FileSpreadsheet, CheckCircle2, AlertCircle, X } from 'lucide-react';
-import { FuelEntry } from '../types';
+import { FuelEntry, VehicleInfo } from '../types';
 import { Language } from '../utils/translations';
 import { exportLogsToCSV, importLogsFromCSV } from '../utils/csv';
 
 interface CSVDataManagementCardProps {
   logs: FuelEntry[];
-  onImportLogs?: (newLogs: FuelEntry[]) => void;
+  vehicles?: VehicleInfo[];
+  onImportLogs?: (newLogs: FuelEntry[], newVehicles?: VehicleInfo[]) => void;
   lang?: Language;
 }
 
 export default function CSVDataManagementCard({
   logs,
+  vehicles = [],
   onImportLogs,
 }: CSVDataManagementCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,7 +26,7 @@ export default function CSVDataManagementCard({
 
   const handleExportCSV = () => {
     if (logs.length === 0) return;
-    exportLogsToCSV(logs);
+    exportLogsToCSV(logs, vehicles);
   };
 
   const handleImportClick = () => {
@@ -43,12 +45,16 @@ export default function CSVDataManagementCard({
       const text = event.target?.result as string;
       if (!text) return;
 
-      const result = importLogsFromCSV(text, logs);
-      if (result.success && result.newCount > 0) {
+      const result = importLogsFromCSV(text, logs, vehicles);
+      if (result.success && (result.newCount > 0 || (result.importedVehicles && result.importedVehicles.length > 0))) {
         if (onImportLogs) {
-          onImportLogs(result.importedLogs);
+          onImportLogs(result.importedLogs, result.importedVehicles);
         }
-        const msg = `Successfully imported ${result.newCount} new record(s).${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
+        const vehNames = result.importedVehicles && result.importedVehicles.length > 0
+          ? result.importedVehicles.map(v => `${v.brand} ${v.model}`.trim()).filter(Boolean).join(', ')
+          : '';
+        const vehMsg = vehNames ? ` & Restored vehicle(s): ${vehNames}` : '';
+        const msg = `Successfully imported ${result.newCount} record(s)${vehMsg}.${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
         setImportNotice({ type: 'success', message: msg });
       } else if (result.success && result.newCount === 0) {
         setImportNotice({
@@ -58,7 +64,7 @@ export default function CSVDataManagementCard({
       } else {
         setImportNotice({
           type: 'error',
-          message: result.error || 'Failed to import CSV file.',
+          message: result.error || 'Failed to import backup file.',
         });
       }
     };
@@ -67,11 +73,11 @@ export default function CSVDataManagementCard({
 
   return (
     <div id="csv-data-management-card" className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
-      {/* Hidden File Input */}
+      {/* Hidden File Input supporting CSV and JSON */}
       <input
         type="file"
         ref={fileInputRef}
-        accept=".csv"
+        accept=".csv,.json"
         onChange={handleFileChange}
         className="hidden"
       />
@@ -83,10 +89,10 @@ export default function CSVDataManagementCard({
           </div>
           <div>
             <h3 className="text-xs font-bold text-slate-200">
-              CSV Data Backup & Management
+              Data Backup & Import
             </h3>
             <p className="text-[11px] text-slate-400">
-              Export logs to Excel/CSV or import existing data
+              Export logs & vehicle profiles to CSV/JSON or import backup data
             </p>
           </div>
         </div>
@@ -100,7 +106,7 @@ export default function CSVDataManagementCard({
                 ? 'bg-slate-950 hover:bg-slate-800 border border-cyan-500/30 text-cyan-400 hover:text-cyan-300'
                 : 'bg-slate-950/40 border border-slate-900 text-slate-600 cursor-not-allowed'
             }`}
-            title="Download CSV Backup"
+            title="Download CSV Backup (includes vehicles)"
           >
             <Download size={14} />
             <span>Export CSV</span>
@@ -109,10 +115,10 @@ export default function CSVDataManagementCard({
           <button
             onClick={handleImportClick}
             className="px-3.5 py-2 rounded-xl bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/30 text-purple-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
-            title="Import CSV File"
+            title="Import CSV or JSON Backup File"
           >
             <Upload size={14} />
-            <span>Import CSV</span>
+            <span>Import Data</span>
           </button>
         </div>
       </div>
@@ -136,3 +142,4 @@ export default function CSVDataManagementCard({
     </div>
   );
 }
+

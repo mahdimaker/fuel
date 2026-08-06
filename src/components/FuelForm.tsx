@@ -380,9 +380,13 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
                 className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
 
-              <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 font-mono font-bold pt-1">
-                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">{Math.round(displayPrevOdo).toLocaleString()}</span>
-                <span className="bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800 text-indigo-400">+2,000 {odoUnit}</span>
+              <div className="flex items-center justify-between text-xs font-mono pt-1">
+                <span className="text-[11px] font-medium text-slate-400">
+                  Max:
+                </span>
+                <span className="bg-slate-900/90 px-2.5 py-1 rounded border border-slate-800 text-slate-100 font-black text-sm shadow-sm">
+                  +2,000 {odoUnit}
+                </span>
               </div>
             </div>
 

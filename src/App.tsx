@@ -137,6 +137,15 @@ const detectDefaultUnitSystem = (): 'metric' | 'us' | 'uk' => {
   return 'metric';
 };
 
+const DEFAULT_VEHICLE: VehicleInfo = {
+  id: 'veh-1',
+  brand: '',
+  model: '',
+  year: '2026',
+  fuelCapacity: 50,
+  currentOdometer: 0
+};
+
 export default function App() {
   // State 1: Language (Hardcoded English only)
   const [lang, setLang] = useState<Language>('en');
@@ -187,14 +196,9 @@ export default function App() {
   });
 
   // Active Vehicle Object derived from state
-  const vehicle = vehicles.find(v => v.id === activeVehicleId) || vehicles[0] || {
-    id: 'veh-1',
-    brand: '',
-    model: '',
-    year: '2026',
-    fuelCapacity: 50,
-    currentOdometer: 0
-  };
+  const vehicle = useMemo(() => {
+    return vehicles.find(v => v.id === activeVehicleId) || vehicles[0] || DEFAULT_VEHICLE;
+  }, [vehicles, activeVehicleId]);
 
   // State 5: Fuel Entry Logs (Global logs array across all vehicles)
   const [logs, setLogs] = useState<FuelEntry[]>(() => {
@@ -248,14 +252,12 @@ export default function App() {
   const [showShareNotification, setShowShareNotification] = useState<boolean>(false);
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
 
-  // Automatically switch tab when no vehicles exist or when adding logs
+  // Automatically switch tab when no vehicles exist
   useEffect(() => {
     if (vehicles.length === 0) {
       setActiveTab('vehicles');
-    } else if (activeLogs.length > 0 && activeTab === 'refuel') {
-      setActiveTab('dashboard');
     }
-  }, [vehicles.length, activeLogs.length]);
+  }, [vehicles.length]);
 
   // Scroll to top on tab changes to fix mobile scroll persistence bug
   useEffect(() => {
@@ -283,7 +285,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('en_vehicles', JSON.stringify(vehicles));
     localStorage.setItem('en_active_vehicle_id', activeVehicleId);
-    if (vehicle) {
+    if (vehicle && vehicle.brand) {
       localStorage.setItem('en_vehicle', JSON.stringify(vehicle));
     }
   }, [vehicles, activeVehicleId, vehicle]);
@@ -291,14 +293,24 @@ export default function App() {
   // Sync logs to localStorage & automatically calibrate odometer for active vehicle
   useEffect(() => {
     localStorage.setItem('en_logs', JSON.stringify(logs));
-    if (activeLogs.length > 0) {
-      const sorted = [...activeLogs].sort((a, b) => b.odometer - a.odometer);
-      const maxOdo = sorted[0].odometer;
-      if (maxOdo > vehicle.currentOdometer) {
-        setVehicles(prev => prev.map(v => v.id === vehicle.id ? { ...v, currentOdometer: maxOdo } : v));
+    if (vehicles.length > 0 && vehicle.id) {
+      const defaultId = vehicles[0]?.id || 'veh-1';
+      const activeVehicleLogs = logs.filter(log => {
+        if (log.vehicleId) {
+          return log.vehicleId === vehicle.id;
+        }
+        return vehicle.id === defaultId;
+      });
+
+      if (activeVehicleLogs.length > 0) {
+        const maxOdo = Math.max(...activeVehicleLogs.map(l => l.odometer));
+        const targetVehicle = vehicles.find(v => v.id === vehicle.id);
+        if (targetVehicle && maxOdo > targetVehicle.currentOdometer) {
+          setVehicles(prev => prev.map(v => v.id === vehicle.id ? { ...v, currentOdometer: maxOdo } : v));
+        }
       }
     }
-  }, [logs, activeLogs, vehicle.id, vehicle.currentOdometer]);
+  }, [logs]);
 
   const handleToggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -342,6 +354,32 @@ export default function App() {
       }
       return filtered;
     });
+  };
+
+  const handleImportData = (importedLogs: FuelEntry[], importedVehicles?: VehicleInfo[]) => {
+    setLogs(importedLogs);
+    if (importedVehicles && importedVehicles.length > 0) {
+      setVehicles(prev => {
+        const existingIds = new Set(prev.map(v => v.id));
+        const newVehs = [...prev];
+        for (const iv of importedVehicles) {
+          if (!existingIds.has(iv.id)) {
+            const emptyIdx = newVehs.findIndex(v => !v.brand || v.brand.trim() === '');
+            if (emptyIdx !== -1) {
+              newVehs[emptyIdx] = iv;
+            } else {
+              newVehs.push(iv);
+            }
+            existingIds.add(iv.id);
+          }
+        }
+        return newVehs;
+      });
+
+      if (importedVehicles[0]?.id) {
+        setActiveVehicleId(importedVehicles[0].id);
+      }
+    }
   };
 
   const handleAddFuelEntry = (newEntry: Omit<FuelEntry, 'id'>) => {
@@ -780,8 +818,9 @@ export default function App() {
             <div className="space-y-6 max-w-4xl mx-auto">
               <FuelLogsList 
                 logs={activeLogs} 
+                vehicles={vehicles}
                 onDeleteEntry={handleDeleteLog} 
-                onImportLogs={setLogs}
+                onImportLogs={handleImportData}
                 lang={lang} 
                 unitSystem={unitSystem} 
               />
@@ -794,7 +833,7 @@ export default function App() {
               ) : (
                 <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
               )}
-              <CSVDataManagementCard logs={activeLogs} onImportLogs={setLogs} lang={lang} />
+              <CSVDataManagementCard logs={activeLogs} vehicles={vehicles} onImportLogs={handleImportData} lang={lang} />
               <div className="pt-2 text-center">
                 <button
                   id="reset-all-data-history-desktop"
@@ -940,8 +979,9 @@ export default function App() {
               <div className="space-y-6">
                 <FuelLogsList 
                   logs={activeLogs} 
+                  vehicles={vehicles}
                   onDeleteEntry={handleDeleteLog} 
-                  onImportLogs={setLogs}
+                  onImportLogs={handleImportData}
                   lang={lang} 
                   unitSystem={unitSystem} 
                   title="Quick refuel overview" 
@@ -955,7 +995,7 @@ export default function App() {
                 ) : (
                   <CostAnalysisCharts logs={activeLogs} lang={lang} unitSystem={unitSystem} />
                 )}
-                <CSVDataManagementCard logs={activeLogs} onImportLogs={setLogs} lang={lang} />
+                <CSVDataManagementCard logs={activeLogs} vehicles={vehicles} onImportLogs={handleImportData} lang={lang} />
                 <div className="pt-2 text-center">
                   <button
                     id="reset-all-data-history-mobile"

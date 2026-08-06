@@ -10,15 +10,16 @@ import {
   Gauge, Droplets, ArrowUpDown, MapPin, Search, Filter, TrendingUp, 
   Coins, Sparkles, SlidersHorizontal, Layers, BarChart3, Tag
 } from 'lucide-react';
-import { FuelEntry } from '../types';
+import { FuelEntry, VehicleInfo } from '../types';
 import { translations, Language } from '../utils/translations';
 import { calculateLogEfficiencies } from '../utils/calculator';
 import { exportLogsToCSV, importLogsFromCSV } from '../utils/csv';
 
 interface FuelLogsListProps {
   logs: FuelEntry[];
+  vehicles?: VehicleInfo[];
   onDeleteEntry: (id: string) => void;
-  onImportLogs?: (newLogs: FuelEntry[]) => void;
+  onImportLogs?: (newLogs: FuelEntry[], newVehicles?: VehicleInfo[]) => void;
   onResetLogs?: () => void;
   lang: Language;
   unitSystem: 'metric' | 'us' | 'uk';
@@ -32,6 +33,7 @@ export type DateRangeFilter = 'all' | '30days' | '90days' | 'year';
 
 export default function FuelLogsList({ 
   logs, 
+  vehicles = [],
   onDeleteEntry, 
   onImportLogs, 
   onResetLogs,
@@ -65,7 +67,7 @@ export default function FuelLogsList({
   // Handle Export CSV
   const handleExportCSV = () => {
     if (logs.length === 0) return;
-    exportLogsToCSV(logs);
+    exportLogsToCSV(logs, vehicles);
   };
 
   // Trigger File Input Click
@@ -86,12 +88,16 @@ export default function FuelLogsList({
       const text = event.target?.result as string;
       if (!text) return;
 
-      const result = importLogsFromCSV(text, logs);
-      if (result.success && result.newCount > 0) {
+      const result = importLogsFromCSV(text, logs, vehicles);
+      if (result.success && (result.newCount > 0 || (result.importedVehicles && result.importedVehicles.length > 0))) {
         if (onImportLogs) {
-          onImportLogs(result.importedLogs);
+          onImportLogs(result.importedLogs, result.importedVehicles);
         }
-        const msg = `Successfully imported ${result.newCount} new record(s).${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
+        const vehNames = result.importedVehicles && result.importedVehicles.length > 0
+          ? result.importedVehicles.map(v => `${v.brand} ${v.model}`.trim()).filter(Boolean).join(', ')
+          : '';
+        const vehMsg = vehNames ? ` & Restored vehicle(s): ${vehNames}` : '';
+        const msg = `Successfully imported ${result.newCount} record(s)${vehMsg}.${result.duplicateCount > 0 ? ` (${result.duplicateCount} duplicates skipped)` : ''}`;
         setImportNotice({ type: 'success', message: msg });
       } else if (result.success && result.newCount === 0) {
         setImportNotice({
@@ -101,7 +107,7 @@ export default function FuelLogsList({
       } else {
         setImportNotice({
           type: 'error',
-          message: result.error || 'Failed to import CSV file.',
+          message: result.error || 'Failed to import backup file.',
         });
       }
     };
@@ -250,7 +256,7 @@ export default function FuelLogsList({
         <input
           type="file"
           ref={fileInputRef}
-          accept=".csv"
+          accept=".csv,.json"
           onChange={handleFileChange}
           className="hidden"
         />
@@ -316,11 +322,11 @@ export default function FuelLogsList({
 
   return (
     <div id="logs-list-card" className="space-y-4">
-      {/* Hidden File Input for CSV Import */}
+      {/* Hidden File Input for CSV/JSON Import */}
       <input
         type="file"
         ref={fileInputRef}
-        accept=".csv"
+        accept=".csv,.json"
         onChange={handleFileChange}
         className="hidden"
       />

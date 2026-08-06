@@ -94,7 +94,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       setSelectedBrand('');
       setSelectedModel('');
     }
-  }, [vehicle, unitSystem, isMetric, isUs, isUk]);
+  }, [vehicle.id, vehicle.brand, vehicle.model, vehicle.year, vehicle.fuelCapacity, vehicle.currentOdometer, unitSystem, isMetric, isUs, isUk]);
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const b = e.target.value;
