@@ -35,6 +35,7 @@ import EfficiencyIssuesCard from './components/EfficiencyIssuesCard';
 import SponsoredAdCard from './components/SponsoredAdCard';
 import FirstRefuelBaselineCard from './components/FirstRefuelBaselineCard';
 import CSVDataManagementCard from './components/CSVDataManagementCard';
+import DashboardView from './components/DashboardView';
 import AppIcon from './components/AppIcon';
 import BrandLogo from './components/BrandLogo';
 import { calculateLogEfficiencies } from './utils/calculator';
@@ -688,93 +689,19 @@ export default function App() {
         {/* DESKTOP CONTENT VIEW */}
         <div className="hidden md:block">
           {activeTab === 'dashboard' && (
-            <div className="grid grid-cols-12 gap-6 items-start">
-              {/* Left Column (md:col-span-6) */}
-              <div className="md:col-span-6 space-y-6">
-                {/* 1. Quick Vehicle Status Summary Card / Profile */}
-                <QuickVehicleStatusCard 
-                  vehicle={vehicle} 
-                  healthMetrics={healthMetrics} 
-                  logs={logs} 
-                  unitSystem={unitSystem} 
-                  lang={lang} 
-                  onNavigateToVehicles={() => setActiveTab('vehicles')}
-                  onNavigateToRefuel={() => setActiveTab('refuel')}
-                />
-
-                {vehicle.brand && (
-                  <>
-                    {/* 2. Fuel Consumption */}
-                    <div>
-                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} fuelCapacity={vehicle.fuelCapacity} />
-                    </div>
-
-                    {/* 3. Vehicle Health Score (VHS) */}
-                    <div>
-                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
-                    </div>
-
-                    {/* 4. Efficiency Health Checklist */}
-                    <div>
-                      <EfficiencyIssuesCard 
-                        lastLogEfficiency={lastLogEfficiency} 
-                        averageEfficiency={averageEfficiency} 
-                        lang={lang} 
-                        currentOdometer={vehicle.currentOdometer}
-                        unitSystem={unitSystem}
-                      />
-                    </div>
-                  </>
-                )}
-
-              </div>
-
-              {/* Right Column (md:col-span-6) */}
-              <div className="md:col-span-6 space-y-6">
-                {/* 1. Log New Refueling Quick Access */}
-                {vehicle.brand ? (
-                  <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={logs} fuelCapacity={vehicle.fuelCapacity} />
-                ) : (
-                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
-                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
-                    <p className="text-xs text-slate-400">Save vehicle profile first in Vehicles tab to unlock refuel logging.</p>
-                  </div>
-                )}
-
-                {vehicle.brand ? (
-                  <>
-                    {/* 2. Financial Impact */}
-                    <div>
-                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} vehicle={vehicle} />
-                    </div>
-
-                    {/* 3. Speed vs. Efficiency Simulator */}
-                    <div>
-                      <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
-                    </div>
-
-                    {/* Sponsored Ads Slot */}
-                    <div>
-                      <SponsoredAdCard lang={lang} />
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-20 bg-slate-950/20 border border-slate-900 rounded-2xl p-10 flex flex-col items-center justify-center h-[400px]">
-                    <Car className="text-slate-700 mb-4 animate-pulse" size={48} />
-                    <h3 className="text-base font-bold text-slate-300">Awaiting Vehicle Information</h3>
-                    <p className="text-xs text-slate-500 mt-2 max-w-sm leading-relaxed">
-                      Complete and save your car details in the Vehicles tab to calibrate diagnostic sensors.
-                    </p>
-                    <button
-                      onClick={() => setActiveTab('vehicles')}
-                      className="mt-4 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold hover:opacity-90 cursor-pointer"
-                    >
-                      Go to Vehicles
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <DashboardView 
+              vehicle={vehicle}
+              activeLogs={activeLogs}
+              logs={logs}
+              healthMetrics={healthMetrics}
+              averageEfficiency={averageEfficiency}
+              lastLogEfficiency={lastLogEfficiency}
+              unitSystem={unitSystem}
+              lang={lang}
+              onNavigateToVehicles={() => setActiveTab('vehicles')}
+              onNavigateToRefuel={() => setActiveTab('refuel')}
+              onAddFuelEntry={handleAddFuelEntry}
+            />
           )}
 
           {activeTab === 'vehicles' && (
@@ -871,73 +798,19 @@ export default function App() {
           {/* Mobile View Router */}
           <div className="space-y-6">
             {activeTab === 'dashboard' && (
-              <>
-                {/* Quick Vehicle Operational Status Summary Card at top of Mobile Dashboard */}
-                <QuickVehicleStatusCard 
-                  vehicle={vehicle} 
-                  healthMetrics={healthMetrics} 
-                  logs={activeLogs} 
-                  unitSystem={unitSystem} 
-                  lang={lang} 
-                  onNavigateToVehicles={() => setActiveTab('vehicles')}
-                  onNavigateToRefuel={() => setActiveTab('refuel')}
-                />
-
-                {vehicle.brand ? (
-                  activeLogs.length === 0 ? (
-                    <div className="space-y-4">
-                      <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-cyan-500/20 p-4 rounded-2xl">
-                        <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-1">
-                          Log Your First Refuel
-                        </h4>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">
-                          To activate diagnostic charts and calibrate your health index, please log your first fuel entry below.
-                        </p>
-                      </div>
-                      <FuelForm currentOdometer={vehicle.currentOdometer} onAddEntry={handleAddFuelEntry} lang={lang} unitSystem={unitSystem} logs={activeLogs} fuelCapacity={vehicle.fuelCapacity} />
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {/* 1. Fuel Consumption */}
-                      <EfficiencyHeroCard fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} logs={activeLogs} isEstimated={healthMetrics.isEstimated} fuelCapacity={vehicle.fuelCapacity} />
-                      
-                      {/* 2. Financial Impact */}
-                      <FinancialImpactCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} vehicle={vehicle} />
-                      
-                      {/* 3. Speed vs. Efficiency Simulator */}
-                      <SpeedSimulatorCard logs={activeLogs} fuelEfficiency={averageEfficiency} lang={lang} unitSystem={unitSystem} />
-                      
-                      {/* 4. Vehicle Health Score (VHS) */}
-                      <HealthScoreCard metrics={healthMetrics} lang={lang} hideAlerts={true} />
-                      
-                      {/* 5. Efficiency Health Checklist */}
-                      <EfficiencyIssuesCard 
-                        lastLogEfficiency={lastLogEfficiency} 
-                        averageEfficiency={averageEfficiency} 
-                        lang={lang} 
-                        currentOdometer={vehicle.currentOdometer}
-                        unitSystem={unitSystem}
-                      />
-                      
-                      {/* Google Ads Placement Slot */}
-                      <SponsoredAdCard lang={lang} />
-                    </div>
-                  )
-                ) : (
-                  <div className="text-center py-10 bg-slate-950/40 border border-slate-900 rounded-2xl p-6">
-                    <Car className="mx-auto text-slate-600 mb-2" size={32} />
-                    <p className="text-xs text-slate-400">
-                      Please complete and save your vehicle profile in the Vehicles tab first to enable logs tracking.
-                    </p>
-                    <button
-                      onClick={() => setActiveTab('vehicles')}
-                      className="mt-3 px-4 py-2 rounded-xl tech-gradient text-white text-xs font-bold cursor-pointer"
-                    >
-                      Go to Vehicles
-                    </button>
-                  </div>
-                )}
-              </>
+              <DashboardView 
+                vehicle={vehicle}
+                activeLogs={activeLogs}
+                logs={logs}
+                healthMetrics={healthMetrics}
+                averageEfficiency={averageEfficiency}
+                lastLogEfficiency={lastLogEfficiency}
+                unitSystem={unitSystem}
+                lang={lang}
+                onNavigateToVehicles={() => setActiveTab('vehicles')}
+                onNavigateToRefuel={() => setActiveTab('refuel')}
+                onAddFuelEntry={handleAddFuelEntry}
+              />
             )}
 
             {activeTab === 'vehicles' && (

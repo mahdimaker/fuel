@@ -54,6 +54,7 @@ export default function Vehicles({
   const [newYear, setNewYear] = useState<string>('2026');
   const [newCapacity, setNewCapacity] = useState<number>(50);
   const [newOdometer, setNewOdometer] = useState<number | ''>('');
+  const [newBodyType, setNewBodyType] = useState<'compact' | 'crossover' | 'suv'>('crossover');
   const [selectedBrand, setSelectedBrand] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
 
@@ -64,6 +65,7 @@ export default function Vehicles({
   const [editYear, setEditYear] = useState<string>('');
   const [editCapacity, setEditCapacity] = useState<number>(50);
   const [editOdometer, setEditOdometer] = useState<number | ''>('');
+  const [editBodyType, setEditBodyType] = useState<'compact' | 'crossover' | 'suv'>('crossover');
 
   // Extract unique brands for preset dropdown
   const uniqueBrands = Array.from(new Set(baseVehiclesEn.map(v => v.brand))).sort();
@@ -112,6 +114,15 @@ export default function Vehicles({
       if (match) {
         setNewCapacity(isUs ? Number((match.fuelCapacity * LITERS_TO_GALLONS).toFixed(1)) : match.fuelCapacity);
       }
+      // Auto-detect body type
+      const lower = m.toLowerCase();
+      if (/tahoe|suburban|expedition|f-150|tundra|tacoma|silverado|colorado|pilot|bronco|armada|sequoia|land cruiser/.test(lower)) {
+        setNewBodyType('suv');
+      } else if (/rav4|cr-v|explorer|escape|edge|equinox|highlander|hr-v|c-hr|trax|rogue|cx-|forester|outback|sportage|tucson/.test(lower)) {
+        setNewBodyType('crossover');
+      } else if (/civic|corolla|camry|accord|prius|golf|jetta|fit|yaris|focus|fusion|mustang|malibu|cruze|insight|impreza|3|6/.test(lower)) {
+        setNewBodyType('compact');
+      }
     } else {
       setNewModel('');
     }
@@ -129,7 +140,8 @@ export default function Vehicles({
       model: newModel,
       year: newYear || '2026',
       fuelCapacity: Number(capacityInLiters),
-      currentOdometer: Number(odoInKm) || 0
+      currentOdometer: Number(odoInKm) || 0,
+      bodyType: newBodyType,
     });
 
     // Reset Form
@@ -138,6 +150,7 @@ export default function Vehicles({
     setNewYear('2026');
     setNewCapacity(50);
     setNewOdometer('');
+    setNewBodyType('crossover');
     setSelectedBrand('');
     setSelectedModel('');
     setShowAddForm(false);
@@ -150,6 +163,7 @@ export default function Vehicles({
     setEditYear(v.year || '2026');
     setEditCapacity(isUs ? Number((v.fuelCapacity * LITERS_TO_GALLONS).toFixed(1)) : v.fuelCapacity);
     setEditOdometer(isMetric ? Math.round(v.currentOdometer) : Math.round(v.currentOdometer * KM_TO_MILES));
+    setEditBodyType(v.bodyType || 'crossover');
   };
 
   const handleSaveEdit = (e: React.FormEvent) => {
@@ -166,6 +180,7 @@ export default function Vehicles({
       year: editYear || '2026',
       fuelCapacity: Number(capacityInLiters),
       currentOdometer: Number(odoInKm) || 0,
+      bodyType: editBodyType,
     });
 
     setEditingVehicleId(null);
@@ -207,104 +222,67 @@ export default function Vehicles({
         {/* Registration Form */}
         {showAddForm && (
           <form onSubmit={handleCreateVehicle} className="space-y-4 pt-1 animate-fadeIn">
-            {/* Brand Logos Grid */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Grid size={13} className="text-cyan-400" />
-                <span>Select Car Brand Logo</span>
-              </label>
-              <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-2 p-2.5 bg-slate-950/80 border border-slate-900 rounded-xl max-h-64 overflow-y-auto custom-scrollbar">
-                {ALL_BRAND_LOGOS.map((b) => {
-                  const isSelected = selectedBrand === b || newBrand.toLowerCase() === b.toLowerCase();
-                  return (
-                    <button
-                      type="button"
-                      key={b}
-                      onClick={() => {
-                        setSelectedBrand(b);
-                        setSelectedModel('');
-                        setNewBrand(b);
-                        setNewModel('');
-                      }}
-                      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all cursor-pointer text-center group ${
-                        isSelected
-                          ? 'bg-cyan-950/70 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-lg shadow-cyan-950/50 scale-[1.02]'
-                          : 'bg-slate-900/60 border-slate-800/90 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-900'
-                      }`}
-                      title={b}
-                    >
-                      <BrandLogo brand={b} size={38} className={isSelected ? 'text-cyan-400' : 'text-slate-300 group-hover:text-cyan-300'} />
-                      <span className="text-xs font-bold tracking-tight mt-1.5 truncate w-full">{b}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
+            {/* Single Brand & Model Selection */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Grid size={14} className="text-cyan-400 shrink-0" />
-                  <span>Quick Select Brand</span>
+                  <span>Brand *</span>
                 </label>
                 <select
                   value={selectedBrand}
                   onChange={handleBrandChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm sm:text-sm text-slate-100 font-semibold outline-none cursor-pointer transition-all"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold outline-none cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-slate-900 text-slate-200 text-base sm:text-sm">-- Select Brand --</option>
+                  <option value="" className="bg-slate-900 text-slate-200">-- Select Brand --</option>
                   {uniqueBrands.map((b) => (
-                    <option key={b} value={b} className="bg-slate-900 text-slate-100 text-base sm:text-sm">{b}</option>
+                    <option key={b} value={b} className="bg-slate-900 text-slate-100">{b}</option>
                   ))}
-                  <option value="custom" className="bg-slate-900 text-slate-200 text-base sm:text-sm">-- Custom Brand --</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200">-- Custom / Other Brand --</option>
                 </select>
+                {selectedBrand === 'custom' && (
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Brand Name..."
+                    value={newBrand}
+                    onChange={(e) => setNewBrand(e.target.value)}
+                    className="w-full bg-slate-950 border border-purple-500 focus:border-purple-400 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none mt-2"
+                  />
+                )}
               </div>
 
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Grid size={14} className="text-purple-400 shrink-0" />
-                  <span>Select Model</span>
+                  <span>Model *</span>
                 </label>
                 <select
                   value={selectedModel}
-                  disabled={!selectedBrand || selectedBrand === 'custom'}
+                  disabled={!selectedBrand}
                   onChange={handleModelChange}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm sm:text-sm text-slate-100 font-semibold outline-none disabled:opacity-40 cursor-pointer transition-all"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 font-semibold outline-none disabled:opacity-40 cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-slate-900 text-slate-200 text-sm sm:text-sm">-- Select Model --</option>
+                  <option value="" className="bg-slate-900 text-slate-200">-- Select Model --</option>
                   {availableModels.map((m) => (
-                    <option key={m} value={m} className="bg-slate-900 text-slate-100 text-sm sm:text-sm">{m}</option>
+                    <option key={m} value={m} className="bg-slate-900 text-slate-100">{m}</option>
                   ))}
-                  <option value="custom" className="bg-slate-900 text-slate-200 text-sm sm:text-sm">-- Custom Model --</option>
+                  <option value="custom" className="bg-slate-900 text-slate-200">-- Custom / Other Model --</option>
                 </select>
+                {(selectedModel === 'custom' || selectedBrand === 'custom') && (
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter Model Name..."
+                    value={newModel}
+                    onChange={(e) => setNewModel(e.target.value)}
+                    className="w-full bg-slate-950 border border-purple-500 focus:border-purple-400 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none mt-2"
+                  />
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Brand *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Toyota"
-                  value={newBrand}
-                  onChange={(e) => setNewBrand(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Model *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Camry"
-                  value={newModel}
-                  onChange={(e) => setNewModel(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 outline-none"
-                />
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs sm:text-sm font-bold text-slate-300 mb-1">Model Year</label>
                 <input
@@ -312,7 +290,7 @@ export default function Vehicles({
                   placeholder="2026"
                   value={newYear}
                   onChange={(e) => setNewYear(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm sm:text-sm text-slate-100 outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none"
                 />
               </div>
 
@@ -324,12 +302,58 @@ export default function Vehicles({
                 <select
                   value={unitSystem}
                   onChange={(e) => onUnitSystemChange?.(e.target.value as 'metric' | 'us' | 'uk')}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm sm:text-sm text-slate-100 outline-none cursor-pointer"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none cursor-pointer"
                 >
-                  <option value="metric" className="bg-slate-900 text-slate-100 text-base sm:text-sm">Metric (km/L)</option>
-                  <option value="us" className="bg-slate-900 text-slate-100 text-base sm:text-sm">US (mi/gal)</option>
-                  <option value="uk" className="bg-slate-900 text-slate-100 text-base sm:text-sm">UK (mi/gal)</option>
+                  <option value="metric" className="bg-slate-900 text-slate-100">Metric (km/L)</option>
+                  <option value="us" className="bg-slate-900 text-slate-100">US (mi/gal)</option>
+                  <option value="uk" className="bg-slate-900 text-slate-100">UK (mi/gal)</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Vehicle Body Type Selector */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <Car size={14} className="text-cyan-400" />
+                <span>Vehicle Body Type</span>
+              </label>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setNewBodyType('compact')}
+                  className={`p-2.5 sm:p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                    newBodyType === 'compact'
+                      ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span>Compact</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Sedan / Hatch</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewBodyType('crossover')}
+                  className={`p-2.5 sm:p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                    newBodyType === 'crossover'
+                      ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span>Crossover</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Mid-Size SUV</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewBodyType('suv')}
+                  className={`p-2.5 sm:p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                    newBodyType === 'suv'
+                      ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span>Full SUV</span>
+                  <span className="text-[10px] text-slate-500 font-normal">SUV / Truck</span>
+                </button>
               </div>
             </div>
 
@@ -501,6 +525,48 @@ export default function Vehicles({
                       </div>
                     </div>
 
+                    {/* Vehicle Body Type for Inline Edit */}
+                    <div className="space-y-1">
+                      <label className="block text-xs font-semibold text-slate-400">
+                        <span>Vehicle Body Type</span>
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditBodyType('compact')}
+                          className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all ${
+                            editBodyType === 'compact'
+                              ? 'bg-cyan-950 border-cyan-500 text-cyan-400'
+                              : 'bg-slate-950 border-slate-800 text-slate-400'
+                          }`}
+                        >
+                          Compact
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditBodyType('crossover')}
+                          className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all ${
+                            editBodyType === 'crossover'
+                              ? 'bg-cyan-950 border-cyan-500 text-cyan-400'
+                              : 'bg-slate-950 border-slate-800 text-slate-400'
+                          }`}
+                        >
+                          Crossover
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditBodyType('suv')}
+                          className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all ${
+                            editBodyType === 'suv'
+                              ? 'bg-cyan-950 border-cyan-500 text-cyan-400'
+                              : 'bg-slate-950 border-slate-800 text-slate-400'
+                          }`}
+                        >
+                          Full SUV
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="flex items-center gap-2 pt-1">
                       <button
                         type="submit"
@@ -529,9 +595,14 @@ export default function Vehicles({
                             <h4 className="text-base sm:text-lg font-extrabold text-white tracking-wide">
                               {v.brand || 'Unnamed'} {v.model}
                             </h4>
-                            <span className="text-xs sm:text-sm text-slate-400 font-mono font-medium">
-                              Year: {v.year || '2026'}
-                            </span>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-xs sm:text-sm text-slate-400 font-mono font-medium">
+                                Year: {v.year || '2026'}
+                              </span>
+                              <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/70 border border-cyan-500/30 px-2 py-0.5 rounded-md">
+                                {v.bodyType === 'compact' ? 'Compact' : v.bodyType === 'suv' ? 'Full SUV' : 'Crossover'}
+                              </span>
+                            </div>
                           </div>
                         </div>
 

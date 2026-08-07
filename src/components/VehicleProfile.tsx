@@ -4,11 +4,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Car, Fuel, Calendar, Gauge, Save, Edit3, Settings, Grid, Check } from 'lucide-react';
+import { Car, Fuel, Calendar, Gauge, Save, Edit3, Settings, Grid, Wind } from 'lucide-react';
 import { VehicleInfo } from '../types';
 import { translations, Language } from '../utils/translations';
 import { baseVehiclesEn } from '../utils/popularVehicles';
-import BrandLogo, { ALL_BRAND_LOGOS } from './BrandLogo';
+import BrandLogo from './BrandLogo';
 
 interface VehicleProfileProps {
   vehicle: VehicleInfo;
@@ -30,6 +30,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
   const [brand, setBrand] = useState<string>(vehicle.brand || '');
   const [model, setModel] = useState<string>(vehicle.model || '');
   const [year, setYear] = useState<string>(vehicle.year || '');
+  const [bodyType, setBodyType] = useState<'compact' | 'crossover' | 'suv'>(vehicle.bodyType || 'crossover');
   
   const [fuelCapacity, setFuelCapacity] = useState<number>(() => {
     if (!vehicle.fuelCapacity) return isUs ? Number((50 * LITERS_TO_GALLONS).toFixed(1)) : 50;
@@ -71,6 +72,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       setBrand(vehicle.brand);
       setModel(vehicle.model);
       setYear(vehicle.year);
+      setBodyType(vehicle.bodyType || 'crossover');
       
       const capacityValue = isUs ? Number((vehicle.fuelCapacity * LITERS_TO_GALLONS).toFixed(1)) : vehicle.fuelCapacity;
       setFuelCapacity(capacityValue);
@@ -89,12 +91,13 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       setBrand('');
       setModel('');
       setYear('');
+      setBodyType('crossover');
       setFuelCapacity(isUs ? Number((50 * LITERS_TO_GALLONS).toFixed(1)) : 50);
       setCurrentOdometer('');
       setSelectedBrand('');
       setSelectedModel('');
     }
-  }, [vehicle.id, vehicle.brand, vehicle.model, vehicle.year, vehicle.fuelCapacity, vehicle.currentOdometer, unitSystem, isMetric, isUs, isUk]);
+  }, [vehicle.id, vehicle.brand, vehicle.model, vehicle.year, vehicle.bodyType, vehicle.fuelCapacity, vehicle.currentOdometer, unitSystem, isMetric, isUs, isUk]);
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const b = e.target.value;
@@ -119,6 +122,16 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
         const capacityValue = isUs ? Number((match.fuelCapacity * LITERS_TO_GALLONS).toFixed(1)) : match.fuelCapacity;
         setFuelCapacity(capacityValue);
       }
+
+      // Auto-detect body type based on model name keywords
+      const lower = m.toLowerCase();
+      if (/tahoe|suburban|expedition|f-150|tundra|tacoma|silverado|colorado|pilot|bronco|armada|sequoia|land cruiser/.test(lower)) {
+        setBodyType('suv');
+      } else if (/rav4|cr-v|explorer|escape|edge|equinox|highlander|hr-v|c-hr|trax|rogue|cx-|forester|outback|sportage|tucson/.test(lower)) {
+        setBodyType('crossover');
+      } else if (/civic|corolla|camry|accord|prius|golf|jetta|fit|yaris|focus|fusion|mustang|malibu|cruze|insight|impreza|3|6/.test(lower)) {
+        setBodyType('compact');
+      }
     } else {
       setModel('');
     }
@@ -135,6 +148,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       brand,
       model,
       year,
+      bodyType,
       fuelCapacity: Number(capacityInLiters),
       currentOdometer: Number(odoInKm) || 0,
     });
@@ -146,6 +160,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       <div id="vehicle-profile-view" className="cyber-card p-6 rounded-2xl relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
+            {/* Automatic Brand Logo Display */}
             <BrandLogo brand={vehicle.brand} size={50} showBadge />
             <div>
               <h3 className="text-sm text-slate-400 font-medium">{t.profileTitle}</h3>
@@ -163,7 +178,25 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
         </div>
 
         <div className="space-y-2 mt-5">
-          {/* Row 1: Year */}
+          {/* Row 1: Vehicle Body Type */}
+          <div className="flex items-center justify-between p-3 bg-slate-950/60 border border-slate-900 rounded-xl hover:border-slate-800/80 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-amber-400">
+                <Wind size={16} />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-slate-400 block">Vehicle Type</span>
+                <span className="text-[10px] text-slate-500">Body Structure</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-extrabold text-slate-200 block uppercase tracking-wide">
+                {vehicle.bodyType === 'compact' ? 'Compact' : vehicle.bodyType === 'suv' ? 'Full SUV' : 'Crossover'}
+              </span>
+            </div>
+          </div>
+
+          {/* Row 2: Year */}
           <div className="flex items-center justify-between p-3 bg-slate-950/60 border border-slate-900 rounded-xl hover:border-slate-800/80 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-cyan-400">
@@ -174,7 +207,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
             <span className="text-sm font-bold text-slate-200">{vehicle.year || '---'}</span>
           </div>
 
-          {/* Row 2: Fuel Capacity */}
+          {/* Row 3: Fuel Capacity */}
           <div className="flex items-center justify-between p-3 bg-slate-950/60 border border-slate-900 rounded-xl hover:border-slate-800/80 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-400">
@@ -189,7 +222,7 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
             </span>
           </div>
 
-          {/* Row 3: Current Odometer */}
+          {/* Row 4: Current Odometer */}
           <div className="flex items-center justify-between p-3 bg-slate-950/60 border border-slate-900 rounded-xl hover:border-slate-800/80 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-emerald-400">
@@ -224,46 +257,12 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Car Brand Logos Visual Picker */}
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-            <Grid size={13} className="text-cyan-400" />
-            <span>Select Car Brand Logo</span>
-          </label>
-          <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-2 p-2.5 bg-slate-950/80 border border-slate-900 rounded-xl max-h-64 overflow-y-auto custom-scrollbar">
-            {ALL_BRAND_LOGOS.map((b) => {
-              const isSelected = selectedBrand === b || brand.toLowerCase() === b.toLowerCase();
-              return (
-                <button
-                  type="button"
-                  key={b}
-                  onClick={() => {
-                    setSelectedBrand(b);
-                    setSelectedModel('');
-                    setBrand(b);
-                    setModel('');
-                  }}
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all cursor-pointer text-center group ${
-                    isSelected
-                      ? 'bg-cyan-950/70 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-lg shadow-cyan-950/50 scale-[1.02]'
-                      : 'bg-slate-900/60 border-slate-800/90 text-slate-400 hover:border-slate-700 hover:text-slate-200 hover:bg-slate-900'
-                  }`}
-                  title={b}
-                >
-                  <BrandLogo brand={b} size={38} className={isSelected ? 'text-cyan-400' : 'text-slate-300 group-hover:text-cyan-300'} />
-                  <span className="text-xs font-bold tracking-tight mt-1.5 truncate w-full">{b}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Brand & Model cascading selection */}
+        {/* Brand & Model Selection */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
               <Grid size={12} className="text-cyan-400" />
-              <span>Select Brand</span>
+              <span>{t.brand} *</span>
             </label>
             <select
               id="brand-presets-select"
@@ -277,17 +276,28 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               ))}
               <option value="custom">-- Custom Brand --</option>
             </select>
+            {selectedBrand === 'custom' && (
+              <input
+                id="car-brand-input"
+                type="text"
+                required
+                placeholder="e.g. Toyota, Ford, BMW"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                className="w-full bg-slate-950 border border-purple-500 focus:border-purple-400 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 outline-none mt-2 transition-all"
+              />
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1">
               <Grid size={12} className="text-purple-400" />
-              <span>Select Model</span>
+              <span>{t.model} *</span>
             </label>
             <select
               id="model-presets-select"
               value={selectedModel}
-              disabled={!selectedBrand || selectedBrand === 'custom'}
+              disabled={!selectedBrand}
               onChange={handleModelChange}
               className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3 py-2.5 text-sm text-slate-200 outline-none transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -297,39 +307,63 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
               ))}
               <option value="custom">-- Custom Model --</option>
             </select>
+            {(selectedModel === 'custom' || selectedBrand === 'custom') && (
+              <input
+                id="car-model-input"
+                type="text"
+                required
+                placeholder="e.g. Camry, Civic"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="w-full bg-slate-950 border border-purple-500 focus:border-purple-400 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 outline-none mt-2 transition-all"
+              />
+            )}
           </div>
         </div>
 
-        {(selectedBrand === 'custom' || selectedModel === 'custom') && (
-          <p className="text-[10px] text-purple-400 font-semibold">
-            Please enter your custom brand and model in the boxes below:
-          </p>
-        )}
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1">{t.brand} *</label>
-            <input
-              id="car-brand-input"
-              type="text"
-              required
-              placeholder="e.g. Toyota, Ford, BMW"
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1">{t.model} *</label>
-            <input
-              id="car-model-input"
-              type="text"
-              required
-              placeholder="e.g. Camry, Civic"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-all"
-            />
+        {/* Vehicle Body Type Selector */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5 mr-1 flex items-center gap-1.5">
+            <Car size={14} className="text-cyan-400" />
+            <span>Vehicle Body Type</span>
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setBodyType('compact')}
+              className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                bodyType === 'compact'
+                  ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>Compact</span>
+              <span className="text-[10px] text-slate-500 font-normal">Sedan / Hatch</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setBodyType('crossover')}
+              className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                bodyType === 'crossover'
+                  ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>Crossover</span>
+              <span className="text-[10px] text-slate-500 font-normal">Mid-Size SUV</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setBodyType('suv')}
+              className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center justify-center cursor-pointer ${
+                bodyType === 'suv'
+                  ? 'bg-cyan-950/80 border-cyan-500 text-cyan-400 ring-1 ring-cyan-500/50 shadow-md shadow-cyan-950/50'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>Full SUV</span>
+              <span className="text-[10px] text-slate-500 font-normal">SUV / Truck</span>
+            </button>
           </div>
         </div>
 
@@ -407,3 +441,4 @@ export default function VehicleProfile({ vehicle, onSave, lang, unitSystem }: Ve
     </div>
   );
 }
+

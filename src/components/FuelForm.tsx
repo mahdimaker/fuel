@@ -257,10 +257,10 @@ export default function FuelForm({ currentOdometer, onAddEntry, lang, unitSystem
   };
 
   const fuelTypesList: { value: FuelType; label: string; color: string; activeClass: string }[] = [
-    { value: 'regular', label: 'Regular Gas', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
-    { value: 'super', label: 'Premium Fuel', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
+    { value: 'regular', label: 'Regular', color: 'from-blue-500 to-indigo-500', activeClass: 'bg-blue-800 border-blue-400 text-white !text-white shadow-md shadow-blue-500/25' },
+    { value: 'super', label: 'Premium', color: 'from-purple-500 to-pink-500', activeClass: 'bg-purple-600 border-purple-400 text-white !text-white shadow-md shadow-purple-500/25' },
     { value: 'diesel', label: 'Diesel', color: 'from-amber-600 to-yellow-500', activeClass: 'bg-amber-600 border-amber-400 text-white !text-white shadow-md shadow-amber-500/25' },
-    { value: 'hybrid', label: 'Hybrid/Electric', color: 'from-emerald-500 to-teal-400', activeClass: 'bg-emerald-600 border-emerald-400 text-white !text-white shadow-md shadow-emerald-500/25' },
+    { value: 'hybrid', label: 'Hybrid', color: 'from-emerald-500 to-teal-400', activeClass: 'bg-emerald-600 border-emerald-400 text-white !text-white shadow-md shadow-emerald-500/25' },
     { value: 'gas', label: 'LPG / CNG', color: 'from-cyan-500 to-blue-400', activeClass: 'bg-cyan-600 border-cyan-400 text-white !text-white shadow-md shadow-cyan-500/25' },
   ];
 

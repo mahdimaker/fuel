@@ -1,11 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState } from 'react';
-import { Gauge, SlidersHorizontal, Sun, Wind, Box } from 'lucide-react';
-import { FuelEntry } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Gauge, SlidersHorizontal, AlertTriangle, Compass, Box, Sun, Wind, Car, X, Check, ChevronRight } from 'lucide-react';
+import { FuelEntry, VehicleInfo } from '../types';
 import { Language } from '../utils/translations';
 
 interface SpeedSimulatorCardProps {
@@ -13,96 +8,201 @@ interface SpeedSimulatorCardProps {
   fuelEfficiency: number; // L/100km
   unitSystem: 'metric' | 'us' | 'uk';
   lang?: Language;
+  vehicle?: VehicleInfo;
 }
 
-export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, lang }: SpeedSimulatorCardProps) {
+type CargoType = 'none' | 'bars' | 'box' | 'bike' | 'bag';
+type VehicleType = 'compact' | 'crossover' | 'suv';
+
+interface CargoOption {
+  id: CargoType;
+  title: string;
+  cdAdd: number;
+  desc: string;
+}
+
+interface VehicleOption {
+  id: VehicleType;
+  title: string;
+  baseCd: number;
+  desc: string;
+}
+
+export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, lang, vehicle }: SpeedSimulatorCardProps) {
   const isMetric = unitSystem === 'metric';
   const isUs = unitSystem === 'us';
   const isUk = unitSystem === 'uk';
 
   // Constants
   const KM_TO_MILES = 0.621371;
-  const TOMAN_TO_USD = 1 / 60000;
+  const LITERS_TO_GALLONS = 0.264172;
 
   // Use a fallback fuelEfficiency if there's none
   const eff = fuelEfficiency > 0 ? fuelEfficiency : 8.0;
 
-  // Environmental Variables States
+  // Environmental Variables States (A/C & Windows)
   const [acOn, setAcOn] = useState<boolean>(false);
   const [windowsOpen, setWindowsOpen] = useState<boolean>(false);
-  const [roofRackLoaded, setRoofRackLoaded] = useState<boolean>(false);
 
-  // Get average fuel price from logs, fallback if none
-  const getAveragePrice = () => {
-    if (!logs || logs.length === 0) return 1.25; // default gas price
-    const totalCost = logs.reduce((sum, l) => sum + l.cost, 0);
-    const totalLiters = logs.reduce((sum, l) => sum + l.liters, 0);
-    return totalLiters > 0 ? totalCost / totalLiters : 1.25;
-  };
+  // Modal State for Cargo / Roof Rack selection
+  const [isCargoModalOpen, setIsCargoModalOpen] = useState<boolean>(false);
 
-  const avgPricePerLiter = getAveragePrice();
+  // Vehicle Type initial state based on profile if available
+  const [vehicleType, setVehicleType] = useState<VehicleType>(() => {
+    if (vehicle?.bodyType) return vehicle.bodyType;
+    return 'crossover';
+  });
 
-  // Speed slider values range
-  // Metric: 90 to 140 km/h (default: 100)
-  // US: 55 to 85 mph (default: 65)
-  const minSpeed = isMetric ? 90 : 55;
-  const maxSpeed = isMetric ? 140 : 85;
+  // Sync if vehicle prop changes
+  useEffect(() => {
+    if (vehicle?.bodyType) {
+      setVehicleType(vehicle.bodyType);
+    }
+  }, [vehicle?.bodyType]);
+
+  // Selected Roof Attachment / Cargo Type
+  const [cargoType, setCargoType] = useState<CargoType>('none');
+
+  // Trip Distance State
+  // US / UK: 10 to 1500 miles (default: 250 miles)
+  // Metric: 15 to 2500 km (default: 400 km)
+  const minDistance = isMetric ? 15 : 10;
+  const maxDistance = isMetric ? 2500 : 1500;
+  const [tripDistance, setTripDistance] = useState<number>(isMetric ? 400 : 250);
+
+  // Cruising Speed State
+  // US / UK: 30 to 90 mph (default: 65 mph)
+  // Metric: 50 to 140 km/h (default: 100 km/h)
+  const minSpeed = isMetric ? 50 : 30;
+  const maxSpeed = isMetric ? 140 : 90;
   const [speed, setSpeed] = useState<number>(isMetric ? 100 : 65);
 
-  // Convert current speed to MPH for unified calculations
+  // Average Fuel Price Calculation
+  const getAveragePrice = () => {
+    if (!logs || logs.length === 0) {
+      return isUs ? 3.55 : isUk ? 1.45 : 1.75; // fallback
+    }
+    const totalCost = logs.reduce((sum, l) => sum + l.cost, 0);
+    const totalLiters = logs.reduce((sum, l) => sum + l.liters, 0);
+    if (totalLiters === 0) return isUs ? 3.55 : 1.75;
+    
+    if (isUs) {
+      const totalGallons = totalLiters * LITERS_TO_GALLONS;
+      return totalGallons > 0 ? totalCost / totalGallons : 3.55;
+    }
+    return totalCost / totalLiters;
+  };
+
+  const avgGasPrice = getAveragePrice();
+
+  // Cargo Types Configuration
+  const cargoOptions: CargoOption[] = [
+    {
+      id: 'none',
+      title: 'Roof Rack: None',
+      cdAdd: 0.000,
+      desc: 'Clean factory roof without crossbars',
+    },
+    {
+      id: 'bars',
+      title: 'Empty Bars',
+      cdAdd: 0.045,
+      desc: 'Bare crossbars or empty factory roof rails',
+    },
+    {
+      id: 'box',
+      title: 'Cargo Roof Box',
+      cdAdd: 0.085,
+      desc: 'Aerodynamic hard-shell luggage box',
+    },
+    {
+      id: 'bike',
+      title: 'Roof Bicycle',
+      cdAdd: 0.135,
+      desc: 'Upright bicycle mounted on roof rack',
+    },
+    {
+      id: 'bag',
+      title: 'Soft Cargo Bag',
+      cdAdd: 0.165,
+      desc: 'Non-aerodynamic soft luggage bag or kayak',
+    },
+  ];
+
+  // Vehicle Types Configuration
+  const vehicleOptions: VehicleOption[] = [
+    {
+      id: 'compact',
+      title: 'Compact',
+      baseCd: 0.28,
+      desc: 'Sedan / Hatchback',
+    },
+    {
+      id: 'crossover',
+      title: 'Crossover',
+      baseCd: 0.33,
+      desc: 'Mid-size SUV / Crossover',
+    },
+    {
+      id: 'suv',
+      title: 'Full SUV',
+      baseCd: 0.38,
+      desc: 'Full SUV / Truck / Van',
+    },
+  ];
+
+  const currentCargo = cargoOptions.find((c) => c.id === cargoType) || cargoOptions[0];
+  const currentVehicle = vehicleOptions.find((v) => v.id === vehicleType) || vehicleOptions[1];
+
+  // Speed in MPH for physics calculation
   const speedMph = isMetric ? speed * KM_TO_MILES : speed;
 
-  // Environmental Drag Penalties
+  // Environmental Penalties
   const acPenaltyPct = acOn ? 8 : 0;
-  // Windows drag increases with speed
   const windowsPenaltyPct = windowsOpen ? Math.round(5 + (speedMph > 50 ? (speedMph - 50) * 0.15 : 0)) : 0;
-  const roofRackPenaltyPct = roofRackLoaded ? 12 : 0;
-  const totalEnvPenaltyPct = acPenaltyPct + windowsPenaltyPct + roofRackPenaltyPct;
+  const envPenaltyPct = acPenaltyPct + windowsPenaltyPct;
 
-  // Efficiency Penalty Model:
-  // Base optimal speed is 55 mph (90 km/h).
-  // Aerodynamic drag increases quadratically above 55 mph.
-  const mphDiff = Math.max(0, speedMph - 55);
-  const speedPenaltyPct = mphDiff * 1.2 + Math.pow(mphDiff, 1.6) * 0.15; // e.g. at 75mph: (20 * 1.2) + (20^1.6 * 0.15) = 24 + 18 = 42% increase! Extremely realistic.
+  // Speed Aerodynamic Penalty
+  const speedDiffMph = Math.max(0, speedMph - 55);
+  const speedDragPct = speedDiffMph * 1.1 + Math.pow(speedDiffMph, 1.55) * 0.14;
+
+  // Cargo Drag Penalty %
+  const cargoDragPct = (currentCargo.cdAdd / currentVehicle.baseCd) * 100;
+
+  // Combined Total Penalty %
+  const totalPenaltyPct = speedDragPct + cargoDragPct + envPenaltyPct;
+
+  // Calculate Base Consumption vs Actual Consumption for Trip
+  const tripDistanceKm = isMetric ? tripDistance : tripDistance / KM_TO_MILES;
   
-  const penaltyPct = speedPenaltyPct + totalEnvPenaltyPct;
+  // Base fuel needed for trip (Liters)
+  const baseLitersNeeded = (eff / 100) * tripDistanceKm;
+  
+  // Actual fuel needed for trip with extra drag (Liters)
+  const actualLitersNeeded = baseLitersNeeded * (1 + totalPenaltyPct / 100);
+  
+  // Extra Wasted Fuel
+  const wastedLiters = actualLitersNeeded - baseLitersNeeded;
+  
+  // Extra Wasted Fuel in user unit
+  const wastedFuelVolume = isUs ? wastedLiters * LITERS_TO_GALLONS : wastedLiters;
+  const fuelUnitLabel = isUs ? 'gal' : 'L';
 
-  // Calculate extra fuel and money burned over 100 miles/km driven
-  const baseLitersPer100km = eff;
-  const currentLitersPer100km = baseLitersPer100km * (1 + penaltyPct / 100);
+  // Extra Fuel Cost
+  const extraCost = isUs 
+    ? wastedFuelVolume * avgGasPrice 
+    : wastedLiters * avgGasPrice;
 
-  // Extra cost per 100 km or 100 miles driven
-  let extraCost = 0;
-  let unitLabel = '';
-  let currencyLabel = isMetric ? '€' : isUs ? '$' : '£';
+  // Currency Symbol
+  const currencySymbol = isUs ? '$' : isUk ? '£' : '€';
 
-  if (isMetric) {
-    const extraLitersPer100km = currentLitersPer100km - baseLitersPer100km;
-    extraCost = extraLitersPer100km * avgPricePerLiter;
-    unitLabel = '100 km driving';
-  } else {
-    // 100 miles driven (US or UK)
-    const distanceKm = 100 / KM_TO_MILES; // miles to km
-    const baseLiters = (baseLitersPer100km / 100) * distanceKm;
-    const extraLiters = baseLiters * (penaltyPct / 100);
-    extraCost = extraLiters * avgPricePerLiter;
-    unitLabel = '100 miles driving';
-  }
-
-  // Fraction across slider range
-  const fraction = Math.min(1, Math.max(0, (speed - minSpeed) / (maxSpeed - minSpeed)));
-
-  // Speed Severity Levels:
-  // Safe Speed: <= 95 km/h (or <= 60 mph)
-  // Moderate Speed: 96-115 km/h (or 61-72 mph)
-  // High Drag / Waste Speed: > 115 km/h (or > 72 mph)
+  // Slider visual indicators
+  const speedFraction = Math.min(1, Math.max(0, (speed - minSpeed) / (maxSpeed - minSpeed)));
   const normSpeed = isMetric ? speed : speed * (90 / 55);
 
   let speedSeverity = {
     textColor: 'text-emerald-400',
-    glowShadow: 'drop-shadow-[0_0_14px_rgba(16,185,129,0.85)]',
     accentHex: '#10b981',
-    trackGlow: '0 0 16px rgba(16,185,129,0.6)',
     badgeText: 'Safe Speed',
     badgeStyle: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
   };
@@ -110,98 +210,93 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
   if (normSpeed > 115) {
     speedSeverity = {
       textColor: 'text-rose-400',
-      glowShadow: 'drop-shadow-[0_0_14px_rgba(244,63,94,0.85)]',
       accentHex: '#f43f5e',
-      trackGlow: '0 0 16px rgba(244,63,94,0.6)',
       badgeText: 'High Drag / Waste',
       badgeStyle: 'bg-rose-500/15 text-rose-400 border-rose-500/30'
     };
   } else if (normSpeed > 95) {
     speedSeverity = {
       textColor: 'text-amber-400',
-      glowShadow: 'drop-shadow-[0_0_14px_rgba(245,158,11,0.85)]',
       accentHex: '#f59e0b',
-      trackGlow: '0 0 16px rgba(245,158,11,0.6)',
       badgeText: 'Moderate Speed',
       badgeStyle: 'bg-amber-500/15 text-amber-400 border-amber-500/30'
     };
   }
 
   return (
-    <div id="speed-simulator-card" className="cyber-card p-6 md:p-8 rounded-2xl border border-cyan-500/15 bg-slate-900/40 relative overflow-hidden transition-all duration-300 hover:border-cyan-500/30">
-      {/* Visual neon light overlay */}
-      <div className="absolute -right-20 -bottom-20 w-44 h-44 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none"></div>
+    <div id="speed-simulator-card" className="cyber-card p-5 sm:p-7 rounded-2xl border border-cyan-500/20 bg-slate-900/50 relative overflow-hidden transition-all duration-300 hover:border-cyan-500/35 shadow-xl">
+      {/* Background glow overlay */}
+      <div className="absolute -right-20 -top-20 w-52 h-52 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none"></div>
 
+      {/* Card Header */}
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
           <Gauge size={22} className="animate-spin-slow" />
         </div>
         <div>
-          <h2 className="text-sm font-extrabold uppercase tracking-widest text-white">
-            Speed vs. Efficiency Simulator
+          <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white">
+            Speed & Cargo Efficiency Simulator
           </h2>
           <p className="text-xs text-slate-400">
-            Visualize how speed alters wind resistance and fuel economy
+            Real-time aerodynamic drag & extra trip fuel cost analyzer
           </p>
         </div>
       </div>
 
-      <p className="text-xs text-slate-300 leading-relaxed mb-6">
-        Most vehicles are aerodynamically optimized up to 55 mph (90 km/h). Increasing velocity past this threshold compounds drag quadratically.
-      </p>
-
-      {/* Interactive Simulation Dashboard Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-5">
-        <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">
-            Fuel Burn Increase
-          </span>
-          <span className="text-2xl font-black font-mono text-rose-400 block tracking-tight">
-            +{penaltyPct.toFixed(1)}%
-          </span>
-          <span className="text-[10px] text-slate-300 mt-1 block font-semibold">
-            Extra gasoline burnt
-          </span>
+      {/* TOP COST ALERT BANNER */}
+      <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-4 shadow-inner relative overflow-hidden">
+        <div className="flex items-center gap-3.5">
+          <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-500 shrink-0">
+            <AlertTriangle size={24} className="animate-pulse" />
+          </div>
+          <div>
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-400 block mb-0.5">
+              EXTRA FUEL COST
+            </span>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-2xl sm:text-3xl font-black font-mono text-rose-500 tracking-tight">
+                +{currencySymbol}{extraCost.toFixed(2)}
+              </span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-600 text-white shadow-sm shadow-rose-600/30">
+                {wastedFuelVolume.toFixed(1)} {fuelUnitLabel} wasted
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-slate-950/60 border border-slate-900/60 p-4 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">
-            Wasted Cost Leak
-          </span>
-          <span className="text-2xl font-black font-mono text-amber-400 block tracking-tight">
-            {currencyLabel === '$' ? `$${extraCost.toFixed(2)}` : currencyLabel === '£' ? `£${extraCost.toFixed(2)}` : `${extraCost.toFixed(2)} ${currencyLabel}`}
-          </span>
-          <span className="text-[10px] text-slate-300 mt-1 block font-semibold">
-            Per {unitLabel}
-          </span>
+        {/* Total Drag % Badge */}
+        <div className="hidden sm:flex flex-col items-end shrink-0">
+          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Fuel Burn Increase</span>
+          <span className="text-lg font-black font-mono text-amber-400">+{totalPenaltyPct.toFixed(1)}%</span>
         </div>
       </div>
 
-      {/* ENVIRONMENTAL VARIABLES SECTION */}
-      <div className="bg-slate-950/70 border border-slate-900/80 p-4 rounded-2xl space-y-3 mb-6 shadow-sm">
-        <div className="flex items-center gap-2 text-amber-400/90 font-extrabold text-xs uppercase tracking-widest">
-          <SlidersHorizontal size={14} className="text-amber-400" />
-          <span>ENVIRONMENTAL VARIABLES</span>
+      {/* CABIN COMFORT & ROOF RACK CONTROL BUTTONS (3 BUTTONS GRID) */}
+      <div className="bg-slate-950/70 border border-slate-900 p-4 rounded-2xl space-y-2.5 mb-6">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-extrabold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+            <SlidersHorizontal size={14} />
+            <span>DRAG VARIABLES</span>
+          </span>
+          <span className="text-[11px] text-slate-400 font-mono font-bold">
+            +{(envPenaltyPct + cargoDragPct).toFixed(1)}% Drag
+          </span>
         </div>
 
-        <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {/* A/C Toggle */}
           <button
             type="button"
             id="toggle-ac-environmental-variable"
             onClick={() => setAcOn(!acOn)}
-            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
+            className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               acOn
-                ? 'bg-blue-600 border-blue-400 !text-white shadow-lg shadow-blue-500/25 ring-1 ring-blue-400'
-                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+                ? 'bg-blue-600 border-blue-400 text-white shadow-md shadow-blue-500/25 ring-1 ring-blue-400'
+                : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
             }`}
           >
-            <Sun size={16} className={acOn ? '!text-white animate-spin-slow shrink-0' : 'text-slate-400 shrink-0'} />
-            <span className={acOn ? 'tracking-wide !text-white' : 'tracking-wide'}>
-              {acOn 
-                ? `A/C ON (+${acPenaltyPct}%)`
-                : 'A/C OFF'}
-            </span>
+            <Sun size={16} className={acOn ? 'animate-spin-slow text-white' : 'text-slate-400'} />
+            <span>{acOn ? `A/C ON (+${acPenaltyPct}%)` : 'A/C OFF'}</span>
           </button>
 
           {/* Windows Toggle */}
@@ -209,112 +304,196 @@ export default function SpeedSimulatorCard({ logs, fuelEfficiency, unitSystem, l
             type="button"
             id="toggle-windows-environmental-variable"
             onClick={() => setWindowsOpen(!windowsOpen)}
-            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
+            className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               windowsOpen
-                ? 'bg-amber-600 border-amber-400 !text-white shadow-lg shadow-amber-500/25 ring-1 ring-amber-400'
-                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+                ? 'bg-amber-600 border-amber-400 text-white shadow-md shadow-amber-500/25 ring-1 ring-amber-400'
+                : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
             }`}
           >
-            <Wind size={16} className={windowsOpen ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
-            <span className={windowsOpen ? 'tracking-wide !text-white' : 'tracking-wide'}>
-              {windowsOpen 
-                ? `Windows Open (+${windowsPenaltyPct}%)`
-                : 'Windows Closed'}
-            </span>
+            <Wind size={16} className={windowsOpen ? 'text-white' : 'text-slate-400'} />
+            <span>{windowsOpen ? `Windows Open (+${windowsPenaltyPct}%)` : 'Windows Closed'}</span>
           </button>
 
-          {/* Roof Rack Toggle */}
+          {/* Roof Rack Modal Trigger Button (Centered alignment like others) */}
           <button
             type="button"
-            id="toggle-roofrack-environmental-variable"
-            onClick={() => setRoofRackLoaded(!roofRackLoaded)}
-            className={`p-2 sm:p-3 rounded-xl border text-[10px] sm:text-xs font-bold flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all cursor-pointer active:scale-95 text-center leading-tight ${
-              roofRackLoaded
-                ? 'bg-purple-600 border-purple-400 !text-white shadow-lg shadow-purple-500/25 ring-1 ring-purple-400'
-                : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800/80 text-slate-300 hover:text-white'
+            id="open-cargo-modal-button"
+            onClick={() => setIsCargoModalOpen(true)}
+            className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer relative ${
+              cargoType !== 'none'
+                ? 'bg-purple-600 border-purple-400 text-white shadow-md shadow-purple-500/25 ring-1 ring-purple-400'
+                : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
             }`}
           >
-            <Box size={16} className={roofRackLoaded ? '!text-white shrink-0' : 'text-slate-400 shrink-0'} />
-            <span className={roofRackLoaded ? 'tracking-wide !text-white' : 'tracking-wide'}>
-              {roofRackLoaded 
-                ? `Roof Rack (+${roofRackPenaltyPct}%)`
-                : 'Roof Rack None'}
+            <Box size={16} className={cargoType !== 'none' ? 'text-white shrink-0' : 'text-slate-400 shrink-0'} />
+            <span className="truncate">
+              {cargoType === 'none' ? 'Roof Rack: None' : currentCargo.title}
             </span>
+            <ChevronRight size={14} className="shrink-0 text-slate-400 absolute right-3" />
           </button>
         </div>
       </div>
 
-      {/* Speed Slider Control */}
-      <div className="space-y-5 bg-slate-950/60 p-5 sm:p-6 rounded-2xl border border-slate-900/80 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              Set Your Cruising Speed:
-            </span>
-            <span className={`inline-block text-[10px] font-extrabold px-3 py-0.5 rounded-full border tracking-wide uppercase ${speedSeverity.badgeStyle}`}>
-              {speedSeverity.badgeText}
-            </span>
+      {/* SLIDERS SECTION */}
+      <div className="space-y-6 mb-6 bg-slate-950/60 p-4 sm:p-5 rounded-2xl border border-slate-900">
+        {/* 1. TRIP DISTANCE SLIDER */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="trip-distance-slider" className="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Compass size={15} className="text-amber-400" />
+              <span>TRIP DISTANCE</span>
+            </label>
+            <div className="px-3 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono font-bold text-white flex items-center gap-1">
+              <span className="text-amber-400 font-extrabold">{tripDistance}</span>
+              <span className="text-slate-400 text-[11px]">{isMetric ? 'km' : 'miles'}</span>
+            </div>
           </div>
 
-          <div className="flex items-baseline">
-            <span className={`text-4xl sm:text-5xl font-mono font-black tracking-tight transition-all duration-300 ${speedSeverity.textColor} ${speedSeverity.glowShadow}`}>
-              {speed}
-            </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-slate-400 ml-2">
-              {isMetric ? 'km/h' : 'mph'}
-            </span>
+          <input
+            id="trip-distance-slider"
+            type="range"
+            min={minDistance}
+            max={maxDistance}
+            step={isMetric ? 10 : 5}
+            value={tripDistance}
+            onChange={(e) => setTripDistance(Number(e.target.value))}
+            className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus:outline-none"
+          />
+
+          <div className="flex justify-between items-center text-xs font-mono font-semibold text-slate-400">
+            <span>{minDistance} {isMetric ? 'km' : 'mi'}</span>
+            <span>{Math.round(maxDistance / 2)} {isMetric ? 'km' : 'mi'}</span>
+            <span>{maxDistance.toLocaleString()} {isMetric ? 'km' : 'mi'}</span>
           </div>
         </div>
 
-        {/* High-Tech Glowing Range Slider */}
-        <div className="relative py-2 flex items-center">
-          {/* Subtle glowing track blur underneath */}
-          <div 
-            className="absolute inset-x-0 h-3 rounded-full blur-sm opacity-70 transition-all duration-200 pointer-events-none"
-            style={{
-              background: `linear-gradient(to right, #10b981 0%, ${speedSeverity.accentHex} ${fraction * 100}%, #0f172a ${fraction * 100}%, #0f172a 100%)`,
-              boxShadow: speedSeverity.trackGlow
-            }}
-          ></div>
+        {/* 2. CRUISING SPEED SLIDER */}
+        <div className="space-y-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <label htmlFor="cruising-speed-slider" className="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Gauge size={15} className="text-cyan-400" />
+              <span>CRUISING SPEED</span>
+            </label>
+
+            <div className="flex items-center justify-between sm:justify-end gap-2">
+              <span className={`inline-block text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded-full border tracking-wide uppercase ${speedSeverity.badgeStyle}`}>
+                {speedSeverity.badgeText}
+              </span>
+              <div className="px-3 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono font-bold text-white flex items-center gap-1 shrink-0">
+                <span className={`font-extrabold ${speedSeverity.textColor}`}>{speed}</span>
+                <span className="text-slate-400 text-[11px]">{isMetric ? 'km/h' : 'mph'}</span>
+              </div>
+            </div>
+          </div>
 
           <input
-            id="speed-simulator-slider"
-            aria-label="Cruising Speed"
+            id="cruising-speed-slider"
             type="range"
             min={minSpeed}
             max={maxSpeed}
+            step={1}
             value={speed}
             onChange={(e) => setSpeed(Number(e.target.value))}
-            className="cyber-slider w-full h-3 rounded-full appearance-none cursor-pointer outline-none relative z-10"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer focus:outline-none transition-all"
             style={{
-              '--slider-glow': speedSeverity.accentHex,
-              background: `linear-gradient(to right, #10b981 0%, ${speedSeverity.accentHex} ${fraction * 100}%, #0f172a ${fraction * 100}%, #0f172a 100%)`
-            } as React.CSSProperties}
+              accentColor: speedSeverity.accentHex,
+              background: `linear-gradient(to right, #10b981 0%, #f59e0b ${Math.min(50, speedFraction * 100)}%, #f43f5e ${speedFraction * 100}%, #1e293b ${speedFraction * 100}%, #1e293b 100%)`,
+              boxShadow: `0 0 8px ${speedSeverity.accentHex}30`
+            }}
           />
-        </div>
 
-        {/* Clean Monospace Ticks */}
-        <div className="flex justify-between items-center text-xs font-mono font-bold text-slate-400 px-1">
-          <div className="flex flex-col items-start">
-            <span className="text-slate-300 font-mono tracking-tight">{minSpeed} {isMetric ? 'km/h' : 'mph'}</span>
-            <span className="text-[10px] text-slate-500 font-sans font-normal">Min</span>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <span className="text-cyan-400 font-mono font-black flex items-center gap-1.5 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block"></span>
-              {isMetric ? '90 km/h' : '55 mph'}
-            </span>
-            <span className="text-[10px] text-cyan-400/90 font-bold uppercase tracking-wider font-mono">Sweet Spot</span>
-          </div>
-
-          <div className="flex flex-col items-end">
-            <span className="text-slate-300 font-mono tracking-tight">{maxSpeed} {isMetric ? 'km/h' : 'mph'}</span>
-            <span className="text-[10px] text-slate-500 font-sans font-normal">Max</span>
+          <div className="flex justify-between items-center text-xs font-mono font-semibold text-slate-400">
+            <span>{minSpeed} {isMetric ? 'km/h' : 'mph'}</span>
+            <span className="text-cyan-400 font-bold">{isMetric ? '90 km/h (Sweet Spot)' : '55 mph (Sweet Spot)'}</span>
+            <span>{maxSpeed} {isMetric ? 'km/h' : 'mph'}</span>
           </div>
         </div>
       </div>
+
+
+
+      {/* SLEEK ROOF RACK / CARGO SELECTION MODAL */}
+      {isCargoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-5">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <Box size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-white">Roof Attachment & Cargo</h3>
+                  <p className="text-xs text-slate-400">Select aerodynamic roof load to compute drag</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCargoModalOpen(false)}
+                className="p-2 rounded-xl bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Cargo Options List */}
+            <div className="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+              {cargoOptions.map((opt) => {
+                const isSelected = cargoType === opt.id;
+                const optionDragPct = (opt.cdAdd / currentVehicle.baseCd) * 100;
+
+                return (
+                  <button
+                    type="button"
+                    key={opt.id}
+                    onClick={() => {
+                      setCargoType(opt.id);
+                      setIsCargoModalOpen(false);
+                    }}
+                    className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-purple-950/60 border-purple-500 text-white ring-1 ring-purple-500/50 shadow-lg shadow-purple-950/40'
+                        : 'bg-slate-950/80 border-slate-800/80 text-slate-300 hover:border-slate-700 hover:bg-slate-950'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-sm text-white">{opt.title}</span>
+                        {isSelected && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-500 text-white">
+                            <Check size={12} /> Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 leading-tight">{opt.desc}</p>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <span className="block text-xs font-mono font-extrabold text-amber-400">
+                        {opt.cdAdd > 0 ? `+${optionDragPct.toFixed(1)}%` : '0% Drag'}
+                      </span>
+                      <span className="block text-[10px] font-mono text-slate-500">
+                        +Cd {opt.cdAdd.toFixed(3)}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer / Close Action */}
+            <div className="pt-2 border-t border-slate-800/80 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsCargoModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold transition-all cursor-pointer active:scale-95 shadow-md shadow-purple-600/30"
+              >
+                Apply Selection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

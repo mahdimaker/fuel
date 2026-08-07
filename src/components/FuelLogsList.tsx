@@ -117,8 +117,8 @@ export default function FuelLogsList({
   // Map types to translation values
   const getFuelTypeLabel = (type: string) => {
     switch (type) {
-      case 'regular': return 'Regular Gas';
-      case 'super': return 'Premium Fuel';
+      case 'regular': return 'Regular';
+      case 'super': return 'Premium';
       case 'diesel': return 'Diesel';
       case 'hybrid': return 'Hybrid';
       case 'gas': return 'LPG/CNG';

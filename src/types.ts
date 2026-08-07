@@ -26,6 +26,7 @@ export interface VehicleInfo {
   year: string;
   fuelCapacity: number; // Liters
   currentOdometer: number; // km
+  bodyType?: 'compact' | 'crossover' | 'suv';
 }
 
 export interface HealthMetrics {

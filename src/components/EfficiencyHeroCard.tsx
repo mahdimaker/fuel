@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Gauge, Zap, TrendingUp, AlertTriangle, Leaf, Flame, Compass } from 'lucide-react';
+import { Fuel, Zap, TrendingUp, AlertTriangle, Leaf, Flame, Compass } from 'lucide-react';
 import { Language } from '../utils/translations';
 import { FuelEntry } from '../types';
 import { calculateLogEfficiencies } from '../utils/calculator';
@@ -99,7 +99,7 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, logs = 
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-              <Gauge size={22} className="animate-pulse" />
+              <Fuel size={22} className="animate-pulse" />
             </div>
             <div className="text-left">
               <h2 className="text-sm font-extrabold uppercase tracking-widest text-white">
@@ -282,7 +282,7 @@ export default function EfficiencyHeroCard({ fuelEfficiency, unitSystem, logs = 
         {/* Row 2: Icon, Title & Subtitle with full width */}
         <div className="flex items-center gap-3 w-full">
           <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0">
-            <Gauge size={22} />
+            <Fuel size={22} />
           </div>
           <div className="w-full">
             <h2 className="text-sm sm:text-base font-extrabold uppercase tracking-widest text-white leading-tight">
